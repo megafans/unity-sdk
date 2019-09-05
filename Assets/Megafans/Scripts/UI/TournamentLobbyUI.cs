@@ -131,8 +131,13 @@ namespace MegafansSDK.UI {
             }
         }
 
-        public void JoinNowBtn_OnClick()
-        {
+        public void JoinNowBtn_OnClick() {
+            if(tournaments == null || listBox == null || listBox.currentIndex >= tournaments.Count) {
+                //TODO: Add popup to join now button that lets users know that there is no available tournaments.
+                Debug.LogWarning($@"Error unable to join: Number of available tournaments ({tournaments?.Count.ToString()
+                    ?? "Null"}), Attempting to join listbox number ({listBox?.currentIndex.ToString() ?? "Null"})");
+                return;
+            }
             LevelsResponseData tournament = tournaments[listBox.currentIndex];
             MegafansUI.Instance.ShowSingleTournamentWindow(tournament);
         }
