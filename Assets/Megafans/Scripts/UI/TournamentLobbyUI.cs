@@ -168,12 +168,12 @@ namespace MegafansSDK.UI {
 
         public void NextBtn_OnClick()
         {
-            listBox.next();
+            listBox?.Next();
         }
 
         public void PreviousBtn_OnClick()
         {
-            listBox.back();
+            listBox?.Back();
         }
 
         private void SetGameNameTxt() {
