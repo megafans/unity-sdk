@@ -337,13 +337,6 @@ namespace MegafansSDK.UI {
             onboardingTutorialUI.ShowDetailsMegafansWindow();
         }
 
-
-        private void OnGUI() {
-            if (uiParent.activeInHierarchy)
-                GUI.enabled = false;
-            else
-                GUI.enabled = true;
-        }
     }
 
 }

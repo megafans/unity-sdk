@@ -144,26 +144,4 @@ public class WebView : MonoBehaviour
         yield break;
     }
 
-#if !UNITY_WEBPLAYER
-    void OnGUI()
-    {
-        GUI.enabled = true;
-        GUI.depth = 0;
-        //GUIStyle customButton = new GUIStyle("button");
-        //customButton.fontSize = 30;
-        //if (GUI.Button(new Rect(16, 16, Screen.width - (32), 80), "EXIT " + TitleTextValue, customButton))
-        //{
-        //    var g = GameObject.Find("WebViewObject");
-        //    if (g != null)
-        //    {
-        //        Destroy(g);
-        //        enabled = false;
-        //    }
-        //    else
-        //    {
-        //        StartCoroutine(Start());
-        //    }
-        //}
-    }
-#endif
 }

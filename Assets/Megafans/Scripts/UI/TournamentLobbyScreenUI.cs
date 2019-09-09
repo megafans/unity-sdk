@@ -189,17 +189,16 @@ namespace MegafansSDK.UI {
 		public void HideAllWindows() {
             Debug.Log("HIDE ALL WINDOWS");
 #if UNITY_EDITOR
-            Debug.Log("Unity Editor");
+            //Debug.Log("Unity Editor");
 #elif UNITY_IOS
-            Debug.Log("IOS");
+            //Debug.Log("IOS");
             IntercomWrapperiOS.HideIntercom();
 #elif UNITY_ANDROID
-            Debug.Log("ANDROID");
+            //Debug.Log("ANDROID");
             IntercomWrapperAndroid.HideIntercom();
 #endif
             if (windows != null) {
-                foreach (GameObject window in windows)
-                {
+                foreach (GameObject window in windows) {
                     window.SetActive(false);
                 }
             }
