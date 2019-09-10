@@ -23,7 +23,8 @@ namespace MegafansSDK.UI {
             => MegafansUtils.IsPasswordValid(oldPasswordField.text) &&
                MegafansUtils.IsPasswordValid(newPasswordField.text) &&
                MegafansUtils.IsPasswordValid(newPasswordConfirmField.text) &&
-               newPasswordField.text == newPasswordConfirmField.text;
+               newPasswordField.text == newPasswordConfirmField.text &&
+               newPasswordField.text != oldPasswordField.text;
 
 
 
@@ -54,7 +55,7 @@ namespace MegafansSDK.UI {
         }
 
 
-
+        //Called from each password field
         public void PasswordField_OnValueChanged() {
             savePasswordBtn.interactable = IsFormValid;
         }
