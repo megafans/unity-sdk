@@ -22,14 +22,14 @@ public class WebView : MonoBehaviour
             cb: (msg) =>
             {
                 Debug.Log(string.Format("CallFromJS[{0}]", msg));
-                status.text = msg;
-                status.GetComponent<Animation>().Play();
+                //status.text = msg;
+                //status.GetComponent<Animation>().Play();
             },
             err: (msg) =>
             {
                 Debug.Log(string.Format("CallOnError[{0}]", msg));
-                status.text = msg;
-                status.GetComponent<Animation>().Play();
+                //status.text = msg;
+                //status.GetComponent<Animation>().Play();
             },
             started: (msg) =>
             {
@@ -87,7 +87,18 @@ public class WebView : MonoBehaviour
 #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
         webViewObject.bitmapRefreshCycle = 1;
 #endif
-        webViewObject.SetMargins(0, 100, 0, 100);
+
+        int height = Screen.height;
+        int width = Screen.width;
+
+        if (Screen.width > 2000)
+        {
+            webViewObject.SetMargins(0, 175, 0, 175);
+        } else if (Screen.height > 1000) {
+            webViewObject.SetMargins(0, 125, 0, 125);
+        } else {
+            webViewObject.SetMargins(0, 100, 0, 100);
+        }
         webViewObject.SetVisibility(true);
 
 #if !UNITY_WEBPLAYER

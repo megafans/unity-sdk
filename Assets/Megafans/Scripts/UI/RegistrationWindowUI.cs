@@ -9,7 +9,8 @@ namespace MegafansSDK.UI {
 
 	public class RegistrationWindowUI : MonoBehaviour {
 
-		[SerializeField] private GameObject emailSection;
+        [SerializeField] private Text titleText;
+        [SerializeField] private GameObject emailSection;
 		[SerializeField] private GameObject phoneSection;
 		[SerializeField] private Toggle agreementCheckboxPhone;
 		[SerializeField] private Toggle agreementCheckboxEmail;
@@ -27,6 +28,7 @@ namespace MegafansSDK.UI {
 		}
 
         public bool IsEmail = true;
+        public bool IsLinking = false;
 
         void Awake() {
             if (IsEmail)
@@ -50,6 +52,14 @@ namespace MegafansSDK.UI {
             {
                 phoneSection.SetActive(true);
                 emailSection.SetActive(false);
+            }
+            if (IsLinking)
+            {
+                titleText.text = "Link your account";
+            }
+            else
+            {
+                titleText.text = "Create your account";
             }
         }
 
@@ -97,7 +107,7 @@ namespace MegafansSDK.UI {
 		}
 
 		public void BackBtn_OnClick() {
-			MegafansUI.Instance.ShowLandingWindow (false);
+            MegafansUI.Instance.ShowLandingWindow (false, IsLinking);
 		}
 
         public void LoginBtn_OnClickEmail() {
@@ -133,7 +143,5 @@ namespace MegafansSDK.UI {
 			Debug.LogError (error);
 			MegafansUI.Instance.ShowPopup ("ERROR", error);
 		}
-
 	}
-
 }

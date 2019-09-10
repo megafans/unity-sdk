@@ -113,12 +113,12 @@ namespace MegafansSDK.UI {
 
 		public void ShowStoreWindow(float credits, bool addToExisting) {
             MegafansUI.Instance.HideHelp();
-            storeWindow.gameObject.SetActive(true);
             StoreWindowUI handler = storeWindow.GetComponent<StoreWindowUI> ();
 			if (handler != null) {
 				handler.Init (credits, addToExisting);
 			}
-		}
+            storeWindow.gameObject.SetActive(true);
+        }
 
         public void HideStoreWindow() {
             storeWindow.gameObject.SetActive(false);
@@ -126,12 +126,12 @@ namespace MegafansSDK.UI {
 
         public void ShowRulesWindow(LevelsResponseData levelInfo = null)
         {
-            termsOfUseAndRulesWindow.gameObject.SetActive(true);
             TermsOfUseAndRulesWindow handler = termsOfUseAndRulesWindow.GetComponent<TermsOfUseAndRulesWindow>();
             if (handler != null)
             {
                 handler.Init(levelInfo);
             }
+            termsOfUseAndRulesWindow.gameObject.SetActive(true);
         }
 
         public void ShowTermsOfUseOrPrivacyWindow(string informationType)

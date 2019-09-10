@@ -81,11 +81,11 @@ namespace MegafansSDK.UI {
             }
         }
 
-        public void ShowLandingWindow(bool IsLogin)
+        public void ShowLandingWindow(bool IsLogin, bool IsLinking = false)
         {
             onboardingTutorialUI.HideAllWindows();
             //tournamentLobbyScreenUI.HideAllWindows();
-            landingScreenUI.ShowLandingWindow(IsLogin);
+            landingScreenUI.ShowLandingWindow(IsLogin, IsLinking);
         }
 
         public void HideLandingWindow()
@@ -93,16 +93,16 @@ namespace MegafansSDK.UI {
             landingScreenUI.HideAllWindows();
         }
 
-        public void ShowRegistrationWindow(bool isEmail)
+        public void ShowRegistrationWindow(bool isEmail, bool IsLinking = false)
         {
             tournamentLobbyScreenUI.HideAllWindows();
             if (isEmail)
             {
-                landingScreenUI.ShowRegistrationWindowEmail();
+                landingScreenUI.ShowRegistrationWindowEmail(IsLinking);
             }
             else
             {
-                landingScreenUI.ShowRegistrationWindowPhone();
+                landingScreenUI.ShowRegistrationWindowPhone(IsLinking);
             }
         }
 
@@ -116,6 +116,15 @@ namespace MegafansSDK.UI {
         {
             tournamentLobbyScreenUI.HideAllWindows();
             landingScreenUI.ShowVerifyPhoneWindow(phoneNumberToVerify, isRegistering, backBtnAction);
+        }
+
+        public void ShowVerifyPhoneWindowFromEdit(string phoneNumberToVerify, UnityAction backBtnAction)
+        {
+            landingScreenUI.ShowVerifyPhoneWindowEdit(phoneNumberToVerify, backBtnAction);
+        }
+
+        public void BackFromVerifyOTP() {
+            landingScreenUI.BackFromVerifyOTP();
         }
 
         public void ShowLoginWindow(bool isEmail)

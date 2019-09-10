@@ -530,7 +530,35 @@ namespace MegafansSDK.Utils {
 				});
 		}
 
-		public void ResetPassword(string email, Action<Response> responseCallback,
+        public void LinkFB(Action<EditProfileResponse> responseCallback, Action<string> failureCallback)
+        {
+            MegafansUI.Instance.ShowLoadingBar();
+
+            fbHelper.LoginRequest((string userId, string email, string username) => {
+                MegafansUI.Instance.HideLoadingBar();
+
+                EditProfileRequest editProfileRequest = new EditProfileRequest();
+                //editProfileRequest.facebook_login_id = "10216538300784796";
+                editProfileRequest.facebook_login_id = userId;
+
+                if (string.IsNullOrEmpty(MegafansPrefs.Email)) {
+                    editProfileRequest.email_address = email;
+                } else {
+                    editProfileRequest.email_address = MegafansPrefs.Email;
+                }
+
+                editProfileRequest.username = MegafansPrefs.Username;
+                editProfileRequest.phone_number = MegafansPrefs.PhoneNumber;
+
+                string url = ServerBaseUrl + EditProfileUrl;
+                Request<EditProfileResponse>(editProfileRequest, url, responseCallback, failureCallback);
+            }, (string error) => {
+                MegafansUI.Instance.HideLoadingBar();
+                failureCallback(error);
+            });
+        }
+
+        public void ResetPassword(string email, Action<Response> responseCallback,
 			Action<string> failureCallback) {
 
 			ResetPasswordRequest resetRequest = new ResetPasswordRequest ();

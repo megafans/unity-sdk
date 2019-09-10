@@ -29,7 +29,7 @@ namespace MegafansSDK.Utils {
         }
 
         public static bool IsPhoneNumberValid(string phoneNumber) {
-			if (phoneNumber.Length <= 0) {
+			if (phoneNumber.Length < 10) {
 				return false;
 			}
 

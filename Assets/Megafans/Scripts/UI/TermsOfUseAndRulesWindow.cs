@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using MegafansSDK.Utils;
+using MegafansSDK.UI;
 
 namespace MegafansSDK.UI
 {
@@ -27,9 +28,6 @@ namespace MegafansSDK.UI
         [SerializeField] private Button backToGameBtn;
         [SerializeField] private Button userTokenHeaderBtn;
 
-        [SerializeField] private RectTransform header;
-        [SerializeField] private RectTransform footer;
-
 
         List<TournamentRulesResponseData> rulesOrTermsData;
         LevelsResponseData levelInfo;
@@ -38,16 +36,17 @@ namespace MegafansSDK.UI
 
         public void Init(LevelsResponseData levelInfo)
         {
+            this.informationType = null;
             this.levelInfo = levelInfo;
             if (this.levelInfo != null)
             {
-                MegafansWebService.Instance.GetTournamentRules(this.levelInfo.id, OnGetTournamentRulesResponse, OnGetTournamentRulesError);
                 headerLabelTxt.text = "How To Play";
             }
         }
 
         public void Init(string informationType, bool isSignUp)
         {
+            this.levelInfo = null;
             this.informationType = informationType;
             if (informationType == MegafansConstants.TERMS_OF_USE)
             {
@@ -78,10 +77,16 @@ namespace MegafansSDK.UI
         {
             userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
             listBox.ClearList();
-            //Canvas.ForceUpdateCanvases();
-            //float headerHeight = header.rect.height;
-            //float footerHeight = footer.rect.height;
-            ShowWebView();
+            Vector3 scale = this.transform.localScale;
+            //Resolution res = Screen.currentResolution;
+            if (this.levelInfo == null) {
+                Debug.Log("**********************************");
+                Debug.Log("No Level Info");
+                Debug.Log("**********************************");
+                ShowWebView();
+            } else {
+                MegafansWebService.Instance.GetTournamentRules(this.levelInfo.id, OnGetTournamentRulesResponse, OnGetTournamentRulesError);
+            }
         }
 
         private void OnDisable()

@@ -67,12 +67,32 @@ namespace MegafansSDK.UI
 
         public void LinkAccountBtn_OnClick()
         {
-            MegafansUI.Instance.ShowLandingWindow(false);
+            if (!string.IsNullOrEmpty(MegafansPrefs.Email) && !string.IsNullOrEmpty(MegafansPrefs.PhoneNumber) && !string.IsNullOrEmpty(MegafansPrefs.FacebookID)) {
+                MegafansUI.Instance.ShowPopup("Already Linked", "Your account is already linked.");
+            } else {
+                MegafansUI.Instance.ShowLandingWindow(false, MegafansPrefs.IsRegisteredMegaFansUser);
+            }
         }
 
         public void UpdatePassword_OnClick()
         {
-            MegafansUI.Instance.ShowUpdateProfileWindow();
+            if (!MegafansPrefs.IsRegisteredMegaFansUser) {
+                MegafansUI.Instance.ShowUpdateProfileWindow();
+            } else if (string.IsNullOrEmpty(MegafansPrefs.Email)) {
+                string msg = "Please link your email address before you are able to add or update your password. Would you like to link your email now?";
+
+                MegafansUI.Instance.ShowAlertDialog(warningIcon, "Link Email",
+                  msg, "Link Now", "Link Later",
+                  () => {
+                      MegafansUI.Instance.HideAlertDialog();
+                      MegafansUI.Instance.ShowLandingWindow(false, MegafansPrefs.IsRegisteredMegaFansUser);                      
+                  },
+                  () => {
+                      MegafansUI.Instance.HideAlertDialog();
+                  });
+            } else {
+                MegafansUI.Instance.ShowUpdateProfileWindow();
+            }
         }
 
         public void TermsOfUseAndPrivacyBtn_OnClick()

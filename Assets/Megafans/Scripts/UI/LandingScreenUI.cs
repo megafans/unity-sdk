@@ -21,30 +21,33 @@ namespace MegafansSDK.UI {
 			FillWindows ();
 		}
 
-		public void ShowLandingWindow(bool isLogin = false) {
+		public void ShowLandingWindow(bool isLogin = false, bool isLinking = false) {
             this.HideAllWindows();
             LandingWindowUI handler = landingWindow.GetComponent<LandingWindowUI>();
             if (handler != null)
             {
                 handler.IsLogin = isLogin;
+                handler.IsLinking = isLinking;
             }
             ShowWindow (landingWindow);
 		}
 
-		public void ShowRegistrationWindowPhone() {
+		public void ShowRegistrationWindowPhone(bool isLinking = false) {
             RegistrationWindowUI handler = registrationWindow.GetComponent<RegistrationWindowUI>();
             if (handler != null)
             {
                 handler.IsEmail = false;
+                handler.IsLinking = isLinking;
             }
             ShowWindow(registrationWindow);
         }
 
-        public void ShowRegistrationWindowEmail() {
+        public void ShowRegistrationWindowEmail(bool isLinking = false) {
             RegistrationWindowUI handler = registrationWindow.GetComponent<RegistrationWindowUI>();
             if (handler != null)
             {
                 handler.IsEmail = true;
+                handler.IsLinking = isLinking;
             }
             ShowWindow(registrationWindow);
         }
@@ -78,6 +81,24 @@ namespace MegafansSDK.UI {
 				handler.SetBackBtnAction (backBtnAction);
 			}
 		}
+
+        public void ShowVerifyPhoneWindowEdit(string phoneNumberToVerify, UnityAction backBtnAction)
+        {       
+            VerifyPhoneWindowUI handler = verifyPhoneWindow.GetComponent<VerifyPhoneWindowUI>();
+            if (handler != null)
+            {
+                handler.PhoneNumberToVerify = phoneNumberToVerify;
+                handler.IsRegistering = false;
+                handler.IsLinking = true;
+                handler.SetBackBtnAction(backBtnAction);
+            }
+            ShowWindow(verifyPhoneWindow);
+        }
+
+        public void BackFromVerifyOTP() {
+            background.gameObject.SetActive(false);
+            verifyPhoneWindow.gameObject.SetActive(false);
+        }
 
         public void ShowRegistrationSuccessWindow(bool isEmail) {        
             RegistrationSuccessUI handler = registrationSuccessWindow.GetComponent<RegistrationSuccessUI>();

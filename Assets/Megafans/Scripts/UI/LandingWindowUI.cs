@@ -9,6 +9,10 @@ namespace MegafansSDK.UI {
 
 	public class LandingWindowUI : MonoBehaviour {
 
+        [SerializeField] private Button withFacebookBtn;
+        [SerializeField] private Button withEmailBtn;
+        [SerializeField] private Button withPhoneBtn;
+
         [SerializeField] private Text withFacebookTextLabel;
         [SerializeField] private Text withEmailTextLabel;
         [SerializeField] private Text withPhoneTextLabel;
@@ -19,7 +23,12 @@ namespace MegafansSDK.UI {
 
         public bool IsLogin = false;
 
+        public bool IsLinking = false;
+
         private void OnEnable() {
+            withFacebookBtn.gameObject.SetActive(true);
+            withEmailBtn.gameObject.SetActive(true);
+            withPhoneBtn.gameObject.SetActive(true);
             updateUIForLoginOrSignUp();
             //if (!Megafans.Instance.IsUserLoggedIn)
             //{
@@ -31,6 +40,8 @@ namespace MegafansSDK.UI {
             if (IsLogin)
             {
                 MegafansWebService.Instance.LoginFB(OnLoginFBResponse, OnLoginFBFailure);
+            } else if (IsLinking) {
+                MegafansWebService.Instance.LinkFB(OnEditProfileResponse, OnLoginFBFailure);
             } else {
                 MegafansUI.Instance.ShowLoadingBar();
                 MegafansWebService.Instance.RegisterFB(OnRegisterFBResponse, OnRegisterFBFailure);
@@ -45,7 +56,7 @@ namespace MegafansSDK.UI {
             if (IsLogin) {
                 MegafansUI.Instance.ShowLoginWindow(true);
             } else {
-                MegafansUI.Instance.ShowRegistrationWindow(true);
+                MegafansUI.Instance.ShowRegistrationWindow(true, IsLinking);
             }
         }
 
@@ -54,7 +65,7 @@ namespace MegafansSDK.UI {
             if (IsLogin) {
                 MegafansUI.Instance.ShowLoginWindow(false);
             } else {
-                MegafansUI.Instance.ShowRegistrationWindow(false);
+                MegafansUI.Instance.ShowRegistrationWindow(false, IsLinking);
             }
         }
 
@@ -151,6 +162,31 @@ namespace MegafansSDK.UI {
                 registerOrLoginActionTextLabel.text = "REGISTER";
                 landingWindowDescriptionText.text = "Log in to your MegaFans account to get back into the tournament arena";
             }
+            else if (IsLinking)
+            {
+                withEmailTextLabel.text = "Link email";
+                withFacebookTextLabel.text = "Link FB";
+                withPhoneTextLabel.text = "Link phone";
+
+                if (!string.IsNullOrEmpty(MegafansPrefs.Email))
+                {
+                    withEmailBtn.gameObject.SetActive(false);
+                } else {
+                    withEmailBtn.gameObject.SetActive(true);
+                }
+
+                if (!string.IsNullOrEmpty(MegafansPrefs.PhoneNumber)) {
+                    withPhoneBtn.gameObject.SetActive(false);
+                } else {
+                    withPhoneBtn.gameObject.SetActive(true);
+                }
+
+                if (!string.IsNullOrEmpty(MegafansPrefs.FacebookID)) {
+                    withFacebookBtn.gameObject.SetActive(false);
+                } else {
+                    withFacebookBtn.gameObject.SetActive(true);
+                }
+            }
             else
             {
                 withFacebookTextLabel.text = "Use FB";
@@ -171,7 +207,7 @@ namespace MegafansSDK.UI {
                 MegafansPrefs.Username = response.data.username;
                 MegafansPrefs.UserId = response.data.userId;
                 MegafansPrefs.SMSAvailable = response.data.sms;
-                //OneSignal.SetExternalUserId(response.data.userId.ToString());
+                //TODO: removed OneSignal //OneSignal.SetExternalUserId(response.data.userId.ToString());
 #if UNITY_EDITOR
                 Debug.Log("Unity Editor");
 #elif UNITY_IOS
@@ -192,5 +228,20 @@ namespace MegafansSDK.UI {
         {
             Debug.LogError(error);
         }
+
+        private void OnEditProfileResponse(EditProfileResponse response)
+        {
+            if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
+            {
+                MegafansUI.Instance.ShowPopup("SUCCESS", "Successfully linked your account");
+                MegafansUI.Instance.ShowTournamentLobby();
+            }
+            else
+            {
+                string msg = "Failed to save changes.";
+                MegafansUI.Instance.ShowPopup("ERROR", msg);
+            }
+        }
+
     }
 }

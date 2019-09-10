@@ -44,17 +44,13 @@ namespace MegafansSDK.UI
 
         //private List<Button> leaderboardOptionBtns;
 
-        void Awake()
-        {
-            userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
-        }
-
         void OnEnable()
         {
             if (!MegafansPrefs.IsRegisteredMegaFansUser) {
                 verifyAcctViewTextLabel.text = "Register your account to view your game history";
                 verifyAcctViewButtonTextLabel.text = "Register now";
             }
+            userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
             //Debug.Log("*********************LeaderBoard Enable***************************");
             //if (MegafansPrefs.UserStatus != 1 && MegafansPrefs.UserStatus != 11 && MegafansPrefs.UserStatus != 13)
             //{
@@ -194,7 +190,7 @@ namespace MegafansSDK.UI
                     rankingListBox.gameObject.SetActive(false);
                     verifyAcctView.SetActive(false);
                     loadingView.SetActive(true);
-                    MegafansWebService.Instance.ViewScoreboard(Megafans.Instance.GameUID, false,
+                    MegafansWebService.Instance.ViewScoreboard(Megafans.Instance.GameUID, true,
                         gameType, OnScoreboardResponse, OnScoreboardFailure);
                 }
             }
@@ -472,10 +468,10 @@ namespace MegafansSDK.UI
 
         public void ViewUserProfile(string userCode)
         {
-            if (this.leaderboardType != LeaderboardType.USER_SCOREBOARD && !string.IsNullOrEmpty(userCode))
-            {
-                MegafansUI.Instance.ShowViewProfileWindow(userCode);
-            }
+            //if (this.leaderboardType != LeaderboardType.USER_SCOREBOARD && !string.IsNullOrEmpty(userCode))
+            //{
+            //    MegafansUI.Instance.ShowViewProfileWindow(userCode);
+            //}
         }
 
         //private void OnViewProfileResponse(ViewProfileResponse response)

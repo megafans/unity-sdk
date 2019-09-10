@@ -15,7 +15,8 @@ namespace MegafansSDK.Utils {
 		public string username;
 		public string email;
 		public string phoneNumber;
-		public string deviceType;
+        public string facebokLoginId;
+        public string deviceType;
 		public string gender;
 		public string dateOfBirth;
 		public float clientBalance;	

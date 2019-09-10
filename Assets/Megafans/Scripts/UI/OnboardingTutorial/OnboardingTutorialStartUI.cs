@@ -44,7 +44,7 @@ namespace MegafansSDK.UI
                 MegafansPrefs.Username = response.data.username;
                 MegafansPrefs.UserId = response.data.userId;
                 MegafansPrefs.SMSAvailable = response.data.sms;
-                //OneSignal.SetExternalUserId(response.data.userId.ToString());
+                //TODO: removed OneSignal //OneSignal.SetExternalUserId(response.data.userId.ToString());
 #if UNITY_EDITOR
                 Debug.Log("Unity Editor");
 #elif UNITY_IOS

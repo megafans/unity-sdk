@@ -33,6 +33,7 @@ namespace MegafansSDK.UI {
 
         public int currentIndex = 0;
 
+
         public GameObject Header => header;
 
 
@@ -66,7 +67,7 @@ namespace MegafansSDK.UI {
 		}
 
         public void OnPointerClick(PointerEventData eventData) {
-			Debug.Log("Button clicked = " + eventData);
+			Debug.Log($"Button clicked {eventData}");
 			//if (canClick == true)
 			//{
 			//    // add code for click here

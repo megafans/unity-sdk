@@ -11,6 +11,8 @@ namespace MegafansSDK.UI {
 
 	public class RegistrationPhoneUI : MonoBehaviour {
 
+        [SerializeField] private Text saveBtnText;
+        [SerializeField] private GameObject termsAndConditionsView;
         [SerializeField] private InputField phoneNumberField;
         [SerializeField] private InputField phoneNumberPrefixField;
         [SerializeField] private RegistrationWindowUI mainRegistrationUI;
@@ -36,10 +38,26 @@ namespace MegafansSDK.UI {
         {
             get
             {
-                bool isValidPrefix = MegafansUtils.IsPhoneNumberPrefixValid(phoneNumberPrefixField.text);
+                //bool isValidPrefix = MegafansUtils.IsPhoneNumberPrefixValid(phoneNumberPrefixField.text);
                 bool isValidNumber = MegafansUtils.IsPhoneNumberValid(phoneNumberField.text);
-                return isValidPrefix && isValidNumber;
+                //return isValidPrefix && isValidNumber;
+                return isValidNumber;
             }
+        }
+
+        private void OnEnable()
+        {
+            if (mainRegistrationUI.IsLinking)
+            {
+                saveBtnText.text = "LINK ACCOUNT";
+                termsAndConditionsView.SetActive(false);
+            }
+            else
+            {
+                saveBtnText.text = "CREATE ACCOUNT";
+                termsAndConditionsView.SetActive(true);
+            }
+
         }
 
         public void ContinueBtn_OnClick() {
@@ -49,31 +67,31 @@ namespace MegafansSDK.UI {
                 MegafansUI.Instance.ShowPopup("ERROR", msg);
                 return;
             }
-            else if (!MegafansUtils.IsPhoneNumberValid(phoneNumberPrefixField.text))
-            {
-                string msg = "Please enter your country code.";
-                MegafansUI.Instance.ShowPopup("ERROR", msg);
-                return;
-            }
-            string prefixText = phoneNumberPrefixField.text;
+            //else if (!MegafansUtils.IsPhoneNumberValid(phoneNumberPrefixField.text))
+            //{
+            //    string msg = "Please enter your country code.";
+            //    MegafansUI.Instance.ShowPopup("ERROR", msg);
+            //    return;
+            //}
+            //string prefixText = phoneNumberPrefixField.text;
 
-            if (prefixText.StartsWith("+", StringComparison.Ordinal))
-            {
-                combinedCountryCodeAndPhoneNumber = phoneNumberPrefixField.text + phoneNumberField.text;
-            }
-            else
-            {
-                combinedCountryCodeAndPhoneNumber = "+" + phoneNumberPrefixField.text + phoneNumberField.text;
-            }
+            //if (prefixText.StartsWith("+", StringComparison.Ordinal))
+            //{
+            //    combinedCountryCodeAndPhoneNumber = phoneNumberPrefixField.text + phoneNumberField.text;
+            //}
+            //else
+            //{
+            //    combinedCountryCodeAndPhoneNumber = "+" + phoneNumberPrefixField.text + phoneNumberField.text;
+            //}
+            combinedCountryCodeAndPhoneNumber = "+1" + phoneNumberField.text;
             MegafansPrefs.PhoneNumber = combinedCountryCodeAndPhoneNumber;
 
-			if (!mainRegistrationUI.IsAgreementAcceptedPhone) {
+			if (!mainRegistrationUI.IsLinking && !mainRegistrationUI.IsAgreementAcceptedPhone) {
 				string msg = "Please accept our Terms of Use and Privacy Policy.";
 				MegafansUI.Instance.ShowPopup ("ERROR", msg);
 
 				return;
 			}
-
             MegafansWebService.Instance.EditProfile(MegafansPrefs.Username, combinedCountryCodeAndPhoneNumber, null,
                 OnEditProfileResponse, OnEditProfileFailure);
 		}
@@ -97,10 +115,10 @@ namespace MegafansSDK.UI {
         {
             if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
             {
-                MegafansPrefs.PhoneNumber = "+" + phoneNumberPrefixField.text + phoneNumberField.text;
-                MegafansUI.Instance.ShowVerifyPhoneWindow (phoneNumberField.text, true, () => {
+                //MegafansPrefs.PhoneNumber = "+" + phoneNumberPrefixField.text + phoneNumberField.text;
+                MegafansUI.Instance.ShowVerifyPhoneWindow (combinedCountryCodeAndPhoneNumber, true, () => {
                     Megafans.Instance.ReportUserRegistered(MegafansPrefs.UserId.ToString());
-                    MegafansUI.Instance.ShowRegistrationSuccessWindow(false);
+                    MegafansUI.Instance.ShowRegistrationWindow(false);
                 });
 
                 //                if (!string.IsNullOrEmpty(updatedUserName))

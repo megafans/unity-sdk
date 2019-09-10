@@ -30,6 +30,7 @@ namespace MegafansSDK.UI {
             activeInputBackground = Sprite.Create(spriteTexture, new Rect(0, 0, spriteTexture.width, spriteTexture.height), new Vector2(0.5f, 0.5f));
 
             phoneNumberField.text = "";
+            //phoneNumberField.text = "9709858807";
         }
 
         public void PhoneNumberPrefixField_OnValueChanged() {

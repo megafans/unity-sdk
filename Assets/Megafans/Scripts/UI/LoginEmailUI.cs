@@ -34,8 +34,8 @@ namespace MegafansSDK.UI {
             emailField.text = "";
             passwordField.text = "";
 
-            //emailField.text = "mark@megafans.com";
-            //passwordField.text = "PasswordWrong";
+            //emailField.text = "mark.hoyt970@gmail.com";
+            //passwordField.text = "Password1";
         }
 
 		public void EmailField_OnValueChanged() {

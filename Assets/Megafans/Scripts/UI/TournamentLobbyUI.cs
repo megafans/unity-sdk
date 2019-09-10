@@ -178,16 +178,16 @@ namespace MegafansSDK.UI {
 
         private void SetGameNameTxt() {
 			string gameName = Application.productName;
-			int maxLengthAllowed = 20;
-			if (gameName.Length > maxLengthAllowed) {
-				gameName = gameName.Substring (0, maxLengthAllowed);
+			//int maxLengthAllowed = 20;
+			//if (gameName.Length > maxLengthAllowed) {
+			//	gameName = gameName.Substring (0, maxLengthAllowed);
 
-				if (gameName [gameName.Length - 1].Equals (' ')) {
-					gameName = gameName.Remove (gameName.Length - 1);
-				}
+			//	if (gameName [gameName.Length - 1].Equals (' ')) {
+			//		gameName = gameName.Remove (gameName.Length - 1);
+			//	}
 
-				gameName += "...";
-			}
+			//	gameName += "...";
+			//}
 
 			gameNameTxt.text = gameName;
 		}
@@ -247,6 +247,7 @@ namespace MegafansSDK.UI {
                 MegafansPrefs.Username = response.data.username;
                 MegafansPrefs.UserStatus = response.data.status ?? 7;
                 MegafansPrefs.CurrentTokenBalance = response.data.clientBalance;
+                MegafansPrefs.FacebookID = response.data.facebokLoginId;
 
                 userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
                 if (response.data.email != null) {

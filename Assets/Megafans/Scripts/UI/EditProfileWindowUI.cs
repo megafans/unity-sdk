@@ -18,18 +18,11 @@ namespace MegafansSDK.UI {
         [SerializeField] private InputField emailAddressField;
         [SerializeField] private InputField confirmEmailAddressField;
         [SerializeField] private RawImage inputFieldHighlightedImage;
+        [SerializeField] private Button saveAccountBtn;
         private Sprite activeInputBackground;
         private Sprite inactiveInputBackground;
-        //[SerializeField] private RawImage profilePicImg;
-        //[SerializeField] private Button updatePasswordBtn;
-        [SerializeField] private Button saveAccountBtn;
-        //[SerializeField] private Button loginToAccountBtn;
-        //[SerializeField] private Button logoutBtn;
 
-
-        //private ImagePicker imagePicker;
-        private bool isEmailProfile = false;
-		//private Texture2D picPlaceholder;
+        private bool isEmailProfile = false;		
         private string addedEmailAddress;
         private string addedPhoneNumber;
         private string updatedUserName;
@@ -50,7 +43,7 @@ namespace MegafansSDK.UI {
             phoneNumberPrefixField.image.sprite = inactiveInputBackground;
             phoneNumberField.image.sprite = inactiveInputBackground;
 
-			MegafansWebService.Instance.ViewProfile ("", OnViewProfileResponse, OnViewProfileFailure);
+            MegafansWebService.Instance.ViewProfile ("", OnViewProfileResponse, OnViewProfileFailure);
             int status = MegafansPrefs.UserStatus;
             if (!MegafansPrefs.IsRegisteredMegaFansUser) {           
                 emailAddressField.gameObject.SetActive(false);
@@ -58,6 +51,8 @@ namespace MegafansSDK.UI {
                 phoneNumberField.gameObject.SetActive(false);
                 phoneNumberPrefixField.gameObject.SetActive(false);
             }
+
+            //phoneNumberField.text = "9709858807";
 		}
 
 		void Start() {
@@ -143,28 +138,31 @@ namespace MegafansSDK.UI {
 
             if (phoneNumberField.gameObject.activeInHierarchy)
             {
-                if (!string.IsNullOrEmpty(phoneNumberField.text) && !string.IsNullOrEmpty(phoneNumberField.text)) {
+                //if (!string.IsNullOrEmpty(phoneNumberField.text) && !string.IsNullOrEmpty(phoneNumberField.text)) {
+                if (!string.IsNullOrEmpty(phoneNumberField.text))
+                {
                     if (!MegafansUtils.IsPhoneNumberValid(phoneNumberField.text))
                     {
                         string msg = "Please enter your phone number.";
                         MegafansUI.Instance.ShowPopup("ERROR", msg);
                         return;
                     }
-                    else if (!MegafansUtils.IsPhoneNumberValid(phoneNumberPrefixField.text))
-                    {
-                        string msg = "Please enter your country code.";
-                        MegafansUI.Instance.ShowPopup("ERROR", msg);
-                        return;
-                    }
-                    string prefixText = phoneNumberPrefixField.text;
-                    if (prefixText.StartsWith("+", StringComparison.Ordinal))
-                    {
-                        addedPhoneNumber = phoneNumberPrefixField.text + phoneNumberField.text;
-                    }
-                    else
-                    {
-                        addedPhoneNumber = "+" + phoneNumberPrefixField.text + phoneNumberField.text;
-                    }
+                    //else if (!MegafansUtils.IsPhoneNumberValid(phoneNumberPrefixField.text))
+                    //{
+                    //    string msg = "Please enter your country code.";
+                    //    MegafansUI.Instance.ShowPopup("ERROR", msg);
+                    //    return;
+                    //}
+                    //string prefixText = phoneNumberPrefixField.text;
+                    //if (prefixText.StartsWith("+", StringComparison.Ordinal))
+                    //{
+                    //addedPhoneNumber = phoneNumberPrefixField.text + phoneNumberField.text;
+                    //}
+                    //else
+                    //{
+                    //addedPhoneNumber = "+" + phoneNumberPrefixField.text + phoneNumberField.text;
+                    //}
+                    addedPhoneNumber = "+1" + phoneNumberField.text;
                 }               
             }
 
@@ -180,6 +178,11 @@ namespace MegafansSDK.UI {
             MegafansUI.Instance.ShowMyAccountWindow();
         }
 
+        public void LinkFBBtn_OnClick()
+        {
+            MegafansWebService.Instance.LinkFB(OnEditProfileResponse, OnEditProfileFailure);
+        }
+
         public void LogoutBtn_OnClick() {
             MegafansWebService.Instance.Logout (OnLogoutResponse, OnLogoutFailure);
             MegafansPrefs.ClearPrefs();
@@ -189,11 +192,10 @@ namespace MegafansSDK.UI {
 		private void OnViewProfileResponse(ViewProfileResponse response) {
 			if (response.success.Equals (MegafansConstants.SUCCESS_CODE)) {
 				nameField.text = response.data.username;
-
 				//MegafansWebService.Instance.FetchImage (response.data.image, OnFetchPicSuccess, OnFetchPicFailure);
 
                 if (MegafansPrefs.IsRegisteredMegaFansUser)
-                {
+                {                  
                     if (System.String.IsNullOrEmpty(response.data.email))
                     {
                         emailAddressField.gameObject.SetActive(true);
@@ -234,9 +236,11 @@ namespace MegafansSDK.UI {
 		}
 
 		private void OnEditProfileResponse(EditProfileResponse response) {
-			if (response.success.Equals (MegafansConstants.SUCCESS_CODE)) {
-                if (!string.IsNullOrEmpty(updatedUserName)) {
-                    MegafansPrefs.Username = updatedUserName;                   
+            if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
+            {
+                if (!string.IsNullOrEmpty(updatedUserName))
+                {
+                    MegafansPrefs.Username = updatedUserName;
 #if UNITY_EDITOR
                     Debug.Log("Unity Editor");
 #elif UNITY_IOS
@@ -249,17 +253,26 @@ namespace MegafansSDK.UI {
                     updatedUserName = null;
                 }
 
-                if (!string.IsNullOrEmpty(addedEmailAddress)) {
+                if (!string.IsNullOrEmpty(addedEmailAddress))
+                {
                     MegafansPrefs.Email = addedEmailAddress;
                     addedEmailAddress = null;
                 }
 
-                if (!string.IsNullOrEmpty(addedPhoneNumber)) {
+                if (!string.IsNullOrEmpty(addedPhoneNumber))
+                {
                     MegafansPrefs.PhoneNumber = addedPhoneNumber;
+                    MegafansUI.Instance.ShowVerifyPhoneWindowFromEdit(addedPhoneNumber, () =>
+                    {
+                        MegafansUI.Instance.ShowEditProfileWindow();
+                    });
                     addedPhoneNumber = null;
+                    MegafansWebService.Instance.ViewProfile("", OnViewProfileResponse, OnViewProfileFailure);
                 }
-                                                 
-                MegafansUI.Instance.ShowTournamentLobby ();
+                else
+                {
+                    MegafansUI.Instance.ShowTournamentLobby();
+                }                                                                
 			}
 			else {
 				string msg = "Failed to save changes.";

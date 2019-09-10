@@ -12,8 +12,9 @@ namespace MegafansSDK.Utils {
 		public string email_address;
         public string phone_number;
         public string username;
+        public string facebook_login_id;
 
-		public override WWW GetWWW(string url) {		
+        public override WWW GetWWW(string url) {		
             Dictionary<string, string> body = new Dictionary<string, string>();
             if (!String.IsNullOrEmpty(username)) {
                 body.Add("username", username);
@@ -26,6 +27,11 @@ namespace MegafansSDK.Utils {
             if (!String.IsNullOrEmpty(email_address))
             {
                 body.Add("email", email_address);
+            }
+
+            if (!String.IsNullOrEmpty(facebook_login_id))
+            {
+                body.Add("facebook_login_id", facebook_login_id);
             }
 
             string jsonString = JsonConvert.SerializeObject(body);

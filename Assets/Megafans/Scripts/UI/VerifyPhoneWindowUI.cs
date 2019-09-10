@@ -27,7 +27,13 @@ namespace MegafansSDK.UI {
 			set;
 		}
 
-		public string PhoneNumberToVerify {
+        public bool IsLinking
+        {
+            get;
+            set;
+        }
+
+        public string PhoneNumberToVerify {
 			get;
 			set;
 		}
@@ -68,8 +74,13 @@ namespace MegafansSDK.UI {
 					//MegafansUI.Instance.ShowPopup ("SUCCESS", msg);
                     MegafansUI.Instance.ShowRegistrationSuccessWindow(true);
                     Megafans.Instance.ReportUserRegistered(MegafansPrefs.UserId.ToString());
-                }
-				else {
+                } else if (IsLinking) {
+                    MegafansPrefs.UserId = response.data.id;
+                    MegafansPrefs.ProfilePicUrl = response.data.image;
+                    MegafansPrefs.AccessToken = response.data.token;
+                    MegafansPrefs.RefreshToken = response.data.refresh;
+                    MegafansUI.Instance.BackFromVerifyOTP();
+                } else {
 					MegafansPrefs.UserId = response.data.id;
 					MegafansPrefs.ProfilePicUrl = response.data.image;
                     MegafansPrefs.AccessToken = response.data.token;

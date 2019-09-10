@@ -8,8 +8,10 @@ using MegafansSDK.Utils;
 namespace MegafansSDK.UI {
 
 	public class RegistrationEmailUI : MonoBehaviour {
-    
-		[SerializeField] private InputField emailField;
+
+        [SerializeField] private Text saveBtnText;
+        [SerializeField] private GameObject termsAndConditionsView;
+        [SerializeField] private InputField emailField;
         [SerializeField] private InputField passwordField;
         [SerializeField] private RawImage inputFieldHighlightedImage;
         [SerializeField] private Image isValidEmail;
@@ -17,6 +19,7 @@ namespace MegafansSDK.UI {
 
         private Sprite activeInputBackground;
         [SerializeField] private RegistrationWindowUI mainRegistrationUI;
+        public bool IsLinking = false;
 
         private void Awake()
         {
@@ -27,6 +30,17 @@ namespace MegafansSDK.UI {
         void OnEnable() {
             emailField.text = "";
 			passwordField.text = "";
+
+            if (mainRegistrationUI.IsLinking) {
+                saveBtnText.text = "LINK ACCOUNT";
+                termsAndConditionsView.SetActive(false);
+            } else {
+                saveBtnText.text = "CREATE ACCOUNT";
+                termsAndConditionsView.SetActive(true);
+            }
+
+            //emailField.text = "mark.hoyt970@gmail.com";
+            //passwordField.text = "Password1";
         }
 
 		public void ContinueBtn_OnClick() {
@@ -44,15 +58,20 @@ namespace MegafansSDK.UI {
 				return;
 			}
 
-			if (!mainRegistrationUI.IsAgreementAcceptedEmail) {
+            if (!mainRegistrationUI.IsLinking && !mainRegistrationUI.IsAgreementAcceptedEmail) {
 				string msg = "Please accept our Terms of Use and Privacy Policy.";
 				MegafansUI.Instance.ShowPopup ("ERROR", msg);
 
 				return;
 			}
             MegafansUI.Instance.ShowLoadingBar();
-            MegafansWebService.Instance.RegisterEmail (emailField.text, passwordField.text,
-				OnRegisterEmailResponse, OnRegisterEmailFailure);
+            if (mainRegistrationUI.IsLinking) {
+                MegafansWebService.Instance.EditProfile(null, null, emailField.text,
+                    OnEditProfileResponse, OnEditProfileFailure);
+            } else {
+                MegafansWebService.Instance.RegisterEmail(emailField.text, passwordField.text,
+                    OnRegisterEmailResponse, OnRegisterEmailFailure);
+            }
 		}
 
 		private void OnRegisterEmailResponse(RegisterResponse response) {
@@ -112,6 +131,43 @@ namespace MegafansSDK.UI {
             }
         }
 
-    }
+        private void OnEditProfileResponse(EditProfileResponse response)
+        {
+            if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
+            {
+                MegafansPrefs.Email = emailField.text;
+                MegafansUI.Instance.ShowTournamentLobby();
+                //                if (!string.IsNullOrEmpty(updatedUserName))
+                //                {
+                //                    MegafansPrefs.Username = updatedUserName;
+                //#if UNITY_EDITOR
+                //                    Debug.Log("Unity Editor");
+                //#elif UNITY_IOS
+                //                    Debug.Log("Logging Out iOS");
+                //                    IntercomWrapperiOS.UpdateUsernameToIntercom(updatedUserName);
+                //#elif UNITY_ANDROID
+                //                    Debug.Log("Logging Out Android");
+                //                    IntercomWrapperAndroid.UpdateUsernameToIntercom(updatedUserName);
+                //#endif
+                //    updatedUserName = null;
+                //}
+            }
+            else
+            {
+                string msg = "Failed to save changes.";
+                if (!string.IsNullOrEmpty(response.message))
+                {
+                    msg = response.message;
+                }
+                MegafansUI.Instance.ShowPopup("ERROR", msg);
+            }
+        }
 
+        private void OnEditProfileFailure(string error)
+        {
+            Debug.LogError(error);
+            string errorString = "Error updating profile.  Please try again.";
+            MegafansUI.Instance.ShowPopup("Error", errorString);
+        }
+    }
 }

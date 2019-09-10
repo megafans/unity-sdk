@@ -164,6 +164,8 @@ namespace MegafansSDK.UI {
                     MegafansUI.Instance.HideLoadingBar();
                     MegafansUI.Instance.ShowPopup("ERROR", error);
                 });
+            } else {
+                MegafansUI.Instance.ShowLandingWindow(false, false);
             }
         }
 

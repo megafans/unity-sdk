@@ -10,6 +10,7 @@ namespace MegafansSDK.Utils {
         private const string k_accessToken = k_prefix + "AccessToken";
         private const string k_refreshToken = k_prefix + "RefreshToken";
         private const string k_emailAddress = k_prefix + "Email";
+        private const string k_facebookID = k_prefix + "FacebookID";
         private const string k_username = k_prefix + "Username";
 		private const string k_phoneNumber = k_prefix + "PhoneNumber";
 		private const string k_profilePicUrl = k_prefix + "ProfilePicUrl";
@@ -75,6 +76,19 @@ namespace MegafansSDK.Utils {
 
             set {
                 PlayerPrefs.SetString (k_emailAddress, value);
+            }
+        }
+
+        public static string FacebookID
+        {
+            get
+            {
+                return PlayerPrefs.GetString(k_facebookID, "");
+            }
+
+            set
+            {
+                PlayerPrefs.SetString(k_facebookID, value);
             }
         }
 
@@ -204,6 +218,7 @@ namespace MegafansSDK.Utils {
             PlayerPrefs.DeleteKey(k_emailAddress);
             PlayerPrefs.DeleteKey(k_userStatus);
             PlayerPrefs.DeleteKey(k_currentTokenBalance);
+            PlayerPrefs.DeleteKey(k_facebookID);
         }
     }
 }
