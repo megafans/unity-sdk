@@ -1,0 +1,41 @@
+﻿Automatic package builder:
+
+The automatic package builder creates a new package every time it sees a push from the unity-sdk repo then uploads it.
+From there the applications using the sdk will periodically check for updates; then download and install them.
+
+As the project grows and the number of games using the mega fans sdk so too will our manual build time.
+
+
+
+Planned features:
+
+Packager
+    - used to package the sdk into a .unitypackage file.
+
+Uploader
+    - used to upload the .unitypackage file to dropbox or other location depended on whats needed.
+
+Build server
+    - triggered from github web hooks,  this will auto test, package, upload, and ping testing staff on slack.
+    - Build server requires:
+        Server - AWS, Firebase, Azure or something like that.  Could be run on a employees always on system.
+        Jenkins - used to automate everything and gives us a nice web ui to check for logs and completion.
+        Commandline Unity setup.
+        GitHub web hooks.
+
+Optional Test runner
+    - Used to check for errors, functionality, and stop regression issues that come as projects grow.
+    - This would be awesome but its a luxury.
+    - Optional.
+
+Auto patcher
+    - Client side patching and downloader.
+    - This checks our server to see if there is a new version and auto-magically downloads it and sets it up.
+
+
+
+
+
+
+
+
