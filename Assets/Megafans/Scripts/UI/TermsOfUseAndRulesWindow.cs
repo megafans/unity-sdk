@@ -1,179 +1,154 @@
-﻿using System;
+﻿#pragma warning disable 649
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 using MegafansSDK.Utils;
-using MegafansSDK.UI;
-
-namespace MegafansSDK.UI
-{
-
-    public interface WebViewLoadingTarget
-    {
-        void OnStartLoading();
-        void OnFinishedLoading();
-
-    }
-
-    public class TermsOfUseAndRulesWindow : MonoBehaviour
-    {
-
-        [SerializeField] private Text headerLabelTxt;
-        [SerializeField] private Text userTokensTxt;
-        [SerializeField] private ListBox listBox;
-        [SerializeField] private GameObject expandableListItemPrefab;
-        [SerializeField] private Button helpBtn;
-        [SerializeField] private Button backToGameBtn;
-        [SerializeField] private Button userTokenHeaderBtn;
 
 
-        List<TournamentRulesResponseData> rulesOrTermsData;
+namespace MegafansSDK.UI {
+
+    public class TermsOfUseAndRulesWindow : MonoBehaviour {
+
+        [SerializeField] Text headerLabelTxt;
+        [SerializeField] Button backToGameBtn;
+        [SerializeField] Scrollbar scrollbarForText;
+        [SerializeField] RectTransform contentHolderForText;
+        [SerializeField] Text textPrefab;
+
+        readonly List<Text> textBoxes = new List<Text>();
+
         LevelsResponseData levelInfo;
-        WebView webViewScreen;
-        string informationType;
 
-        public void Init(LevelsResponseData levelInfo)
-        {
-            this.informationType = null;
+
+
+
+        public void Init(LevelsResponseData levelInfo) {
             this.levelInfo = levelInfo;
             if (this.levelInfo != null)
-            {
-                headerLabelTxt.text = "How To Play";
-            }
+                headerLabelTxt.text = "Tournament Rules";
         }
 
-        public void Init(string informationType, bool isSignUp)
-        {
+        public void Init(string informationType, bool isSignUp) {
             this.levelInfo = null;
-            this.informationType = informationType;
-            if (informationType == MegafansConstants.TERMS_OF_USE)
-            {
+
+            if (informationType == MegafansConstants.TERMS_OF_USE) {
                 headerLabelTxt.text = "Terms of Use";
+                MegafansWebService.Instance.GetTermsOfUse(OnGetTournamentTermsOrPrivacyPolicyResponse, LogError);
             }
-            else if (informationType == MegafansConstants.PRIVACY_POLICY)
-            {
+            else if (informationType == MegafansConstants.PRIVACY_POLICY) {
                 headerLabelTxt.text = "Privacy Policy";
+                MegafansWebService.Instance.GetPrivacyInfo(OnGetTournamentTermsOrPrivacyPolicyResponse, LogError);
             }
 
-            if (isSignUp)
-            {
-                helpBtn.gameObject.SetActive(false);
-                backToGameBtn.gameObject.SetActive(false);
-                userTokenHeaderBtn.gameObject.SetActive(false);
-            }
-
-            //if (webViewScreen == null) {
-            //    webViewScreen = (new GameObject("WebView")).AddComponent<WebView>();
-            //} else {
-            //    Destroy(webViewScreen);
-            //    webViewScreen = (new GameObject("WebView")).AddComponent<WebView>();
-            //}
-            //webViewScreen.Url = MegafansConstants.PRIVACY_POLICY_URL;
+            backToGameBtn.gameObject.SetActive(!isSignUp);
         }
 
-        private void OnEnable()
-        {
-            userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
-            listBox.ClearList();
-            Vector3 scale = this.transform.localScale;
-            //Resolution res = Screen.currentResolution;
-            if (this.levelInfo == null) {
-                Debug.Log("**********************************");
-                Debug.Log("No Level Info");
-                Debug.Log("**********************************");
-                ShowWebView();
-            } else {
-                MegafansWebService.Instance.GetTournamentRules(this.levelInfo.id, OnGetTournamentRulesResponse, OnGetTournamentRulesError);
+        void OnEnable() {
+            if (levelInfo != null) {
+                MegafansWebService.Instance.GetTournamentRules(this.levelInfo.id, OnGetTournamentRulesResponse, LogError);
             }
         }
 
-        private void OnDisable()
-        {
-            HideWebView();
+        void OnDisable() {
+            foreach (var text in textBoxes)
+                text.text = "";
         }
 
-        public void ShowWebView()
-        {
-            if (!string.IsNullOrEmpty(this.informationType))
-            {
-                if (webViewScreen == null)
-                {
-                    webViewScreen = (new GameObject("WebView")).AddComponent<WebView>();
-                }
-                else
-                {
-                    Destroy(webViewScreen);
-                    webViewScreen = (new GameObject("WebView")).AddComponent<WebView>();
-                }
-                if (informationType == MegafansConstants.TERMS_OF_USE)
-                {
-                    webViewScreen.Url = MegafansConstants.TERMS_OF_USE_URL;
-                }
-                else if (informationType == MegafansConstants.PRIVACY_POLICY)
-                {
-                    webViewScreen.Url = MegafansConstants.PRIVACY_POLICY_URL;
-                }
-            }
-        }
-
-
-        public void HideWebView()
-        {
-            if (webViewScreen)
-            {
-                webViewScreen.CloseWebView();
-            }
-        }
-
-        public void CloseTermsAndConditions()
-        {
-            //if (webViewScreen)
-            //{
-            //    webViewScreen.CloseWebView();
-            //}
+        public void CloseTermsAndConditions() {
             MegafansUI.Instance.BackFromTermsOfUseOrRulesWindow();
         }
 
-        private void FillRulesOrTermsData(List<TournamentRulesResponseData> data)
-        {
-            for (int i = 0; i < data.Count; i++)
-            {
-                TournamentRulesResponseData info = data[i];
-                GameObject textItem = Instantiate(expandableListItemPrefab);
-                ExpandableTextItem textHandler = textItem.GetComponent<ExpandableTextItem>();
-                if (textHandler != null)
-                {
-                    textHandler.SetValues("Step " + info.sequence + ":", info.description);
-                    textItem.SetActive(true);
-                    listBox.AddItem(textItem);
-                }
-            }
+        void OnGetTournamentRulesResponse(TournamentRulesResponse response) {
+            if (!response.success.Equals(MegafansConstants.SUCCESS_CODE) || response.data?.Count < 1)
+                return;
+
+            //TODO: request that they change the backend on this over to a better format
+            string text = Environment.NewLine;
+            foreach (var data in response.data)
+                text += (data.description + Environment.NewLine);
+            SetUnityTextObjects(text);
         }
 
-        private void OnGetTournamentRulesResponse(TournamentRulesResponse response)
-        {
-            if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
-            {
-                List<TournamentRulesResponseData> rulesData = response.data;
-                if (rulesData.Count == 0 || rulesData == null)
-                {
-                    //messageTxt.gameObject.SetActive(true);
-                    //messageTxt.text = "No tournaments running right now";
-                }
-                else
-                {
-                    //messageTxt.gameObject.SetActive(false);
-                    rulesOrTermsData = rulesData;
-                    FillRulesOrTermsData(rulesData);
-                }
-            }
+        void OnGetTournamentTermsOrPrivacyPolicyResponse(TermsOrPrivacyPolicyResponse response) {
+            if (!response.success.Equals(MegafansConstants.SUCCESS_CODE) || response.data?.description == null)
+                return;
+
+            //TODO: request that they change the backend on this over to a better format
+            SetUnityTextObjects(HTMLDataToText(response.data.description));
         }
 
-        private void OnGetTournamentRulesError(string error)
-        {
-            Debug.LogError(error.ToString());
+        void LogError(string error) {
+            Debug.LogError(error);
+        }
+
+        string HTMLDataToText (string html) {
+            var data = html;
+            data = data.Insert(0, Environment.NewLine + Environment.NewLine); //For spacing
+            data = data.Replace("<strong>", "<b>"); data = data.Replace("</strong>", "</b>");
+            data = data.Replace("<p>", ""); data = data.Replace("</p>", "");
+            data = data.Replace("<u>", ""); data = data.Replace("</u>", "");
+            data = data.Replace("<ol>", ""); data = data.Replace("</ol>", "");
+            data = data.Replace("<em>", ""); data = data.Replace("</em>", "");
+            data = data.Replace("</span>", "");
+            data = data.Replace("</li>", "");
+            data = data.Replace("</a>", "");
+            data = data.Replace("&nbsp;", "");
+            data = data.Replace("&ndash;", "–");
+            data = data.Replace("&ldquo;", "\"");
+            data = data.Replace("&rdquo;", "\"");
+            for (int i = 0; i < data.Length; ) {
+                if(data[i] == '<' && (data[i + 1] == 's' || data[i + 1] == 'l' || data[i + 1] == 'a' || data[i + 1] == 'o')) {
+                    int c = 0;
+                    while(data[i + c] != '>')
+                        c++;
+                    data = data.Remove(i, c + 1);
+                }
+                else {
+                    i++;
+                }
+            }
+            return data;
+        }
+
+        void SetUnityTextObjects (string text) {
+            string[] spiltData = text.Split(new string[1] {Environment.NewLine}, StringSplitOptions.None);
+            for (int i = 0; i < spiltData.Length; i++) {
+                if(i < textBoxes.Count) {
+                    textBoxes[i].text = spiltData[i];
+                    textBoxes[i].transform.localScale = Vector3.one;
+                } else {
+                    //TODO: merge short paragraphs before creating new instantiated text prefabs
+                    //Need to create multiple text objects because of a hard limit on number of char
+                    var instText = Instantiate<Text>(textPrefab);
+                    instText.transform.parent = contentHolderForText;
+                    instText.transform.localScale = Vector3.one;
+                    instText.fontSize = 32;
+                    instText.text = spiltData[i];
+                    textBoxes.Add(instText);
+                }
+            }
+
+            //Clear up extra text boxes from the last use
+            if(textBoxes.Count - spiltData.Length > 0) {
+                for (int i = spiltData.Length; i < textBoxes.Count; i++)
+                    Destroy(textBoxes[i].gameObject);
+                textBoxes.RemoveRange(spiltData.Length, textBoxes.Count - spiltData.Length);
+            }
+
+            //Wait two frames then we set the the scroll bar back to the top
+            StartCoroutine(WaitTwoFramesForScrollBar());
+        }
+
+
+        //We do this because
+        IEnumerator WaitTwoFramesForScrollBar() {
+            yield return null;
+            yield return null;
+            scrollbarForText.value = 1f;
         }
     }
 }

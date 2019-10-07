@@ -1,11 +1,9 @@
-﻿using System.Collections;
+﻿#pragma warning disable 649
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
 using MegafansSDK.Utils;
-using MegaFans.Unity.iOS;
-using MegaFans.Unity.Android;
 
 namespace MegafansSDK.UI
 {

@@ -14,6 +14,13 @@ namespace MegafansSDK {
         FBREGISTERED = 13
     }
 
+	public enum Deployment  {
+		Development,
+		Staging,
+		Production,
+		Custom
+	}
+
 }
 
 namespace MegafansSDK.Utils {

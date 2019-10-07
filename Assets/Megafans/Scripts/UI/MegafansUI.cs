@@ -1,10 +1,9 @@
-﻿using System.Collections;
+﻿#pragma warning disable 649
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
-using MegaFans.Unity.iOS;
-using MegaFans.Unity.Android;
 
 using MegafansSDK.Utils;
 
@@ -222,15 +221,11 @@ namespace MegafansSDK.UI {
             }
 		}
 
-        public void ShowLeaderboardWithScore(GameType gameType, RankingType rankingType, float score, string level = null) {
-            //if (MegafansPrefs.IsRegisteredMegaFansUser) {
-                landingScreenUI.HideAllWindows();
-                this.backToLeaderboardGameType = gameType;
-                this.backToLeaderboardRankingType = rankingType;
-                tournamentLobbyScreenUI.ShowLeaderboardWindow(gameType, rankingType, score, level);
-            //} else {
-                //onboardingTutorialUI.ShowRegisterNowMegaFansWindow();
-            //}
+        public void ShowLeaderboardWithScore(GameType gameType, RankingType rankingType, int score, string level = null, string matchId = null) {
+            landingScreenUI.HideAllWindows();
+            backToLeaderboardGameType = gameType;
+            backToLeaderboardRankingType = rankingType;
+            tournamentLobbyScreenUI.ShowLeaderboardWindow(gameType, rankingType, score, level, matchId);
         }
 
         public void ShowStoreWindow() {
@@ -252,27 +247,11 @@ namespace MegafansSDK.UI {
         }
 
         public void ShowHelp() {
-#if UNITY_EDITOR
-            Debug.Log("Unity Editor");
-#elif UNITY_IOS
-            Debug.Log("IOS");
-            IntercomWrapperiOS.ShowIntercom();
-#elif UNITY_ANDROID
-            Debug.Log("ANDROID show intercom");
-            IntercomWrapperAndroid.ShowIntercom();
-#endif
+
         }
         
         public void HideHelp() {
-#if UNITY_EDITOR
-            Debug.Log("Unity Editor");
-#elif UNITY_IOS
-            Debug.Log("IOS");
-            IntercomWrapperiOS.HideIntercom();
-#elif UNITY_ANDROID
-            Debug.Log("ANDROID");
-            IntercomWrapperAndroid.HideIntercom();
-#endif
+
         }
 
         public void BackFromUserProfile()
@@ -346,6 +325,13 @@ namespace MegafansSDK.UI {
             onboardingTutorialUI.ShowDetailsMegafansWindow();
         }
 
+
+        //private void OnGUI() {
+        //    if (uiParent.activeInHierarchy)
+        //        GUI.enabled = false;
+        //    else
+        //        GUI.enabled = true;
+        //}
     }
 
 }

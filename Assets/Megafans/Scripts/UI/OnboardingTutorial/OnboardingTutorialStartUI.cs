@@ -1,9 +1,8 @@
-﻿using System.Collections;
+﻿#pragma warning disable 649
+
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using MegaFans.Unity.iOS;
-using MegaFans.Unity.Android;
-
 using MegafansSDK.Utils;
 
 namespace MegafansSDK.UI
@@ -44,16 +43,7 @@ namespace MegafansSDK.UI
                 MegafansPrefs.Username = response.data.username;
                 MegafansPrefs.UserId = response.data.userId;
                 MegafansPrefs.SMSAvailable = response.data.sms;
-                //TODO: removed OneSignal //OneSignal.SetExternalUserId(response.data.userId.ToString());
-#if UNITY_EDITOR
-                Debug.Log("Unity Editor");
-#elif UNITY_IOS
-                Debug.Log("IOS");
-                IntercomWrapperiOS.RegisterIntercomUserWithID(MegafansPrefs.UserId.ToString(), Megafans.Instance.GameUID, Application.productName);
-#elif UNITY_ANDROID
-                Debug.Log("ANDROID");
-                IntercomWrapperAndroid.RegisterUserWithUserId(MegafansPrefs.UserId.ToString(), Megafans.Instance.GameUID, Application.productName);
-#endif
+                //OneSignal.SetExternalUserId(response.data.userId.ToString());
             }
             else
             {

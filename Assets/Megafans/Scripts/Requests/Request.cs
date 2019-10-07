@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#pragma warning disable 618
+using UnityEngine;
 
 namespace MegafansSDK.Utils {
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Purchasing;
+using UnityEngine.Purchasing.Extension;
 using MegafansSDK;
 using MegafansSDK.UI;
 
@@ -52,6 +53,7 @@ namespace MegafansSDK.Utils
             }
             Debug.Log(string.Format("Purchasing Ability is NOT initialized"));
             // Create a builder, first passing in a suite of Unity provided stores.
+
             var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
             Debug.Log(string.Format("Builder created - {0}", builder));
             // Add a product to sell / restore by way of its identifier, associating the general identifier
@@ -64,6 +66,7 @@ namespace MegafansSDK.Utils
             Debug.Log(string.Format("Added product - {0}", Megafans.Instance.ProductID3000Tokens));
             builder.AddProduct(Megafans.Instance.ProductID10000Tokens, ProductType.Consumable);
             Debug.Log(string.Format("Added product - {0}", Megafans.Instance.ProductID10000Tokens));
+
             //builder.AddProduct(kProductIDNonConsumable, ProductType.NonConsumable);
             //// And finish adding the subscription product. Notice this uses store-specific IDs, illustrating
             //// if the Product ID was configured differently between Apple and Google stores. Also note that
@@ -184,7 +187,7 @@ namespace MegafansSDK.Utils
                 // the Action<bool> below, and ProcessPurchase if there are previously purchased products to restore.
                 apple.RestoreTransactions((result) =>
                 {
-                    // The first phase of restoration. If no more responses are received on ProcessPurchase then 
+                    // The first phase of restoration. If no more responses are received on ProcessPurchase then
                     // no purchases are available to be restored.
                     Debug.Log("RestorePurchases continuing: " + result + ". If no further messages, no purchases available to restore.");
                 });

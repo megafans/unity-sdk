@@ -1,10 +1,8 @@
-﻿using System;
+﻿#pragma warning disable 649
+
 using UnityEngine;
 using UnityEngine.UI;
-
 using MegafansSDK.Utils;
-using MegaFans.Unity.iOS;
-using MegaFans.Unity.Android;
 
 namespace MegafansSDK.UI {
 
@@ -22,7 +20,6 @@ namespace MegafansSDK.UI {
         private Sprite activeInputBackground;
         private Sprite inactiveInputBackground;
 
-        private bool isEmailProfile = false;		
         private string addedEmailAddress;
         private string addedPhoneNumber;
         private string updatedUserName;
@@ -84,15 +81,8 @@ namespace MegafansSDK.UI {
 //            //        string msg = "Error uploading profile image.  Please try again.";
 //            //        MegafansUI.Instance.ShowPopup("ERROR", msg);
 //            //    }));
-//            //return; 
-//#elif UNITY_IOS
-//            Debug.Log("IOS");
-//            IntercomWrapperiOS.HideIntercom();
-//#elif UNITY_ANDROID
-//            Debug.Log("ANDROID");
-//            IntercomWrapperAndroid.HideIntercom();
-//#endif
-  //          imagePicker.PickImage ((Texture2D tex, string imagePath) => {
+//            //return;
+		//          imagePicker.PickImage ((Texture2D tex, string imagePath) => {
 		//		if(tex != null) {
 		//			isPhotoRemoved = false;
 		//			profilePicImg.texture = tex;
@@ -202,8 +192,7 @@ namespace MegafansSDK.UI {
                         confirmEmailAddressField.gameObject.SetActive(true);
                         phoneNumberField.gameObject.SetActive(false);
                         phoneNumberPrefixField.gameObject.SetActive(false);
-                        isEmailProfile = false;
-                    }
+					}
                     else
                     {
                         if (System.String.IsNullOrEmpty(response.data.phoneNumber) && MegafansPrefs.SMSAvailable)
@@ -220,7 +209,6 @@ namespace MegafansSDK.UI {
                             phoneNumberField.gameObject.SetActive(false);
                             phoneNumberPrefixField.gameObject.SetActive(false);
                         }
-                        isEmailProfile = true;
                     }
                 } else {
                     emailAddressField.gameObject.SetActive(false);
@@ -236,21 +224,10 @@ namespace MegafansSDK.UI {
 		}
 
 		private void OnEditProfileResponse(EditProfileResponse response) {
-            if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
-            {
-                if (!string.IsNullOrEmpty(updatedUserName))
-                {
+            if (response.success.Equals(MegafansConstants.SUCCESS_CODE)) {
+                if (!string.IsNullOrEmpty(updatedUserName)) {
                     MegafansPrefs.Username = updatedUserName;
-#if UNITY_EDITOR
-                    Debug.Log("Unity Editor");
-#elif UNITY_IOS
-                    Debug.Log("Logging Out iOS");
-                    IntercomWrapperiOS.UpdateUsernameToIntercom(updatedUserName);
-#elif UNITY_ANDROID
-                    Debug.Log("Logging Out Android");
-                    IntercomWrapperAndroid.UpdateUsernameToIntercom(updatedUserName);
-#endif
-                    updatedUserName = null;
+					updatedUserName = null;
                 }
 
                 if (!string.IsNullOrEmpty(addedEmailAddress))
@@ -300,22 +277,11 @@ namespace MegafansSDK.UI {
 
         private void OnLogoutResponse(LogoutResponse response) {
 			//if (response.success.Equals (MegafansConstants.SUCCESS_CODE)) {
-				MegafansPrefs.UserId = 0;
-				MegafansPrefs.ProfilePicUrl = "";
-				MegafansPrefs.ClearPrefs ();
-
-				MegafansWebService.Instance.FBLogout ();
-
-#if UNITY_EDITOR
-                Debug.Log("Unity Editor");
-#elif UNITY_IOS
-                Debug.Log("Logging Out iOS");
-                IntercomWrapperiOS.LogoutFromIntercom();
-#elif UNITY_ANDROID
-                Debug.Log("Logging Out Android");
-                IntercomWrapperAndroid.LogoutFromIntercom();         
-#endif           
-            MegafansUI.Instance.ShowOnboardingStartWindow();
+			MegafansPrefs.UserId = 0;
+			MegafansPrefs.ProfilePicUrl = "";
+			MegafansPrefs.ClearPrefs ();
+			MegafansWebService.Instance.FBLogout ();
+			MegafansUI.Instance.ShowOnboardingStartWindow();
 			//}
 		}
 

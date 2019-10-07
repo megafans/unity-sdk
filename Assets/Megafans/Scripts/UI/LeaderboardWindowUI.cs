@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿#pragma warning disable 649
+using System.Collections;
 using System.Collections.Generic;
+//using AdsManagerAPI;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
@@ -9,40 +11,39 @@ using MegafansSDK.Utils;
 
 namespace MegafansSDK.UI {
 
-    public interface ICustomMessageTarget : IEventSystemHandler
-    {
+    public interface ICustomMessageTarget : IEventSystemHandler {
         void ViewUserProfile(string userCode);
-
     }
 
-    public class LeaderboardWindowUI : MonoBehaviour, ICustomMessageTarget
-    {
+    public class LeaderboardWindowUI : MonoBehaviour, ICustomMessageTarget {
 
-        [SerializeField] private GameObject leaderboardItemPrefab;
-        [SerializeField] private ListBox listBox;
-        [SerializeField] private Button rankingBtn;
-        [SerializeField] private Button scoreBtn;
-        [SerializeField] private Button historyBtn;
-        //[SerializeField] private Button continueBtn;
-        //[SerializeField] private Button btn2;
-        [SerializeField] private Text scoreValueText;
-        [SerializeField] private Text levelValueText;
-        [SerializeField] private GameObject verifyAcctView;
-        [SerializeField] private Text messageTxt;
-        [SerializeField] private GameObject loadingView;
-        [SerializeField] private Sprite verifyAccountIcon;
+        [SerializeField] GameObject leaderboardItemPrefab;
+        [SerializeField] ListBox listBox;
+        [SerializeField] Button rankingBtn;
+        [SerializeField] Button scoreBtn;
+        [SerializeField] Button historyBtn;
+        [SerializeField] Text scoreValueText;
+        [SerializeField] Text levelValueText;
+        [SerializeField] GameObject verifyAcctView;
+        [SerializeField] Text messageTxt;
+        [SerializeField] GameObject loadingView;
+        [SerializeField] Sprite verifyAccountIcon;
+        [SerializeField] GameObject afterScoreImageCircle;
+        [SerializeField] GameObject megaFansLogo;
 
-        [SerializeField] private GameObject afterScoreImageCircle;
-        [SerializeField] private GameObject continueBtn;
-        [SerializeField] private GameObject megaFansLogo;
+        [SerializeField] GameObjectToggleUI afterMatchButtons;
 
-        private GameType gameType = GameType.TOURNAMENT;
-        private LeaderboardType leaderboardType;
-        private RankingType rankingType = RankingType.RANKING;
+        GameType gameType = GameType.TOURNAMENT;
+        LeaderboardType leaderboardType;
+        RankingType rankingType = RankingType.RANKING;
 
-        private JoinMatchAssistant matchAssistant;
+        JoinMatchAssistant matchAssistant;
 
-        private List<Button> leaderboardOptionBtns;
+        List<Button> leaderboardOptionBtns;
+
+        int score = 0;
+        string matchId = "";
+
 
         void Awake() {
 			matchAssistant = this.gameObject.AddComponent<JoinMatchAssistant> ();
@@ -57,65 +58,34 @@ namespace MegafansSDK.UI {
 			leaderboardOptionBtns.Add (rankingBtn);
 			leaderboardOptionBtns.Add (scoreBtn);
 			leaderboardOptionBtns.Add (historyBtn);
-            Debug.Log("*********************LeaderBoard Awake***************************");
-		}
+        }
 
 		void OnEnable() {
-            Debug.Log("*********************LeaderBoard Enable***************************");
             if (!MegafansPrefs.IsRegisteredMegaFansUser)
-            {
                 MegafansWebService.Instance.ViewProfile("", OnViewProfileResponse, OnViewProfileFailure);
-            }
         }
 
-		void Start() {
-            Debug.Log("*********************LeaderBoard Start***************************");
-        }
-
-		public void Init(GameType gameType, RankingType rankingType,
-                         LeaderboardType leaderboardType = LeaderboardType.LEADERBOARD, float withScore = 0, string withLevel = null) {
+        public void Init(GameType gameType, RankingType rankingType,
+            LeaderboardType leaderboardType = LeaderboardType.LEADERBOARD,
+            int withScore = 0, string withLevel = null, string matchId = null) {
 
 			this.gameType = gameType;
             this.leaderboardType = leaderboardType;
-            //if (gameType == GameType.TOURNAMENT) {
-            //	SetBtn1 ("Practice", () => {
-            //		matchAssistant.JoinPracticeMatch();
-            //	});
+            this.rankingType = RankingType.RANKING;
+            this.matchId = matchId;
 
-            //	SetBtn2 ("Tournament", () => {
-            //		MegafansUI.Instance.ShowLevelSelection();
-            //	});
-            //}
-            //else if (gameType == GameType.PRACTICE) {
-            //	SetBtn1 ("Tournament", () => {
-            //		MegafansUI.Instance.ShowLevelSelection();
-            //	});
-
-            //	SetBtn2 ("Practice", () => {
-            //		matchAssistant.JoinPracticeMatch();
-            //	});
-            //}
-            if (withLevel == null)
-            {
+            if (withLevel == null) {
                 afterScoreImageCircle.SetActive(false);
                 megaFansLogo.SetActive(true);
-                continueBtn.SetActive(false);
+                afterMatchButtons.EnableGroup(-1);
             }
-            else
-            {
+            else {
                 afterScoreImageCircle.SetActive(true);
                 megaFansLogo.SetActive(false);
-                continueBtn.SetActive(true);
-
+                afterMatchButtons.EnableGroup(1); //afterMatchButtons.EnableGroup(AdsManager.Instance.IsRewardedVideoAvailable() ? 1 : 0); //Ads version
                 scoreValueText.text = withScore.ToString();
-                if (withLevel != null)
-                {
-                    levelValueText.text = withLevel;
-                }
-                else
-                {
-                    levelValueText.text = "Level 1";
-                }
+                levelValueText.text = withLevel;
+                score = withScore;
             }
 
 			RequestLeaderboard (gameType, leaderboardType, rankingType);
@@ -126,10 +96,8 @@ namespace MegafansSDK.UI {
             MegafansUI.Instance.ShowTournamentLobby();
         }
 
-        public void VerifyAccountBtn_OnClick()
-        {
-            if (!string.IsNullOrEmpty(MegafansPrefs.Email) && !string.IsNullOrEmpty(MegafansPrefs.PhoneNumber))
-            {
+        public void VerifyAccountBtn_OnClick() {
+            if (!string.IsNullOrEmpty(MegafansPrefs.Email) && !string.IsNullOrEmpty(MegafansPrefs.PhoneNumber)) {
                 string msg = "Please select your preferred method of account verification";
 
                 MegafansUI.Instance.ShowAlertDialog(verifyAccountIcon, "Verify Account",
@@ -141,8 +109,7 @@ namespace MegafansSDK.UI {
                         MegafansUI.Instance.HideAlertDialog();
                     });
             }
-            else if (!string.IsNullOrEmpty(MegafansPrefs.Email))
-            {
+            else if (!string.IsNullOrEmpty(MegafansPrefs.Email)) {
                 MegafansUI.Instance.ShowLoadingBar();
                 MegafansWebService.Instance.ResendEmailVerification((response) => {
                     MegafansUI.Instance.HideLoadingBar();
@@ -153,8 +120,7 @@ namespace MegafansSDK.UI {
                     MegafansUI.Instance.ShowPopup("ERROR", error);
                 });
             } 
-            else if (!string.IsNullOrEmpty(MegafansPrefs.PhoneNumber))
-            {
+            else if (!string.IsNullOrEmpty(MegafansPrefs.PhoneNumber)) {
                 MegafansUI.Instance.ShowLoadingBar();
                 MegafansWebService.Instance.LoginPhone(MegafansPrefs.PhoneNumber, (response) => {
                     MegafansUI.Instance.HideLoadingBar();
@@ -169,12 +135,35 @@ namespace MegafansSDK.UI {
             }
         }
 
+        public void ViewUserProfile(string userCode) {
+            //if (this.leaderboardType != LeaderboardType.USER_SCOREBOARD && !string.IsNullOrEmpty(userCode)) {
+            //    MegafansUI.Instance.ShowViewProfileWindow(userCode);
+            //}
+            Debug.Log("Show Profile");
+        }
+
+        public void JoinTournamentBtn_OnClick() {
+            MegafansUI.Instance.ShowSingleTournamentWindow(null);
+        }
+
         public void ReplayBtn_OnClick() {
             if (gameType == GameType.TOURNAMENT) {
                 matchAssistant.ReplayTournamentMatch();
             } else {
                 matchAssistant.JoinPracticeMatch();
             }
+        }
+
+        public void DoubleBtn_OnClick() {
+            afterMatchButtons.EnableGroup(0);
+//            AdsManager.Instance.ShowRewardedVideo(() => {
+//                scoreValueText.text = (score * 2).ToString();
+//                MegafansWebService.Instance.SaveScore(matchId, score * 2,
+//                    (response) => {
+//                        if (response.success.Equals (MegafansConstants.SUCCESS_CODE))
+//                            RequestLeaderboard(gameType, leaderboardType, rankingType);
+//                    }, null);
+//            });
         }
 
         public void BackBtn_OnClick() {
@@ -193,7 +182,8 @@ namespace MegafansSDK.UI {
 			RequestLeaderboard (gameType, LeaderboardType.USER_SCOREBOARD, RankingType.SCORE);
 		}
 
-		private void RequestLeaderboard(GameType gameType, LeaderboardType leaderboardType,
+
+		void RequestLeaderboard(GameType gameType, LeaderboardType leaderboardType,
 			RankingType rankingType = RankingType.RANKING) {
             this.leaderboardType = leaderboardType;
             this.rankingType = rankingType;
@@ -225,7 +215,7 @@ namespace MegafansSDK.UI {
 			}
 		}
 
-		private void OnScoreboardResponse(ViewScoreboardResponse response) {
+		void OnScoreboardResponse(ViewScoreboardResponse response) {
             loadingView.SetActive(false);
             if (response.success.Equals (MegafansConstants.SUCCESS_CODE)) {
 				if (response.data != null) {
@@ -303,12 +293,12 @@ namespace MegafansSDK.UI {
             }
 		}
 
-		private void OnScoreboardFailure(string error) {
+		void OnScoreboardFailure(string error) {
             loadingView.SetActive(false);
             Debug.LogError (error);
 		}
 
-		private void OnLeaderboardResponse(ViewLeaderboardResponse response) {
+		void OnLeaderboardResponse(ViewLeaderboardResponse response) {
             loadingView.SetActive(false);
             if (response.success.Equals (MegafansConstants.SUCCESS_CODE)) {
                 if (response.data != null)
@@ -398,12 +388,12 @@ namespace MegafansSDK.UI {
             }
         }
 
-		private void OnLeaderboardFailure(string error) {
+		void OnLeaderboardFailure(string error) {
             loadingView.SetActive(false);
             Debug.LogError (error);
 		}
 
-		private void SetHeaderAndBtns(LeaderboardType leaderboardType,
+		void SetHeaderAndBtns(LeaderboardType leaderboardType,
 			RankingType rankingType = RankingType.RANKING) {
 
 			LeaderboardItem headerViewHandler = listBox.Header.GetComponent<LeaderboardItem> ();
@@ -433,28 +423,25 @@ namespace MegafansSDK.UI {
 			}
 		}
 
-        private void SetVerifyAcctViewVisibility() {
-            if (MegafansPrefs.IsRegisteredMegaFansUser)
-            {
+        void SetVerifyAcctViewVisibility() {
+            if (MegafansPrefs.IsRegisteredMegaFansUser) {
                 listBox.gameObject.SetActive(true);
                 verifyAcctView.SetActive(false);
                 loadingView.SetActive(true);
                 MegafansWebService.Instance.ViewScoreboard(Megafans.Instance.GameUID, true,
                     gameType, OnScoreboardResponse, OnScoreboardFailure);
             }
-            else
-            {
+            else {
                 listBox.gameObject.SetActive(false);
                 verifyAcctView.SetActive(true);
             }
         }
 
-		private void SelectBtn(Button selectedBtn) {
+		void SelectBtn(Button selectedBtn) {
 			foreach (Button btn in leaderboardOptionBtns) {
 				if (btn == selectedBtn) {
                     btn.GetComponent<Image>().color = Color.clear;
                     btn.GetComponentsInChildren<Text>()[0].color = MegafansUI.Instance.primaryColor;
-
                 }
 				else {
                     btn.GetComponent<Image>().color = MegafansUI.Instance.primaryColor;
@@ -463,35 +450,18 @@ namespace MegafansSDK.UI {
 			}
 		}
 
-        public void ViewUserProfile(string userCode) {
-            //if (this.leaderboardType != LeaderboardType.USER_SCOREBOARD && !string.IsNullOrEmpty(userCode)) {
-            //    MegafansUI.Instance.ShowViewProfileWindow(userCode);
-            //}
-            Debug.Log("Show Profile");
-        }
-
-        private void OnViewProfileResponse(ViewProfileResponse response) {
-            if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
-            {
+        void OnViewProfileResponse(ViewProfileResponse response) {
+            if (response.success.Equals(MegafansConstants.SUCCESS_CODE)) {
                 MegafansPrefs.UserStatus = response.data.status ?? 7;
-                if (rankingType == RankingType.SCORE)
-                {
-                    if (leaderboardType == LeaderboardType.USER_SCOREBOARD)
-                    {
-                        SetVerifyAcctViewVisibility();
-                    }
-                }
+                if (rankingType == RankingType.SCORE && leaderboardType == LeaderboardType.USER_SCOREBOARD)
+                    SetVerifyAcctViewVisibility();
             }
         }
 
-        private void OnViewProfileFailure(string error)
-        {
+        void OnViewProfileFailure(string error) {
             Debug.LogError(error);
         }
 
-        public void JoinTournamentBtn_OnClick()
-        {
-            MegafansUI.Instance.ShowSingleTournamentWindow(null);
-        }
+
     }
 }

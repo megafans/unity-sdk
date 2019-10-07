@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿#pragma warning disable 649
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -72,7 +73,7 @@ namespace MegafansSDK.UI {
 				if (IsRegistering) {
 					//string msg = "You have registered successfully.";
 					//MegafansUI.Instance.ShowPopup ("SUCCESS", msg);
-                    MegafansUI.Instance.ShowRegistrationSuccessWindow(true);
+                    MegafansUI.Instance.ShowRegistrationSuccessWindow(false);
                     Megafans.Instance.ReportUserRegistered(MegafansPrefs.UserId.ToString());
                 } else if (IsLinking) {
                     MegafansPrefs.UserId = response.data.id;

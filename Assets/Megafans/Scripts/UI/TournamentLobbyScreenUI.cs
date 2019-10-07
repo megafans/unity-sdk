@@ -1,10 +1,7 @@
-﻿using System.Collections;
+﻿#pragma warning disable 649
 using System.Collections.Generic;
 using UnityEngine;
-
 using MegafansSDK.Utils;
-using MegaFans.Unity.iOS;
-using MegaFans.Unity.Android;
 
 namespace MegafansSDK.UI {
 
@@ -62,23 +59,21 @@ namespace MegafansSDK.UI {
             }
         }
 
-        public void ShowSingleTournamentWindow(LevelsResponseData levelInfo)
-        {
-            SingleTournamentLobbyWindow handler = singleTournamentLobby.GetComponent<SingleTournamentLobbyWindow>();
-            if (handler != null)
-            {
+        public void ShowSingleTournamentWindow(LevelsResponseData levelInfo) {
+			SingleTournamentLobbyWindow handler = singleTournamentLobby.GetComponent<SingleTournamentLobbyWindow>();
+			if (handler != null) {
                 if (levelInfo != null) {
                     ShowWindow(singleTournamentLobby);
                     handler.Init(levelInfo);
-                } else {
+				} else {
                     TournamentLobbyUI tournamentLobbyUI = tournamentLobby.GetComponent<TournamentLobbyUI>();
                     if (tournamentLobbyUI.tournaments != null && tournamentLobbyUI.tournaments.Count > 0) {
-                        ShowWindow(singleTournamentLobby);
+						ShowWindow(singleTournamentLobby);
                         handler.Init(tournamentLobbyUI.tournaments[0]);
                     } else {
-                        MegafansUI.Instance.ShowPopup("No Tournaments Running", "Sorry there are not tournaments currently running.  Check back soon!");
-                    }                   
-                }
+						MegafansUI.Instance.ShowPopup("No Tournaments Running", "Sorry there are not tournaments currently running.  Check back soon!");
+                    }
+				}
             }
         }
 
@@ -98,15 +93,15 @@ namespace MegafansSDK.UI {
             }
         }
 
-		public void ShowLeaderboardWindow(GameType gameType, RankingType rankingType, float withScore = 0, string withLevel = null) {
+		public void ShowLeaderboardWindow(GameType gameType, RankingType rankingType, int withScore = 0, string withLevel = null, string matchId = null) {
 			ShowWindow (leaderboardWindow);
 
 			LeaderboardWindowUI handler = leaderboardWindow.GetComponent<LeaderboardWindowUI> ();
 			if (handler != null) {
                 if (withLevel == null) {
-                    handler.Init(gameType, rankingType, LeaderboardType.LEADERBOARD, withScore, null);
+                    handler.Init(gameType, rankingType, LeaderboardType.LEADERBOARD, withScore);
                 } else {
-                    handler.Init(gameType, rankingType, LeaderboardType.LEADERBOARD, withScore, withLevel);
+                    handler.Init(gameType, rankingType, LeaderboardType.LEADERBOARD, withScore, withLevel, matchId);
                 }                
 			}
 		}
@@ -188,17 +183,9 @@ namespace MegafansSDK.UI {
 
 		public void HideAllWindows() {
             Debug.Log("HIDE ALL WINDOWS");
-#if UNITY_EDITOR
-            //Debug.Log("Unity Editor");
-#elif UNITY_IOS
-            //Debug.Log("IOS");
-            IntercomWrapperiOS.HideIntercom();
-#elif UNITY_ANDROID
-            //Debug.Log("ANDROID");
-            IntercomWrapperAndroid.HideIntercom();
-#endif
-            if (windows != null) {
-                foreach (GameObject window in windows) {
+			if (windows != null) {
+                foreach (GameObject window in windows)
+                {
                     window.SetActive(false);
                 }
             }

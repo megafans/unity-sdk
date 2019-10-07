@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿#pragma warning disable 649
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,9 +35,7 @@ namespace MegafansSDK.UI {
 
         public int currentIndex = 0;
 
-
         public GameObject Header => header;
-
 
 
 		public void AddItem(GameObject item) {
@@ -53,30 +53,30 @@ namespace MegafansSDK.UI {
 			if (index < 0 || index >= listItemsHolder.transform.childCount) {
 				return null;
 			}
+
 			return listItemsHolder.transform.GetChild (index).gameObject;
 		}
 
 		public void ClearList() {
 			for (int i = 0; i < listItemsHolder.transform.childCount; i++) {
-				if (header != null && i == 0)
+				if (header != null && i == 0) {
 					continue;
-				if (footer != null && i == listItemsHolder.transform.childCount - 1)
+				}
+
+				if (footer != null && i == listItemsHolder.transform.childCount - 1) {
 					continue;
+				}
+
 				Destroy (listItemsHolder.transform.GetChild (i).gameObject);
 			}
 		}
 
         public void OnPointerClick(PointerEventData eventData) {
-			Debug.Log($"Button clicked {eventData}");
-			//if (canClick == true)
-			//{
-			//    // add code for click here
-			//}
-			//canClick = true;
-        }
+			Debug.Log("Button clicked = " + eventData);
+		}
 
         public void DidSelectItem() {
-            Debug.Log($"Button clicked {currentIndex}");
+            Debug.Log("Button clicked = " + currentIndex);
         }
 
         // Use this for initialization
@@ -88,11 +88,12 @@ namespace MegafansSDK.UI {
                 points = new float[screens];
                 stepSize = 1 / (float)(screens - 1);
 
-                for (int i = 0; i < screens; i++) {
+                for (int i = 0; i < screens; i++)
+                {
                     points[i] = i * stepSize;
                 }
             }
-			else {
+            else {
                 points = new float[0];
             }
         }
@@ -141,8 +142,8 @@ namespace MegafansSDK.UI {
             return output;
         }
 
-        public void Next() {
-			if (currentIndex < points.Length - 1) {
+        public void next() {
+            if (currentIndex < points.Length - 1) {
                 currentIndex += 1;
                 float scrollPoint = points[currentIndex];
                 targetH = scrollPoint;
@@ -158,7 +159,7 @@ namespace MegafansSDK.UI {
             //}
         }
 
-        public void Back() {
+        public void back() {
             if (currentIndex > 0) {
                 currentIndex -= 1;
                 float scrollPoint = points[currentIndex];

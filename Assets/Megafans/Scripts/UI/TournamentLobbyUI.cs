@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿#pragma warning disable 649
+
+using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
 using MegafansSDK.Utils;
 using UnityEngine.EventSystems;
-using MegaFans.Unity.iOS;
-using MegaFans.Unity.Android;
 
 namespace MegafansSDK.UI {
 
@@ -27,7 +27,6 @@ namespace MegafansSDK.UI {
         [SerializeField] private Image gameIconImg;
         [SerializeField] private Button joinNowBtn;
         [SerializeField] private Text joinNowBtnText;
-        private float lastTokenBalance = 0;
 
         private JoinMatchAssistant matchAssistant;
 		private Texture picPlaceholder;
@@ -61,17 +60,8 @@ namespace MegafansSDK.UI {
             {
                 MegafansWebService.Instance.ViewProfile("", OnViewProfileResponse, OnViewProfileFailure);
             }
+            userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
             RequestTournaments();
-
-#if UNITY_EDITOR
-            Debug.Log("Unity Editor");
-#elif UNITY_IOS
-            Debug.Log("IOS");
-            IntercomWrapperiOS.ShowIntercomIfUnreadMessages();
-#elif UNITY_ANDROID
-            Debug.Log("ANDROID show intercom");
-            IntercomWrapperAndroid.ShowIntercomIfUnreadMessages();
-#endif
             //UnityEngine.Purchasing.ProductCollection allproducts = InAppPurchaser.Instance.GetProducts();
         }
 
@@ -91,7 +81,7 @@ namespace MegafansSDK.UI {
 
         public void ScrollViewDidFinishScrollingOnIndex(int index)
         {
-            CountdownTimer timer = listBox.GetItem(index).transform.GetChild(0).gameObject.GetComponent<CountdownTimer>();
+            CountdownTimer timer = listBox.GetItem(index).transform.GetChild(1).gameObject.GetComponent<CountdownTimer>();
             LevelsResponseData tournamentAtIndex = tournaments[index];
             SetCountDownTimer_ForTournament(tournamentAtIndex, timer.secondsRemaining);
         }
@@ -131,13 +121,8 @@ namespace MegafansSDK.UI {
             }
         }
 
-        public void JoinNowBtn_OnClick() {
-            if(tournaments == null || listBox == null || listBox.currentIndex >= tournaments.Count) {
-                //TODO: Add popup to join now button that lets users know that there is no available tournaments.
-                Debug.LogWarning($@"Error unable to join: Number of available tournaments ({tournaments?.Count.ToString()
-                    ?? "Null"}), Attempting to join listbox number ({listBox?.currentIndex.ToString() ?? "Null"})");
-                return;
-            }
+        public void JoinNowBtn_OnClick()
+        {
             LevelsResponseData tournament = tournaments[listBox.currentIndex];
             MegafansUI.Instance.ShowSingleTournamentWindow(tournament);
         }
@@ -168,12 +153,12 @@ namespace MegafansSDK.UI {
 
         public void NextBtn_OnClick()
         {
-            listBox?.Next();
+            listBox.next();
         }
 
         public void PreviousBtn_OnClick()
         {
-            listBox?.Back();
+            listBox.back();
         }
 
         private void SetGameNameTxt() {
@@ -247,7 +232,7 @@ namespace MegafansSDK.UI {
                 MegafansPrefs.Username = response.data.username;
                 MegafansPrefs.UserStatus = response.data.status ?? 7;
                 MegafansPrefs.CurrentTokenBalance = response.data.clientBalance;
-                MegafansPrefs.FacebookID = response.data.facebokLoginId;
+                MegafansPrefs.FacebookID = response.data.facebookLoginId;
 
                 userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
                 if (response.data.email != null) {

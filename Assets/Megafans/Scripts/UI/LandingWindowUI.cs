@@ -1,9 +1,8 @@
-﻿using UnityEngine;
+﻿#pragma warning disable 649
+using UnityEngine;
 using UnityEngine.UI;
 
 using MegafansSDK.Utils;
-using MegaFans.Unity.iOS;
-using MegaFans.Unity.Android;
 
 namespace MegafansSDK.UI {
 
@@ -12,6 +11,7 @@ namespace MegafansSDK.UI {
         [SerializeField] private Button withFacebookBtn;
         [SerializeField] private Button withEmailBtn;
         [SerializeField] private Button withPhoneBtn;
+        [SerializeField] private Button loginOrSignUpInsteadBtn;
 
         [SerializeField] private Text withFacebookTextLabel;
         [SerializeField] private Text withEmailTextLabel;
@@ -161,13 +161,14 @@ namespace MegafansSDK.UI {
                 registerOrLoginTextLabel.text = "Need an account?";
                 registerOrLoginActionTextLabel.text = "REGISTER";
                 landingWindowDescriptionText.text = "Log in to your MegaFans account to get back into the tournament arena";
+                loginOrSignUpInsteadBtn.gameObject.SetActive(true);
             }
             else if (IsLinking)
             {
                 withEmailTextLabel.text = "Link email";
                 withFacebookTextLabel.text = "Link FB";
                 withPhoneTextLabel.text = "Link phone";
-
+                loginOrSignUpInsteadBtn.gameObject.SetActive(false);
                 if (!string.IsNullOrEmpty(MegafansPrefs.Email))
                 {
                     withEmailBtn.gameObject.SetActive(false);
@@ -195,31 +196,20 @@ namespace MegafansSDK.UI {
                 registerOrLoginTextLabel.text = "Have an account?";
                 registerOrLoginActionTextLabel.text = "LOG IN";
                 landingWindowDescriptionText.text = "Choose the most convenient way to save your progress and create your MegaFans account";
+                loginOrSignUpInsteadBtn.gameObject.SetActive(true);
             }
         }
 
-        private void OnRegisterNewUserResponse(RegisterFirstTimeResponse response)
-        {
-            if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
-            {
+        private void OnRegisterNewUserResponse(RegisterFirstTimeResponse response) {
+            if (response.success.Equals(MegafansConstants.SUCCESS_CODE)) {
                 MegafansPrefs.AccessToken = response.data.token;
                 MegafansPrefs.RefreshToken = response.data.refresh;
                 MegafansPrefs.Username = response.data.username;
                 MegafansPrefs.UserId = response.data.userId;
                 MegafansPrefs.SMSAvailable = response.data.sms;
-                //TODO: removed OneSignal //OneSignal.SetExternalUserId(response.data.userId.ToString());
-#if UNITY_EDITOR
-                Debug.Log("Unity Editor");
-#elif UNITY_IOS
-                Debug.Log("IOS");
-                IntercomWrapperiOS.RegisterIntercomUserWithID(MegafansPrefs.UserId.ToString(), Megafans.Instance.GameUID, Application.productName);
-#elif UNITY_ANDROID
-                Debug.Log("ANDROID");
-                IntercomWrapperAndroid.RegisterUserWithUserId(MegafansPrefs.UserId.ToString(), Megafans.Instance.GameUID, Application.productName);
-#endif
+                //OneSignal.SetExternalUserId(response.data.userId.ToString());
             }
-            else
-            {
+            else {
                 MegafansUI.Instance.ShowPopup("ERROR", response.message);
             }
         }

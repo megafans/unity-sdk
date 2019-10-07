@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿#pragma warning disable 649
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,7 +47,10 @@ namespace MegafansSDK.UI
                 MegafansWebService.Instance.EditProfile(usernameField.text, null, null,
                     OnEditProfileResponse, OnEditProfileFailure);
             } else {
-                matchAssistant.JoinPracticeMatch();
+                MegafansUI.Instance.ShowLoadingBar();
+                MegafansWebService.Instance.GetLevels(Megafans.Instance.GameUID, GameType.TOURNAMENT,
+                    OnGetTournamentsResponse, OnGetTournamentsFailure);
+                //matchAssistant.JoinPracticeMatch();
             }
         }
 
@@ -104,6 +109,41 @@ namespace MegafansSDK.UI
             {
                 usernameFieldHighlightedImage.gameObject.SetActive(true);
             }
+        }
+
+        private void OnGetTournamentsResponse(LevelsResponse response)
+        {
+            MegafansUI.Instance.HideLoadingBar();
+            if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
+            {
+                List<LevelsResponseData> levelsData = response.data;
+                if (levelsData.Count == 0 || levelsData == null)
+                {
+                    matchAssistant.JoinPracticeMatch();
+                }
+                else
+                {
+                    LevelsResponseData currentF2PLevel = null;
+                    foreach (LevelsResponseData level in levelsData)
+                    {
+                        if (level.secondsLeft > 0 && level.f2p) {
+                            currentF2PLevel = level;
+                        }
+                    }
+
+                    if (currentF2PLevel != null) {
+                        matchAssistant.JoinTournamentMatch(currentF2PLevel.id);
+                    } else {
+                        matchAssistant.JoinPracticeMatch();
+                    }
+                }
+            }
+        }
+
+        private void OnGetTournamentsFailure(string error)
+        {
+            Debug.LogError(error);
+            MegafansUI.Instance.HideLoadingBar();
         }
 
         //private void OnVerifyPhoneResponse(LoginResponse response)

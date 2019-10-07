@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿#pragma warning disable 649
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -137,20 +139,6 @@ namespace MegafansSDK.UI {
             {
                 MegafansPrefs.Email = emailField.text;
                 MegafansUI.Instance.ShowTournamentLobby();
-                //                if (!string.IsNullOrEmpty(updatedUserName))
-                //                {
-                //                    MegafansPrefs.Username = updatedUserName;
-                //#if UNITY_EDITOR
-                //                    Debug.Log("Unity Editor");
-                //#elif UNITY_IOS
-                //                    Debug.Log("Logging Out iOS");
-                //                    IntercomWrapperiOS.UpdateUsernameToIntercom(updatedUserName);
-                //#elif UNITY_ANDROID
-                //                    Debug.Log("Logging Out Android");
-                //                    IntercomWrapperAndroid.UpdateUsernameToIntercom(updatedUserName);
-                //#endif
-                //    updatedUserName = null;
-                //}
             }
             else
             {

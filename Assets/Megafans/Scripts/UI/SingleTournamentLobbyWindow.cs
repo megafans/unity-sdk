@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#pragma warning disable 649
+
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using MegafansSDK.Utils;
@@ -33,7 +35,7 @@ namespace MegafansSDK.UI
             {
                 SetWinValueTxt();
                 SetPlayNowBtnAmountTxt();
-                tournamentCard.SetValues(this.levelInfo);
+                tournamentCard.SetValues(this.levelInfo, true);
             }
             userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
@@ -114,7 +116,7 @@ namespace MegafansSDK.UI
 
         private void SetWinValueTxt()
         {
-            youCouldWinValueTxt.text = levelInfo.message;
+            youCouldWinValueTxt.text = levelInfo.name;
         }
 
         private void SetPlayNowBtnAmountTxt()

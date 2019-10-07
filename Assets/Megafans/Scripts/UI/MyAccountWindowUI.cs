@@ -1,10 +1,7 @@
-﻿using System;
+﻿#pragma warning disable 649
 using UnityEngine;
 using UnityEngine.UI;
-
 using MegafansSDK.Utils;
-using MegaFans.Unity.iOS;
-using MegaFans.Unity.Android;
 
 namespace MegafansSDK.UI
 {
@@ -100,35 +97,9 @@ namespace MegafansSDK.UI
             MegafansUI.Instance.ShowTermsOfUseOrPrivacyWindow(MegafansConstants.TERMS_OF_USE, false);
         }
 
-        public void ProfilePic_OnClick()
-        {
-#if UNITY_EDITOR
-            Debug.Log("Unity Editor");
-
-            ////if (tex != null)
-            ////{
-            //    //isPhotoRemoved = false;
-            //    //profilePicImg.texture = tex;               
-            //    StartCoroutine(MegafansWebService.Instance.UploadProfilePic("/Users/markhoyt/Downloads/IMG_3956.PNG", (obj) =>
-            //    {
-            //        string msg = "Successfully uploaded profile picture.";
-            //        MegafansUI.Instance.ShowPopup("SUCCESS", msg);
-            //    }, (err) =>
-            //    {
-            //        string msg = "Error uploading profile image.  Please try again.";
-            //        MegafansUI.Instance.ShowPopup("ERROR", msg);
-            //    }));
-            //return; 
-#elif UNITY_IOS
-            Debug.Log("IOS");
-            IntercomWrapperiOS.HideIntercom();
-#elif UNITY_ANDROID
-            Debug.Log("ANDROID");
-            IntercomWrapperAndroid.HideIntercom();
-#endif
+        public void ProfilePic_OnClick() {
             imagePicker.PickImage((Texture2D tex, string imagePath) => {
-                if (tex != null)
-                {
+                if (tex != null) {
                     isPhotoRemoved = false;
                     profilePicImg.texture = tex;
                     string newImageToUpload = MegafansUtils.TextureToString((Texture2D)profilePicImg.texture);
@@ -202,6 +173,11 @@ namespace MegafansSDK.UI
             if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
             {
                 userNameLabel.text = response.data.username;
+                MegafansPrefs.ProfilePicUrl = response.data.image;
+                MegafansPrefs.Username = response.data.username;
+                MegafansPrefs.UserStatus = response.data.status ?? 7;
+                MegafansPrefs.CurrentTokenBalance = response.data.clientBalance;
+                MegafansPrefs.FacebookID = response.data.facebookLoginId;
 
                 MegafansWebService.Instance.FetchImage(response.data.image, OnFetchPicSuccess, OnFetchPicFailure);
 
@@ -258,35 +234,21 @@ namespace MegafansSDK.UI
             }
         }
 
-        private void OnFetchPicFailure(string error)
-        {
+        void OnFetchPicFailure(string error) {
             Debug.LogError(error);
         }
 
-        private void OnLogoutResponse(LogoutResponse response)
-        {
+        void OnLogoutResponse(LogoutResponse response) {
             //if (response.success.Equals (MegafansConstants.SUCCESS_CODE)) {
             MegafansPrefs.UserId = 0;
             MegafansPrefs.ProfilePicUrl = "";
             MegafansPrefs.ClearPrefs();
-
             MegafansWebService.Instance.FBLogout();
-
-#if UNITY_EDITOR
-            Debug.Log("Unity Editor");
-#elif UNITY_IOS
-                Debug.Log("Logging Out iOS");
-                IntercomWrapperiOS.LogoutFromIntercom();
-#elif UNITY_ANDROID
-                Debug.Log("Logging Out Android");
-                IntercomWrapperAndroid.LogoutFromIntercom();         
-#endif           
             MegafansUI.Instance.ShowOnboardingStartWindow();
             //}
         }
 
-        private void OnLogoutFailure(string error)
-        {
+        private void OnLogoutFailure(string error) {
             Debug.LogError(error.ToString());
         }
     }

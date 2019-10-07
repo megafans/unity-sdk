@@ -1,203 +1,103 @@
-﻿using System;
+﻿#pragma warning disable 649
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 using MegafansSDK.UI;
 using MegafansSDK.Utils;
+using UnityEngine.UIElements;
 
-using MegaFans.Unity.Android;
-using MegaFans.Unity.iOS;
 
 namespace MegafansSDK {
 	
-	public class Megafans : MonoBehaviour
-    {
+	public class Megafans : MonoBehaviour {
 
-        [SerializeField] private string gameUID = "";
-        [SerializeField] private string tutorialUrl = "";
-        [SerializeField] private string tokenPurchase200ProductID = "";
-        [SerializeField] private string tokenPurchase1000ProductID = "";
-        [SerializeField] private string tokenPurchase3000ProductID = "";
-        [SerializeField] private string tokenPurchase10000ProductID = "";
-        [SerializeField] private Sprite gameIcon;
+		[Space(10), Header("Game Settings:")]
+		[SerializeField] string gameUID;
+		[SerializeField] Sprite gameIcon;
+		[SerializeField] string tutorialUrl;
+		[Space(10), Header("Purchase IDs:")]
+		[SerializeField] string tokenPurchase200ProductID;
+        [SerializeField] string tokenPurchase1000ProductID;
+        [SerializeField] string tokenPurchase3000ProductID;
+		[SerializeField] string tokenPurchase10000ProductID;
+		[Space(10), Header("Deployment Environment:")]
+		[SerializeField] Deployment deployment;
+		[SerializeField] string customDeployment;
 
-        private Megafans() {
-            Debug.Log("REPORT - INIT MEGAFANS");
-        }
 
-		private static Megafans instance = null;
-		public static Megafans Instance {
-			get {
-				return instance;
-			}
-		}
+		string currentTournamentToken = "";
 
-		private ILandingOptionsListener landingOptionsListener;
-		private IJoinGameCallback joinGameCallback;
+		static Megafans instance = null;
+		public static Megafans Instance => instance;
+
+		ILandingOptionsListener landingOptionsListener;
+		IJoinGameCallback joinGameCallback;
+
+		public int CurrentTournamentId  { get ; set ; } = 0;
 
 		/// <summary>
 		/// Gets or sets the Game Unique Identifier. Available at MegaFans developer portal.
 		/// Set its value once at start.
 		/// </summary>
 		/// <value>The Game Unique Identifier.</value>
-		public string GameUID {
-			get {
-				return gameUID;
-			}
-
-			set {
-				gameUID = value;
-			}
-		}
-
-        private string gameName = "";
-        /// <summary>
-        /// Gets or sets the Game Name. Provided by you the developer.
-        /// Set its value once at start.
-        /// </summary>
-        /// <value>The Game Name.</value>
-        public string GameName
-        {
-            get
-            {
-                return gameName;
-            }
-
-            set
-            {
-                gameName = value;
-            }
-        }
+		public string GameUID => gameUID;
 
 		/// <summary>
 		/// Gets or sets the URL of a Tutorial video, which a user can watch from the MegaFans landing screen.
 		/// Set its value once at start.
 		/// </summary>
 		/// <value>The URL of tutorial video.</value>
-		public string TutorialUrl {
-			get {
-				return tutorialUrl;
-			}
-
-			set {
-				tutorialUrl = value;
-			}
-		}
+		public string TutorialUrl =>  tutorialUrl;
 
         /// <summary>
         /// Gets or sets the Game Icon, which is needed throughout the MegaFans SDK for your games branding
         /// Set its value once at start.
         /// </summary>
         /// <value>The Sprite for the current games icon</value>
-        public Sprite GameIcon
-        {
-            get
-            {
-                return gameIcon;
-            }
-
-            set
-            {
-                GameIcon = value;
-            }
-        }
+        public Sprite GameIcon => gameIcon;
 
         /// <summary>
         /// Gets or sets the In-App ProductID for the purchase of 200 MegaFans Tokens. This is the product ID given to you from the Apple App Store and Google Play store, should be the same for both stores.
         /// Set its value once at start.
         /// </summary>
         /// <value>The ProductID for 200 MegaFans Token Purchase.</value>
-        public string ProductID200Tokens
-        {
-            get
-            {
-                return tokenPurchase200ProductID;
-            }
-
-            set
-            {
-                tokenPurchase200ProductID = value;
-            }
-        }
+        public string ProductID200Tokens => tokenPurchase200ProductID;
 
         /// <summary>
         /// Gets or sets the In-App ProductID for the purchase of 1000 MegaFans Tokens. This is the product ID given to you from the Apple App Store and Google Play store, should be the same for both stores.
         /// Set its value once at start.
         /// </summary>
         /// <value>The ProductID for 1000 MegaFans Token Purchase.</value>
-        public string ProductID1000Tokens
-        {
-            get
-            {
-                return tokenPurchase1000ProductID;
-            }
-
-            set
-            {
-                tokenPurchase1000ProductID = value;
-            }
-        }
+        public string ProductID1000Tokens => tokenPurchase1000ProductID;
 
         /// <summary>
         /// Gets or sets the In-App ProductID for the purchase of 3000 MegaFans Tokens. This is the product ID given to you from the Apple App Store and Google Play store, should be the same for both stores.
         /// Set its value once at start.
         /// </summary>
         /// <value>The ProductID for 3000 MegaFans Token Purchase.</value>
-        public string ProductID3000Tokens
-        {
-            get
-            {
-                return tokenPurchase3000ProductID;
-            }
+        public string ProductID3000Tokens => tokenPurchase3000ProductID;
 
-            set
-            {
-                tokenPurchase3000ProductID = value;
-            }
-        }
-
-        /// <summary>
+		/// <summary>
         /// Gets or sets the In-App ProductID for the purchase of 10000 MegaFans Tokens. This is the product ID given to you from the Apple App Store and Google Play store, should be the same for both stores.
-        /// Set its value once at start.
-        /// </summary>
+		/// </summary>
         /// <value>The ProductID for 10000 MegaFans Token Purchase.</value>
-        public string ProductID10000Tokens
-        {
-            get
-            {
-                return tokenPurchase10000ProductID;
-            }
-
-            set
-            {
-                tokenPurchase10000ProductID = value;
-            }
-        }
-
-        private string currentTournamentToken = "";
-        private int currentTournamentId = 0;
-		public int CurrentTournamentId {
-			get {
-				return currentTournamentId;
-			}
-
-			set {
-				currentTournamentId = value;
-			}
-		}
+		public string ProductID10000Tokens => tokenPurchase10000ProductID;
 
 		/// <summary>
 		/// Gets a value indicating whether the user is currently logged in to MegaFans.
 		/// </summary>
 		/// <value><c>true</c> if the user is logged in; otherwise, <c>false</c>.</value>
-		public bool IsUserLoggedIn {
-			get {
-                string accessToken = MegafansPrefs.AccessToken;
-                return accessToken != "";
+		public bool IsUserLoggedIn => !string.IsNullOrEmpty(MegafansPrefs.AccessToken);
 
-            }
-		}
+
+
+
+
+		//Private constructor
+		Megafans() { }
+
 
 		void Awake() {
 			if (instance == null) {
@@ -209,21 +109,13 @@ namespace MegafansSDK {
 			}
 		}
 
-		void Start() {
-            Debug.Log("REPORT - START MEGAFANS");
-        }
 
-        public void ShowMegafans(IJoinGameCallback joinGameCallback,
-            ILandingOptionsListener landingOptionsListener)
-        {
-            if (!Megafans.Instance.IsUserLoggedIn)
-            {
-                Megafans.Instance.ShowLandingScreen(joinGameCallback, landingOptionsListener);
-            } else {
-
-                Megafans.Instance.ShowTournamentLobby(joinGameCallback, landingOptionsListener);
-            }
-        }
+        public void ShowMegafans(IJoinGameCallback joinGameCallback, ILandingOptionsListener landingOptionsListener) {
+            if (Instance.IsUserLoggedIn)
+				Instance.ShowTournamentLobby(joinGameCallback, landingOptionsListener);
+			else
+                Instance.ShowLandingScreen(joinGameCallback, landingOptionsListener);
+		}
 
         /// <summary>
         /// Shows the landing screen of MegaFans to the user.
@@ -233,8 +125,7 @@ namespace MegafansSDK {
         public void ShowLandingScreen(IJoinGameCallback joinGameCallback, ILandingOptionsListener landingOptionsListener) {
 			this.landingOptionsListener = landingOptionsListener;
             this.joinGameCallback = joinGameCallback;
-
-            MegafansUI.Instance.EnableUI (true);
+			MegafansUI.Instance.EnableUI (true);
             MegafansUI.Instance.ShowOnboardingStartWindow();
 		}
 
@@ -252,7 +143,6 @@ namespace MegafansSDK {
 
 			this.landingOptionsListener = landingOptionsListener;
 			this.joinGameCallback = joinGameCallback;
-
 			MegafansUI.Instance.EnableUI (true);
 			MegafansUI.Instance.ShowTournamentLobby ();
 		}
@@ -263,44 +153,31 @@ namespace MegafansSDK {
 		/// <param name="score">Score of user.</param>
 		/// <param name="token">Match token obtained from MegaFans API.</param>
 		/// <param name="gameType">Game type obtained from IJoinGameCallback's StartGame function.</param>
-		/// <param name="OnScoreSaved">Optional callback to take an action when score has been saved successfully.</param>
-		/// <param name="OnFailed">Optional callback to take an action when score could not be saved.</param>
-        public void SaveScore(float score, string metaString, GameType gameType, Action OnScoreSaved = null, Action<string> OnFailed = null) {
+		/// <param name="onScoreSaved">Optional callback to take an action when score has been saved successfully.</param>
+		/// <param name="onFailed">Optional callback to take an action when score could not be saved.</param>
+        public void SaveScore(int score, string metaString, GameType gameType, Action onScoreSaved = null,
+			Action<string> onFailed = null) {
+
             MegafansUI.Instance.EnableUI(true);
             if (string.IsNullOrEmpty(this.currentTournamentToken)) {
                 Debug.Log("No Tournament token found");
                 return;
             }
+            MegafansUI.Instance.ShowLeaderboardWithScore(gameType, RankingType.RANKING, score, metaString, currentTournamentToken);
             MegafansWebService.Instance.SaveScore (this.currentTournamentToken, score,
 				(SaveScoreResponse response) => {
                     this.currentTournamentToken = "";
                     if (response.success.Equals (MegafansConstants.SUCCESS_CODE)) {
-                        MegafansUI.Instance.ShowLeaderboardWithScore(gameType, RankingType.RANKING, score, metaString);
-//#if UNITY_EDITOR
-//                        Debug.Log("Unity Editor");
-//#elif UNITY_IOS
-//                        Debug.Log("Log tournament iOS");
-//                        IntercomWrapperiOS.LogTournamentToIntercom(this.currentTournamentId, score, GameUID, Application.productName);
-//#elif UNITY_ANDROID
-//                        Debug.Log("Log tournament Android");
-//                        IntercomWrapperAndroid.LogTournamentToIntercom(this.currentTournamentId, score, GameUID, Application.productName);
-//#endif
-                        if (OnScoreSaved != null) {
+						if (onScoreSaved != null) {
                             Debug.Log("REPORT - SAVE SCORE");
-                            OnScoreSaved ();
+                            onScoreSaved ();
 						}
 					}
 					else {
-						if (OnFailed != null) {
-							OnFailed (response.message);
-						}
+						onFailed?.Invoke (response.message);
 					}
 				},
-				(string error) => {
-					if (OnFailed != null) {
-						OnFailed (error);
-					}
-				});
+				(error) => onFailed?.Invoke (error));
 		}
 
 		/// <summary>
@@ -308,10 +185,10 @@ namespace MegafansSDK {
 		/// </summary>
 		/// <param name="transactionNumber">Transaction number returned by IAP.</param>
 		/// <param name="numberOfTokens">Number of tokens purchased by user.</param>
-		/// <param name="OnSuccess">Optional callback to detect this operation's success.</param>
-		/// <param name="OnFailure">Optional callback to detect this operation's failure.</param>
-		public void SaveTokens(string transactionNumber, string receipt, string productId, int numberOfTokens, Action OnSuccess = null,
-			Action<string> OnFailure = null) {
+		/// <param name="onSuccess">Optional callback to detect this operation's success.</param>
+		/// <param name="onFailure">Optional callback to detect this operation's failure.</param>
+		public void SaveTokens(string transactionNumber, string receipt, string productId, int numberOfTokens,
+			Action onSuccess = null, Action<string> onFailure = null) {
 
 			MegafansWebService.Instance.BuyTokens (GameUID, numberOfTokens, transactionNumber, productId, receipt,
 				(BuyTokensResponse response) => {
@@ -319,47 +196,41 @@ namespace MegafansSDK {
                         //MegafansUI.Instance.ShowStoreWindow(numberOfTokens, true);
                         MegafansPrefs.CurrentTokenBalance += numberOfTokens;
                         MegafansUI.Instance.ShowStoreWindow();
-
-                        if (OnSuccess != null) {
-							OnSuccess();
-						}
+						onSuccess?.Invoke();
 					}
 					else {
-						if(OnFailure != null) {
-							OnFailure(response.message);
-						}
+						onFailure?.Invoke(response.message);
 					}
 				},
-				(string error) => {
-					if(OnFailure != null) {
-						OnFailure(error);
-					}
-				});
+				(error) => onFailure?.Invoke(error));
+		}
+
+
+		public string ServerBaseUrl () {
+			switch (deployment) {
+				case Deployment.Development:
+					return "https://gameapi-dev.megafans.com"; //Dev
+				case Deployment.Staging:
+					return "https://gameapi-staging.megafans.com"; //Staging
+				case Deployment.Production:
+					return "https://gameapi.megafans.com"; //Prod
+				case Deployment.Custom:
+					return customDeployment;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 		}
 
 
 		internal void ReportPlayGameClicked() {
-			if (landingOptionsListener != null) {
-				landingOptionsListener.OnPlayGameClicked ();
-			}
+			landingOptionsListener?.OnPlayGameClicked ();
 		}
+
 
 		internal void ReportUserLoggedIn(string userId) {
-			if (landingOptionsListener != null) {
-                Debug.Log("REPORT - USER LOGGED IN");
-#if UNITY_EDITOR
-                Debug.Log("Unity Editor");
-#elif UNITY_IOS
-                Debug.Log("IOS");
-                IntercomWrapperiOS.RegisterIntercomUserWithID(userId, GameUID, Application.productName);
-#elif UNITY_ANDROID
-                Debug.Log("ANDROID");
-                IntercomWrapperAndroid.RegisterUserWithUserId(userId, GameUID, Application.productName);
-#endif
-
-                landingOptionsListener.OnUserLoggedIn (userId);
-			}
+			landingOptionsListener?.OnUserLoggedIn (userId);
 		}
+
 
 		internal void ReportUserRegistered(string userId) {
 			if (landingOptionsListener != null) {
@@ -367,6 +238,7 @@ namespace MegafansSDK {
                 landingOptionsListener.OnUserRegistered ();
             }
         }
+
 
         internal void ReportStartGame(string tournamentToken, int tournamentID, GameType gameType, Dictionary<string, string> metaData) {
             if (joinGameCallback != null)
@@ -379,9 +251,7 @@ namespace MegafansSDK {
 
 
         internal void ReportPurchaseTokens(int numberOfTokens) {
-			if (joinGameCallback != null) {
-				joinGameCallback.PurchaseTokens (numberOfTokens);
-			}
+			joinGameCallback?.PurchaseTokens (numberOfTokens);
 		}
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#pragma warning disable 649
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System;
@@ -68,36 +69,45 @@ namespace MegafansSDK.UI
             int daysRemaining = updatedValue / days;
             if (daysRemaining > 0)
             {
-                daysTextLabel.text = daysRemaining.ToString();
+                daysTextLabel.text = ToDoubleDigits(daysRemaining);
                 updatedValue = updatedValue % days;
+            } else {
+                daysTextLabel.text = "00";
             }
 
             int hoursRemaining = updatedValue / (minutes * seconds);
             if (hoursRemaining > 0)
             {
-                hoursTextLabel.text = hoursRemaining.ToString();
+                hoursTextLabel.text = ToDoubleDigits(hoursRemaining);
                 updatedValue = updatedValue % (minutes * seconds);
             }
             else
             {
-                hoursTextLabel.text = "000";
+                hoursTextLabel.text = "00";
             }
 
             int minutesRemaining = updatedValue / minutes;
             if (minutesRemaining > 0)
             {
-                minutesTextLabel.text = minutesRemaining.ToString();
+                minutesTextLabel.text = ToDoubleDigits(minutesRemaining);
                 updatedValue = updatedValue % minutes;
             }
             else
             {
-                minutesTextLabel.text = "000";
+                minutesTextLabel.text = "00";
             }
 
             secondsTextLabel.text = updatedValue.ToString();
 
         }
 
+        private string ToDoubleDigits(int numericalValue) {
+            string valueAsString = numericalValue.ToString();
+            if (valueAsString.Length == 1) {
+                return valueAsString.Insert(0, "0");
+            }
+            return valueAsString;
+        }
 
 
         public IEnumerator StartCountdown()
@@ -106,7 +116,6 @@ namespace MegafansSDK.UI
             {
                 yield return new WaitForSeconds(1.0f);
                 this.secondsRemaining -= 1;
-                Debug.Log("Tick");
             }
         }
     }

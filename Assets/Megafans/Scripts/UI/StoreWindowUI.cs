@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿#pragma warning disable 649
+
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 using MegafansSDK.Utils;
-using MegafansSDK.UI;
 
 namespace MegafansSDK.UI {
 
@@ -30,54 +29,75 @@ namespace MegafansSDK.UI {
         {
             userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
             listBox.ClearList();
+            MegafansUI.Instance.ShowLoadingBar();
+            StartCoroutine(SetProducts());
+        }
+
+        public IEnumerator SetProducts() {
             UnityEngine.Purchasing.ProductCollection allproducts = InAppPurchaser.Instance.GetProducts();
-            GameObject bestDeal = Instantiate(storeItemBestDealPrefab);
-            for (int i = 0; i < allproducts.all.Length; ++i)
+            if (allproducts != null)
             {
-                UnityEngine.Purchasing.Product currentProduct = allproducts.all[i];
-                if (currentProduct.definition.id == Megafans.Instance.ProductID10000Tokens)
+                GameObject bestDeal = Instantiate(storeItemBestDealPrefab);
+                for (int i = 0; i < allproducts.all.Length; ++i)
                 {
-                    StoreItem viewHandler = bestDeal.GetComponent<StoreItem>();
-                    viewHandler.SetValues(10000, currentProduct.metadata.localizedPriceString, () =>
+                    UnityEngine.Purchasing.Product currentProduct = allproducts.all[i];
+                    if (currentProduct.definition.id == Megafans.Instance.ProductID10000Tokens)
                     {
-                        StoreItemBuyBtn_OnClick(10000);
-                    });
-                }
-                else
-                {
-                    GameObject item = Instantiate(storeItemPrefab);
-                    StoreItem viewHandler = item.GetComponent<StoreItem>();
-                    if (viewHandler != null)
+                        StoreItem viewHandler = bestDeal.GetComponent<StoreItem>();
+                        viewHandler.SetValues(10000, currentProduct.metadata.localizedPriceString, () =>
+                        {
+                            StoreItemBuyBtn_OnClick(10000);
+                        });
+                    }
+                    else
                     {
-                        if (currentProduct.definition.id == Megafans.Instance.ProductID200Tokens)
+                        GameObject item = Instantiate(storeItemPrefab);
+                        StoreItem viewHandler = item.GetComponent<StoreItem>();
+                        if (viewHandler != null)
                         {
-                            viewHandler.SetValues(200, currentProduct.metadata.localizedPriceString, () =>
+                            if (currentProduct.definition.id == Megafans.Instance.ProductID200Tokens)
                             {
-                                StoreItemBuyBtn_OnClick(200);
-                            });
-                        }
-                        else if (currentProduct.definition.id == Megafans.Instance.ProductID1000Tokens)
-                        {
-                            viewHandler.SetValues(1000, currentProduct.metadata.localizedPriceString, () =>
+                                viewHandler.SetValues(200, currentProduct.metadata.localizedPriceString, () =>
+                                {
+                                    StoreItemBuyBtn_OnClick(200);
+                                });
+                            }
+                            else if (currentProduct.definition.id == Megafans.Instance.ProductID1000Tokens)
                             {
-                                StoreItemBuyBtn_OnClick(1000);
-                            });
-                        }
-                        else if (currentProduct.definition.id == Megafans.Instance.ProductID3000Tokens)
-                        {
-                            viewHandler.SetValues(3000, currentProduct.metadata.localizedPriceString, () =>
+                                viewHandler.SetValues(1000, currentProduct.metadata.localizedPriceString, () =>
+                                {
+                                    StoreItemBuyBtn_OnClick(1000);
+                                });
+                            }
+                            else if (currentProduct.definition.id == Megafans.Instance.ProductID3000Tokens)
                             {
-                                StoreItemBuyBtn_OnClick(3000);
-                            });
+                                viewHandler.SetValues(3000, currentProduct.metadata.localizedPriceString, () =>
+                                {
+                                    StoreItemBuyBtn_OnClick(3000);
+                                });
+                            }
+                            listBox.AddItem(item);
                         }
-                        listBox.AddItem(item);
                     }
                 }
-            }
 
-            if (bestDeal != null)
+                if (bestDeal != null)
+                {
+                    listBox.AddItem(bestDeal);
+                }
+                MegafansUI.Instance.HideLoadingBar();
+            }
+            else
             {
-                listBox.AddItem(bestDeal);
+                MegafansUI.Instance.ShowLoadingBar();
+                int countDown = 3;
+                while (countDown > 0)
+                {
+                    Debug.Log("Countdown: " + countDown);
+                    yield return new WaitForSeconds(1.0f);
+                    countDown--;
+                }
+                StartCoroutine(SetProducts());
             }
         }
 

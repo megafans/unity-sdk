@@ -610,7 +610,7 @@ PlayerSettings:
   facebookStatus: 1
   facebookXfbml: 0
   facebookFrictionlessRequests: 1
-  apiCompatibilityLevel: 2
+  apiCompatibilityLevel: 6
   cloudProjectId: 3291e001-1da3-46f6-bce8-a6965f4d84bb
   framebufferDepthMemorylessMode: 0
   projectName: Megafans Test

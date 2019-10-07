@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#pragma warning disable 618
+using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
 using Newtonsoft.Json;

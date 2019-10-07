@@ -10,8 +10,6 @@ public class Game : MonoBehaviour, ILandingOptionsListener, IJoinGameCallback {
 
 	[SerializeField] private GameObject gameCanvas;
 	[SerializeField] private Text msgTxt;
-	[SerializeField] private string gameUID = "";
-    [SerializeField] private string tutorialUrl = "";
 
 	private int minNumber = 1;
 	private int maxNumber = 1000;
@@ -27,11 +25,7 @@ public class Game : MonoBehaviour, ILandingOptionsListener, IJoinGameCallback {
 	}
 
 	void Start() {
-		Megafans.Instance.GameUID = gameUID;
-        Megafans.Instance.GameName = "MegaUnityGame";
-		Megafans.Instance.TutorialUrl = tutorialUrl;
-
-        if (!Megafans.Instance.IsUserLoggedIn) {
+		if (!Megafans.Instance.IsUserLoggedIn) {
 			Megafans.Instance.ShowLandingScreen (this, this);
 		}
 		else {

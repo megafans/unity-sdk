@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿#pragma warning disable 649
+using UnityEngine;
 using UnityEngine.UI;
 using System;
 using MegafansSDK.Utils;

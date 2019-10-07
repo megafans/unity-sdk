@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#pragma warning disable 649
+
+using UnityEngine;
 using System;
 using UnityEngine.UI;
 
@@ -28,9 +30,12 @@ namespace MegafansSDK.UI {
 			loginBtn.interactable = false;
             Texture2D spriteTexture = (Texture2D)inputFieldHighlightedImage.texture;
             activeInputBackground = Sprite.Create(spriteTexture, new Rect(0, 0, spriteTexture.width, spriteTexture.height), new Vector2(0.5f, 0.5f));
-
-            phoneNumberField.text = "";
             //phoneNumberField.text = "9709858807";
+        }
+
+        private void OnEnable()
+        {
+            phoneNumberField.text = "";
         }
 
         public void PhoneNumberPrefixField_OnValueChanged() {
