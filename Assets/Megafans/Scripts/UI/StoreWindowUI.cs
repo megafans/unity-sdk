@@ -3,25 +3,29 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-
 using MegafansSDK.Utils;
 
-namespace MegafansSDK.UI {
+namespace MegafansSDK.UI
+{
 
-	public class StoreWindowUI : MonoBehaviour {
+    public class StoreWindowUI : MonoBehaviour
+    {
 
-		[SerializeField] private Text userTokensTxt;
-		[SerializeField] private ListBox listBox;
-		[SerializeField] private Text messageTxt;
-		[SerializeField] private Sprite confirmationIcon;
+        [SerializeField] private Text userTokensTxt;
+        [SerializeField] private ListBox listBox;
+        [SerializeField] private Text messageTxt;
+        [SerializeField] private Sprite confirmationIcon;
         [SerializeField] private GameObject storeItemPrefab;
         [SerializeField] private GameObject storeItemBestDealPrefab;
+        [SerializeField] private GameObject storeItemFree;
 
-        void Awake() {
-			
-		}
+        void Awake()
+        {
 
-		void Start() {
+        }
+
+        void Start()
+        {
             //UnityEngine.Purchasing.ProductCollection allproducts = InAppPurchaser.Instance.GetProducts();
         }
 
@@ -33,7 +37,8 @@ namespace MegafansSDK.UI {
             StartCoroutine(SetProducts());
         }
 
-        public IEnumerator SetProducts() {
+        public IEnumerator SetProducts()
+        {
             UnityEngine.Purchasing.ProductCollection allproducts = InAppPurchaser.Instance.GetProducts();
             if (allproducts != null)
             {
@@ -99,52 +104,75 @@ namespace MegafansSDK.UI {
                 }
                 StartCoroutine(SetProducts());
             }
+
+            //TODO: Offer Wall Within iaps
+            GameObject itemFree = Instantiate(storeItemFree);
+            StoreItem viewHandlerFree = itemFree.GetComponent<StoreItem>();
+
+            if (itemFree != null)
+            {
+                viewHandlerFree.SetValues(() => StoreItemFreeBtn_OnClick());
+                listBox.AddItem(itemFree);
+            }
         }
 
-        public void Init(float credits, bool addToExisting) {
+        public void Init(float credits, bool addToExisting)
+        {
             float totalCredits = credits;
-			if (addToExisting) {
-                totalCredits += float.Parse (userTokensTxt.text);
-			}
+            if (addToExisting)
+            {
+                totalCredits += float.Parse(userTokensTxt.text);
+            }
 
-			userTokensTxt.text = totalCredits.ToString ();
+            userTokensTxt.text = totalCredits.ToString();
         }
 
-		public void BackBtn_OnClick() {
+        public void UpdateCreditUI()
+        {
+            userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+        }
+
+        public void BackBtn_OnClick()
+        {
             MegafansUI.Instance.BackFromStoreWindow();
-		}
+        }
 
         public void StoreItemBuyBtn_OnClick(int tokenQty)
         {
             InAppPurchaser.Instance.BuyTokens(tokenQty);
         }
 
-		//private void ShowConfirmationDialog(int itemIdx) {
-		//	GameObject item = listBox.GetItem (itemIdx);
-		//	if (item != null) {
-		//		StoreItem itemHandler = item.GetComponent<StoreItem> ();
-		//		if (itemHandler != null) {
-		//			int tokensQty = itemHandler.Quantity;
-		//			float price = itemHandler.Price;
+        public void StoreItemFreeBtn_OnClick()
+        {
+            MegafansSDK.Megafans.Instance.m_AdsManager.ShowOfferwall();
+        }
 
-		//			string msg = "You are purchasing <color=#f5a623ff>" + tokensQty + " Tokens</color> \nfor " +
-		//			             "<b><color=black>$" + price + "</color></b>" +
-		//			             "\n\nDo you want to continue the purchase?";
+        //private void ShowConfirmationDialog(int itemIdx) {
+        //	GameObject item = listBox.GetItem (itemIdx);
+        //	if (item != null) {
+        //		StoreItem itemHandler = item.GetComponent<StoreItem> ();
+        //		if (itemHandler != null) {
+        //			int tokensQty = itemHandler.Quantity;
+        //			float price = itemHandler.Price;
 
-		//			MegafansUI.Instance.ShowAlertDialog (confirmationIcon, "Confirmation",
-		//				msg, "Buy", "Cancel",
-		//				() => {
-		//					MegafansUI.Instance.HideAlertDialog();
-  //                          Debug.Log(string.Format("InAppPurchaser Instance is null - {0}", InAppPurchaser.Instance == null));
-  //                          InAppPurchaser.Instance.BuyTokens(tokensQty);						
-		//				},
-		//				() => {
-		//					MegafansUI.Instance.HideAlertDialog();
-		//				});
-		//		}
-		//	}
-		//}
+        //			string msg = "You are purchasing <color=#f5a623ff>" + tokensQty + " Tokens</color> \nfor " +
+        //			             "<b><color=black>$" + price + "</color></b>" +
+        //			             "\n\nDo you want to continue the purchase?";
 
-	}
+        //			MegafansUI.Instance.ShowAlertDialog (confirmationIcon, "Confirmation",
+        //				msg, "Buy", "Cancel",
+        //				() => {
+        //					MegafansUI.Instance.HideAlertDialog();
+        //                          Debug.Log(string.Format("InAppPurchaser Instance is null - {0}", InAppPurchaser.Instance == null));
+        //                          InAppPurchaser.Instance.BuyTokens(tokensQty);						
+        //				},
+        //				() => {
+        //					MegafansUI.Instance.HideAlertDialog();
+        //				});
+        //		}
+        //	}
+        //}
+
+    }
 
 }

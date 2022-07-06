@@ -2,15 +2,24 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace MegafansSDK.Utils {
+namespace MegafansSDK.Utils
+{
 
-	[System.Serializable]
-	public class ViewLeaderboardRequest : Request {
+    [System.Serializable]
+    public class ViewLeaderboardRequest : Request
+    {
 
-		public string app_game_uid;
+        public string app_game_uid;
+        public string tournament_id;
+        public string leaderboardsize;
+        public string leaderboardpage;
 
-		public override WWW GetWWW(string url) {
-            url += ("?appGameUid=" + app_game_uid);
+        public override WWW GetWWW(string url)
+        {
+            if(string.IsNullOrEmpty(leaderboardsize) && string.IsNullOrEmpty(leaderboardpage))
+                url += ("?tournamentid=" + tournament_id);
+            else
+                url += ("?tournamentid=" + tournament_id + "&pagenumber=" + leaderboardpage + "&pageSize=" + leaderboardsize);
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
             string authorization = MegafansWebService.GetBearerToken();
@@ -18,11 +27,11 @@ namespace MegafansSDK.Utils {
             headers.Add("Content-Type", "application/json");
             headers.Add("MegaFansSDKVersion", MegafansConstants.MegafansSDKVersion);
 
-            WWW www = new WWW (url, null, headers);
+            WWW www = new WWW(url, null, headers);
 
-			return www;
-		}
+            return www;
+        }
 
-	}
+    }
 
 }

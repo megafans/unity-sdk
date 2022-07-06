@@ -15,7 +15,7 @@ namespace MegafansSDK.Utils
     [System.Serializable]
     public class LevelsResponseData
     {
-
+        public bool cash_tournament;
         public int id;
         public string name;
         public string message;
@@ -26,7 +26,11 @@ namespace MegafansSDK.Utils
         public int secondsToStart;
         public bool f2p;
         public string imageUrl;
+        public string payout;
         public LevelsPayoutData payouts;
+        public bool askPassword;
+        public bool freeEntryTournament;
+        public int freeEntriesRemaining;
     }
 
     [System.Serializable]

@@ -7,26 +7,24 @@ using UnityEngine.Events;
 
 using MegafansSDK.Utils;
 
-namespace MegafansSDK.UI {
+namespace MegafansSDK.UI
+{
 
-	public class VerifyPhoneWindowUI : MonoBehaviour {
+    public class VerifyPhoneWindowUI : MonoBehaviour
+    {
 
-		[SerializeField] private InputField otpField;
-		[SerializeField] private Button backBtn;
-        [SerializeField] private RawImage inputFieldHighlightedImage;
-
-        private Sprite activeInputBackground;
+        [SerializeField] private InputField otpField;
+        [SerializeField] private Button backBtn;
 
         private void Awake()
         {
-            Texture2D spriteTexture = (Texture2D)inputFieldHighlightedImage.texture;
-            activeInputBackground = Sprite.Create(spriteTexture, new Rect(0, 0, spriteTexture.width, spriteTexture.height), new Vector2(0.5f, 0.5f));
         }
 
-        public bool IsRegistering {
-			get;
-			set;
-		}
+        public bool IsRegistering
+        {
+            get;
+            set;
+        }
 
         public bool IsLinking
         {
@@ -34,89 +32,94 @@ namespace MegafansSDK.UI {
             set;
         }
 
-        public string PhoneNumberToVerify {
-			get;
-			set;
-		}
-
-		void OnEnable() {
-			otpField.text = "";
-            Debug.Log("PHONE NUMBER TO VERIFY ---------------");
-            Debug.Log(PhoneNumberToVerify);
-            Debug.Log("PHONE NUMBER TO VERIFY ---------------");
+        public string PhoneNumberToVerify
+        {
+            get;
+            set;
         }
 
-		public void VerifyBtn_OnClick() {
-			if (otpField.text == "") {
-				string msg = "Please enter your OTP.";
-				MegafansUI.Instance.ShowPopup ("ERROR", msg);
+        void OnEnable()
+        {
+            otpField.text = "";
+        }
 
-				return;
-			}
+        public void VerifyBtn_OnClick()
+        {
+            if (otpField.text == "")
+            {
+                string msg = "Please enter your OTP.";
+                MegafansUI.Instance.ShowPopup("ERROR", msg);
 
-			MegafansWebService.Instance.VerifyOtp (otpField.text, PhoneNumberToVerify, OnVerifyPhoneResponse,
-				OnVerifyPhoneFailure, IsRegistering);
-		}
+                return;
+            }
 
-		public void ResendBtn_OnClick() {
-			MegafansWebService.Instance.LoginPhone (PhoneNumberToVerify, OnResendOTPResponse,
-				OnResendOTPFailure);
-		}
+            MegafansWebService.Instance.VerifyOtp(otpField.text, PhoneNumberToVerify, OnVerifyPhoneResponse,
+                OnVerifyPhoneFailure, IsRegistering);
+        }
 
-		public void SetBackBtnAction(UnityAction action) {
-			backBtn.onClick.RemoveAllListeners ();
-			backBtn.onClick.AddListener (action);
-		}
+        public void ResendBtn_OnClick()
+        {
+            MegafansWebService.Instance.LoginPhone(PhoneNumberToVerify, OnResendOTPResponse,
+                OnResendOTPFailure);
+        }
 
-		private void OnVerifyPhoneResponse(LoginResponse response) {
-			if (response.success.Equals (MegafansConstants.SUCCESS_CODE)) {
-				if (IsRegistering) {
-					//string msg = "You have registered successfully.";
-					//MegafansUI.Instance.ShowPopup ("SUCCESS", msg);
+        public void SetBackBtnAction(UnityAction action)
+        {
+            backBtn.onClick.RemoveAllListeners();
+            backBtn.onClick.AddListener(action);
+        }
+
+        private void OnVerifyPhoneResponse(LoginResponse response)
+        {
+            if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
+            {
+                if (IsRegistering)
+                {
                     MegafansUI.Instance.ShowRegistrationSuccessWindow(false);
                     Megafans.Instance.ReportUserRegistered(MegafansPrefs.UserId.ToString());
-                } else if (IsLinking) {
+                }
+                else if (IsLinking)
+                {
                     MegafansPrefs.UserId = response.data.id;
                     MegafansPrefs.ProfilePicUrl = response.data.image;
                     MegafansPrefs.AccessToken = response.data.token;
                     MegafansPrefs.RefreshToken = response.data.refresh;
                     MegafansUI.Instance.BackFromVerifyOTP();
-                } else {
-					MegafansPrefs.UserId = response.data.id;
-					MegafansPrefs.ProfilePicUrl = response.data.image;
+                }
+                else
+                {
+                    MegafansPrefs.UserId = response.data.id;
+                    MegafansPrefs.ProfilePicUrl = response.data.image;
                     MegafansPrefs.AccessToken = response.data.token;
                     MegafansPrefs.RefreshToken = response.data.refresh;
-                    Megafans.Instance.ReportUserLoggedIn (MegafansPrefs.UserId.ToString());
-				}
-			}
-			else {
-				string msg = "Invalid OTP.";
-				MegafansUI.Instance.ShowPopup ("ERROR", msg);
-			}
-		}
-
-		private void OnVerifyPhoneFailure(string error) {
-			Debug.LogError (error);
-		}
-
-		private void OnResendOTPResponse(LoginResponse response) {
-			if (response.success.Equals (MegafansConstants.SUCCESS_CODE)) {
-				string msg = "OTP has been resent successfully.";
-				MegafansUI.Instance.ShowPopup ("OTP RESENT", msg);
-			}
-		}
-
-		private void OnResendOTPFailure(string error) {
-			Debug.LogError (error);
-            MegafansUI.Instance.ShowPopup("OTP RESENT", error);
+                    Megafans.Instance.ReportUserLoggedIn(MegafansPrefs.UserId.ToString());
+                }
+            }
+            else
+            {
+                string msg = "Invalid OTP.";
+                MegafansUI.Instance.ShowPopup("ERROR", msg);
+            }
         }
 
-        void Update()
+        private void OnVerifyPhoneFailure(string error)
         {
-            if (otpField.GetComponent<InputField>().isFocused == true && otpField.image.sprite != activeInputBackground)
+            Debug.LogError(error);
+        }
+
+        private void OnResendOTPResponse(LoginResponse response)
+        {
+            if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
             {
-                otpField.image.sprite = activeInputBackground;
+                string msg = "OTP has been resent successfully.";
+                MegafansUI.Instance.ShowPopup("OTP RESENT", msg);
             }
+        }
+
+        private void OnResendOTPFailure(string error)
+        {
+            Debug.LogError(error);
+            MegafansUI.Instance.ShowPopup("OTP RESENT", error);
         }
     }
 }

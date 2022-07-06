@@ -8,176 +8,209 @@ using System.Text.RegularExpressions;
 using System.Text;
 using System.IO;
 using Newtonsoft.Json;
-
+using UnityEngine.UI;
 using MegafansSDK.UI;
 
-namespace MegafansSDK.Utils {
-	
-	public class MegafansWebService : MonoBehaviour {
+namespace MegafansSDK.Utils
+{
 
-		private MegafansWebService() { }
-		private static MegafansWebService instance = null;
-		public static MegafansWebService Instance => instance;
+    public class MegafansWebService : MonoBehaviour
+    {
 
-		const string RegisterUrlEmail = "/register_usernamepassword";
+        private MegafansWebService() { }
+        private static MegafansWebService instance = null;
+        public static MegafansWebService Instance => instance;
+
+        const string RegisterUrlEmail = "/register_usernamepassword";
         const string RegisterUrlNewUser = "/register_newuser";
         const string RegisterUrlFB = "/register_facebook";
-		const string RegisterUrlPhone = "/register_phone";
-		const string LoginUrlEmail = "/login";
-		const string LoginUrlFB = "/login_fb";
-		const string LoginUrlPhone = "/login_phone";
-		const string OtpUrl = "/verifyphone";
-		const string ResetPasswordUrl = "/forgot_password"; //Not updated
-		const string UpdatePasswordUrl = "/change_password";
-		const string GetTournamentsUrl = "/view_all_tournaments";
-		const string ViewProfileUrl = "/view_profile";
-		const string EditProfileUrl = "/edit_profile"; //Not updated
-		const string UploadImageUrl = "/image_upload";
-		const string CheckCreditsUrl = "/show_credit";
-		const string EnterTournamentUrl = "/enter_tournament";
-		const string EnterPracticeUrl = "/enter_practice";
-		const string SaveScoreUrl = "/save_game_scores";
-		const string ViewPracticeScoreboardUrl = "/practice_score_leaderboard";
-		const string ViewScoreboardUrl = "/tournament_score_leaderboard";
-		const string ViewCurrentUserPracticeScoreboardUrl = "/practice_my_leaderboard";
-		const string ViewCurrentUserScoreboardUrl = "/tournament_my_leaderboard";
-		const string ViewleaderboardUrl = "/tournament_rank_leaderboard";
-		const string GetTournamentRulesUrl = "/rules";
-		const string GetTermsOfUseUrl = "/TermsAndConditions";
-		const string GetPrivacyPolicyUrl = "/Privacy";
-		const string ViewPracticeLeaderboardUrl = "/practice_rank_leaderboard";
-		const string BuyTokensUrl = "/buy_tokens";
-		const string RefreshAccessTokenUrl = "/refresh";
-		const string ResendVerificationEmailUrl = "/resend_confirmation_email";
-		const string LogoutUrl = "/logout";
+        const string RegisterUrlPhone = "/register_phone";
+        const string LoginUrlEmail = "/login";
+        const string LoginUrlFB = "/login_fb";
+        const string LoginUrlPhone = "/login_phone";
+        const string OtpUrl = "/verifyphone";
+        const string ResetPasswordUrl = "/forgot_password"; //Not updated
+        const string UpdatePasswordUrl = "/change_password";
+        const string GetTournamentsUrl = "/view_all_tournaments";
+        const string ViewProfileUrl = "/view_profile";
+        const string EditProfileUrl = "/edit_profile"; //Not updated
+        const string UploadImageUrl = "/image_upload";
+        const string CheckCreditsUrl = "/show_credit";
+        const string EnterTournamentUrl = "/enter_tournament";
+        const string EnterPracticeUrl = "/enter_practice";
+        const string SaveScoreUrl = "/save_game_scores";
+        const string ViewPracticeScoreboardUrl = "/practice_score_leaderboard";
+        const string ViewScoreboardUrl = "/tournament_score_leaderboard";
+        const string ViewCurrentUserPracticeScoreboardUrl = "/practice_my_leaderboard";
+        const string ViewCurrentUserScoreboardUrl = "/my_history";//"/tournament_my_leaderboard";
+        const string ViewleaderboardUrl = "/leaderboard";//" / tournament_rank_leaderboard";
+        const string GetTournamentRulesUrl = "/rules";
+        const string GetTermsOfUseUrl = "/TermsAndConditions";
+        const string GetPrivacyPolicyUrl = "/Privacy";
+        const string ViewPracticeLeaderboardUrl = "/practice_rank_leaderboard";
+        const string BuyTokensUrl = "/buy_tokens";
+        const string OfferwallUrl = "/ispostback";
+        const string RefreshAccessTokenUrl = "/refresh";
+        const string ResendVerificationEmailUrl = "/resend_confirmation_email";
+        const string LogoutUrl = "/logout";
+        const string LastTournamentResults = "/last_leaderboard";
+        const string FreeTokensCountURL = "/ad_tokens";
+        const string CheckPassword = "/checkpassword";
 
-		private MegafansFBHelper fbHelper;
+        //private MegafansFBHelper fbHelper;
         private bool isRefreshingToken = false;
 
-        void Awake() {
-			if (instance == null) {
-				instance = this;
-				DontDestroyOnLoad (this.gameObject);
-			}
-			else if (instance != this) {
-				Destroy(gameObject);
-			}
+        void Awake()
+        {
+            if (instance == null)
+            {
+                instance = this;
+                DontDestroyOnLoad(this.gameObject);
+            }
+            else if (instance != this)
+            {
+                Destroy(gameObject);
+            }
 
-			if (fbHelper == null) {
-				fbHelper = this.gameObject.AddComponent<MegafansFBHelper> ();
-			}
-		}
+            //if (fbHelper == null)
+            //{
+            //    fbHelper = this.gameObject.AddComponent<MegafansFBHelper>();
+            //}
+        }
 
-		void Start() {
-			
-		}
+        void Start()
+        {
+
+        }
 
 
-		private void Request<T>(Request request, string url, Action<T> responseCallback,
-			Action<string> failureCallback, bool isSilent = false) {
-            if (url != (Megafans.Instance.ServerBaseUrl() + RefreshAccessTokenUrl)) {
+        private void Request<T>(Request request, string url, Action<T> responseCallback,
+            Action<string> failureCallback, bool isSilent = false)
+        {
+            if (url != (Megafans.Instance.ServerBaseUrl() + RefreshAccessTokenUrl))
+            {
                 isRefreshingToken = false;
-            } else {
-                if (isRefreshingToken) {
-                    string error = "You current session is unauthorized.  Please log back into MegaFans.";
-                    MegafansUI.Instance.ShowPopup("Unauthorized", error);
+            }
+            else
+            {
+                if (isRefreshingToken)
+                {
+                    MegafansUI.Instance.ShowPopup(MegafansConstants.UNAUTHORIZED_USER_ERROR_TITLE, MegafansConstants.UNAUTHORIZED_USER_ERROR_DESCRIPTION, () => MegafansUI.Instance.LogOutCurrentUser());
                     MegafansPrefs.ClearPrefs();
                     return;
-                } else {
+                }
+                else
+                {
                     isRefreshingToken = true;
                 }
             }
-			StartCoroutine (RequestCoroutine<T> (request, url, responseCallback, failureCallback, isSilent));
-		}
+            StartCoroutine(RequestCoroutine<T>(request, url, responseCallback, failureCallback, isSilent));
+        }
 
-		private IEnumerator RequestCoroutine<T>(Request request, string url, Action<T> responseCallback,
-			Action<string> failureCallback, bool isSilent) {
+        private IEnumerator RequestCoroutine<T>(Request request, string url, Action<T> responseCallback,
+            Action<string> failureCallback, bool isSilent)
+        {
 
-			if (!isSilent) {
-				MegafansUI.Instance.ShowLoadingBar ();
-			}
+            if (!isSilent)
+            {
+                MegafansUI.Instance.ShowLoadingBar();
+            }
 
-		//	Debug.Log ("REQUEST:");
-		//	Debug.Log (request.ToJson ());
-			WWW www = request.GetWWW (url);
-			yield return www;
+            //	Debug.Log ("REQUEST:");
+            //	Debug.Log (request.ToJson ());
+            WWW www = request.GetWWW(url);
+            yield return www;
 
-			if (!isSilent) {
-				MegafansUI.Instance.HideLoadingBar ();
-			}
+            if (!isSilent)
+            {
+                MegafansUI.Instance.HideLoadingBar();
+            }
 
 
-            if (String.IsNullOrEmpty (www.error)) {
-				Debug.Log ("RESPONSE:");
-				Debug.Log (www.text);
+            if (String.IsNullOrEmpty(www.error))
+            {
+                Debug.Log("RESPONSE:");
+                Debug.Log(www.text);
 
-				try {
-					T response = MegafansJsonHelper.FromJson<T> (www.text);
-					responseCallback (response);
-				}
-				catch(Exception e) {
-					Debug.LogError (e.ToString());
+                try
+                {
+                    T response = MegafansJsonHelper.FromJson<T>(www.text);
+                    responseCallback(response);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e.ToString());
 
-					string error = "Something went wrong. Please try later.";
-					failureCallback (error);
-				}
-			}
-			else {
+                    string error = "Something went wrong. Please try later.";
+                    failureCallback(error);
+                }
+            }
+            else
+            {
                 Debug.Log("ERROR RESPONSE:");
                 Debug.Log(www.error);
                 string getStatusCode = Regex.Match(www.error, @"\d+").Value;
                 int statusCode = int.Parse(getStatusCode);
-                if (statusCode == 401) {
-                    if (!string.IsNullOrEmpty(MegafansPrefs.AccessToken) && !string.IsNullOrEmpty(MegafansPrefs.RefreshToken)) {
-                        this.RefreshAccessToken((RefreshAccessTokenResponse response) => {
-                            if (response.success.Equals(MegafansConstants.SUCCESS_CODE)) {
+                if (statusCode == 401)
+                {
+                    if (!string.IsNullOrEmpty(MegafansPrefs.AccessToken) && !string.IsNullOrEmpty(MegafansPrefs.RefreshToken))
+                    {
+                        this.RefreshAccessToken((RefreshAccessTokenResponse response) =>
+                        {
+                            if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
+                            {
                                 if (response.data != null)
                                 {
                                     MegafansPrefs.AccessToken = response.data.token;
                                     MegafansPrefs.RefreshToken = response.data.refresh;
-                                    Request <T> (request, url, responseCallback, failureCallback);
+                                    Request<T>(request, url, responseCallback, failureCallback);
                                 }
                                 else
                                 {
-                                    string error = "You current session is unauthorized.  Please log back into MegaFans.";
-                                    MegafansUI.Instance.ShowPopup("Unauthorized", error);
+                                    MegafansUI.Instance.ShowPopup(MegafansConstants.UNAUTHORIZED_USER_ERROR_TITLE, MegafansConstants.UNAUTHORIZED_USER_ERROR_DESCRIPTION, () => MegafansUI.Instance.LogOutCurrentUser());
                                     MegafansPrefs.ClearPrefs();
                                 }
                             }
                             else
                             {
-                                string error = "You current session is unauthorized.  Please log back into MegaFans.";
-                                MegafansUI.Instance.ShowPopup("Unauthorized", error);
+                                MegafansUI.Instance.ShowPopup(MegafansConstants.UNAUTHORIZED_USER_ERROR_TITLE, MegafansConstants.UNAUTHORIZED_USER_ERROR_DESCRIPTION, () => MegafansUI.Instance.LogOutCurrentUser());
                                 MegafansPrefs.ClearPrefs();
                             }
-                        }, (string error) => {
+                        }, (string error) =>
+                        {
                             Debug.LogError(error);
                         });
-                    } else {
+                    }
+                    else
+                    {
                         Debug.Log("No access or refresh token found");
                     }
-                } else if (!isSilent) {
-                    if (isRefreshingToken) {
-                        string error = "You current session is unauthorized.  Please log back into MegaFans.";
-                        MegafansUI.Instance.ShowPopup("Unauthorized", error);
-                        MegafansPrefs.ClearPrefs();
-                        MegafansUI.Instance.ShowLandingWindow(true);
-                        this.isRefreshingToken = false;
-                    } else {
+                }
+                else if (!isSilent)
+                {
+                    if (isRefreshingToken)
+                    {
+                        MegafansUI.Instance.ShowPopup(MegafansConstants.UNAUTHORIZED_USER_ERROR_TITLE, MegafansConstants.UNAUTHORIZED_USER_ERROR_DESCRIPTION, () => MegafansUI.Instance.LogOutCurrentUser());
+                    }
+                    else
+                    {
                         string error = "There was an error. Please check your internet connection.";
-                        try {
+                        try
+                        {
                             Response response = MegafansJsonHelper.FromJson<Response>(www.text);
                             error = response.message;
-                        } catch (Exception e) {
+                        }
+                        catch (Exception e)
+                        {
                             Debug.LogError(e.ToString());
                         }
                         MegafansUI.Instance.ShowPopup("ERROR", error);
-                    }			
-				}
+                    }
+                }
 
-				failureCallback (www.error);
-			}
-		}
+                failureCallback(www.error);
+            }
+        }
 
         public void RegisterNewUser(Action<RegisterFirstTimeResponse> responseCallback, Action<string> failureCallback)
         {
@@ -192,257 +225,308 @@ namespace MegafansSDK.Utils {
         }
 
         public void RegisterPhone(string username, string phoneNumber,
-			Action<RegisterResponse> responseCallback, Action<string> failureCallback) {
+            Action<RegisterResponse> responseCallback, Action<string> failureCallback)
+        {
 
-			RegisterRequestPhone registerRequest = new RegisterRequestPhone ();
-			registerRequest.username = username;
-			registerRequest.phone_number = phoneNumber;
-			registerRequest.device_token = DeviceInfo.DeviceToken;
-			//registerRequest.device_type = DeviceInfo.DeviceType;
-			registerRequest.registerType = MegafansConstants.PHONE;
+            RegisterRequestPhone registerRequest = new RegisterRequestPhone();
+            registerRequest.username = username;
+            registerRequest.phone_number = phoneNumber;
+            registerRequest.device_token = DeviceInfo.DeviceToken;
+            //registerRequest.device_type = DeviceInfo.DeviceType;
+            registerRequest.registerType = MegafansConstants.PHONE;
 
             string url = Megafans.Instance.ServerBaseUrl() + RegisterUrlPhone;
-			Request<RegisterResponse> (registerRequest, url, responseCallback, failureCallback);
-		}
+            Request<RegisterResponse>(registerRequest, url, responseCallback, failureCallback);
+        }
 
-		public void RegisterEmail(string email, string password,
-			Action<RegisterResponse> responseCallback, Action<string> failureCallback) {
+        public void RegisterEmail(string email, string password,
+            Action<RegisterResponse> responseCallback, Action<string> failureCallback)
+        {
 
-			RegisterRequestEmail registerRequest = new RegisterRequestEmail ();
-			registerRequest.email = email;
-			registerRequest.password = password;
-			registerRequest.device_token = DeviceInfo.DeviceToken;
-			registerRequest.device_type = DeviceInfo.DeviceType;
+            RegisterRequestEmail registerRequest = new RegisterRequestEmail();
+            registerRequest.email = email;
+            registerRequest.password = password;
+            registerRequest.device_token = DeviceInfo.DeviceToken;
+            registerRequest.device_type = DeviceInfo.DeviceType;
 
-			string url = Megafans.Instance.ServerBaseUrl() + RegisterUrlEmail;
-			Request<RegisterResponse> (registerRequest, url, responseCallback, failureCallback);
-		}
+            string url = Megafans.Instance.ServerBaseUrl() + RegisterUrlEmail;
+            Request<RegisterResponse>(registerRequest, url, responseCallback, failureCallback);
+        }
 
-		public void RegisterFB(Action<RegisterResponse> responseCallback, Action<string> failureCallback) {
-			MegafansUI.Instance.ShowLoadingBar ();
+        //public void RegisterFB(Action<RegisterResponse> responseCallback, Action<string> failureCallback)
+        //{
+        //    MegafansUI.Instance.ShowLoadingBar();
 
-			fbHelper.Logout ();
+        //    fbHelper.Logout();
 
-            fbHelper.RegisterRequest ((string userId, string email, string username, Texture2D newImageToUpload) => {
-                Debug.Log("Register Facebook");
-                Debug.Log(userId);
-                Debug.Log(username);
-                Debug.Log(newImageToUpload);
-                Debug.Log(email);
+        //    fbHelper.RegisterRequest((string userId, string email, string username, Texture2D newImageToUpload) =>
+        //    {
+        //        Debug.Log("Register Facebook");
+        //        Debug.Log(userId);
+        //        Debug.Log(username);
+        //        Debug.Log(newImageToUpload);
+        //        Debug.Log(email);
 
-                RegisterRequestFB registerRequest = new RegisterRequestFB();
-				registerRequest.facebook_login_id = userId;
-				registerRequest.username = username;
-                registerRequest.email = email;
+        //        RegisterRequestFB registerRequest = new RegisterRequestFB();
+        //        registerRequest.facebook_login_id = userId;
+        //        registerRequest.username = username;
+        //        registerRequest.email = email;
 
-                MegafansPrefs.Email = email;
-                MegafansPrefs.Username = username;
-                MegafansPrefs.ProfilePic = MegafansUtils.TextureToString(newImageToUpload);
+        //        MegafansPrefs.Email = email;
+        //        MegafansPrefs.Username = username;
+        //        MegafansPrefs.ProfilePic = MegafansUtils.TextureToString(newImageToUpload);
 
-                registerRequest.device_token = DeviceInfo.DeviceToken;
-				registerRequest.device_type = DeviceInfo.DeviceType;
-				registerRequest.registerType = MegafansConstants.FB;
+        //        registerRequest.device_token = DeviceInfo.DeviceToken;
+        //        registerRequest.device_type = DeviceInfo.DeviceType;
+        //        registerRequest.registerType = MegafansConstants.FB;
 
-				string url = Megafans.Instance.ServerBaseUrl() + RegisterUrlFB;
-				Request<RegisterResponse>(registerRequest, url, responseCallback, failureCallback);
-			},
-				(string error) => {
-					MegafansUI.Instance.HideLoadingBar();
-					failureCallback(error);
-				});
-		}
+        //        string url = Megafans.Instance.ServerBaseUrl() + RegisterUrlFB;
+        //        Request<RegisterResponse>(registerRequest, url, responseCallback, failureCallback);
+        //    },
+        //        (string error) =>
+        //        {
+        //            MegafansUI.Instance.HideLoadingBar();
+        //            failureCallback(error);
+        //        });
+        //}
 
-		public void VerifyOtp(string otp, string phoneNumber, Action<LoginResponse> responseCallback,
-			Action<string> failureCallback, bool isRegistering) {
+        public void VerifyOtp(string otp, string phoneNumber, Action<LoginResponse> responseCallback,
+            Action<string> failureCallback, bool isRegistering)
+        {
 
-			OtpRequest otpRequest = new OtpRequest ();
-			otpRequest.otp = otp;
-			otpRequest.phone_number = phoneNumber;
+            OtpRequest otpRequest = new OtpRequest();
+            otpRequest.otp = otp;
+            otpRequest.phone_number = phoneNumber;
             otpRequest.app_game_uid = Megafans.Instance.GameUID;
 
             string url = Megafans.Instance.ServerBaseUrl() + OtpUrl;
-			Request<LoginResponse> (otpRequest, url, responseCallback, failureCallback);
-		}
-
-		public void LoginPhone(string phoneNumber, Action<LoginResponse> responseCallback,
-			Action<string> failureCallback) {
-
-			LoginRequestPhone loginRequest = new LoginRequestPhone ();
-            loginRequest.appGameUid = Megafans.Instance.GameUID;
-            loginRequest.phone_number = phoneNumber;
-			loginRequest.device_token = DeviceInfo.DeviceToken;
-			//loginRequest.device_type = DeviceInfo.DeviceType;
-			loginRequest.registerType = MegafansConstants.PHONE;
-
-			string url = Megafans.Instance.ServerBaseUrl() + LoginUrlPhone;
-			Request<LoginResponse> (loginRequest, url, responseCallback, failureCallback);
-		}
-
-		public void LoginEmail(string email, string password, Action<LoginResponse> responseCallback,
-			Action<string> failureCallback) {
-
-			LoginRequestEmail loginRequest = new LoginRequestEmail ();
-			loginRequest.email = email;
-            loginRequest.appGameUid = Megafans.Instance.GameUID;
-            loginRequest.password = password;
-			loginRequest.device_token = DeviceInfo.DeviceToken;
-			//loginRequest.device_type = DeviceInfo.DeviceType;
-
-			string url = Megafans.Instance.ServerBaseUrl() + LoginUrlEmail;
-			Request<LoginResponse> (loginRequest, url, responseCallback, failureCallback);
-		}
-
-		public void LoginFB(Action<LoginResponse> responseCallback, Action<string> failureCallback) {
-			MegafansUI.Instance.ShowLoadingBar ();
-
-			fbHelper.LoginRequest ((string userId, string email, string username) => {
-				MegafansUI.Instance.HideLoadingBar();
-
-				LoginRequestFB loginRequest = new LoginRequestFB();
-				loginRequest.facebook_login_id = userId;
-                loginRequest.appGameUid = Megafans.Instance.GameUID;
-                //loginRequest.username = username;
-                //loginRequest.email = email;
-                loginRequest.device_token = DeviceInfo.DeviceToken;
-				//loginRequest.device_type = DeviceInfo.DeviceType;
-				loginRequest.registerType = MegafansConstants.FB;
-
-				string url = Megafans.Instance.ServerBaseUrl() + LoginUrlFB;
-				Request<LoginResponse>(loginRequest, url, responseCallback, failureCallback);
-			},
-				(string error) => {
-					MegafansUI.Instance.HideLoadingBar();
-					failureCallback(error);
-				});
-		}
-
-        public void LinkFB(Action<EditProfileResponse> responseCallback, Action<string> failureCallback)
-        {
-            MegafansUI.Instance.ShowLoadingBar();
-
-            fbHelper.LoginRequest((string userId, string email, string username) => {
-                MegafansUI.Instance.HideLoadingBar();
-
-                EditProfileRequest editProfileRequest = new EditProfileRequest();
-                //editProfileRequest.facebook_login_id = "10216538300784796"; 
-                editProfileRequest.facebook_login_id = userId;
-
-                if (string.IsNullOrEmpty(MegafansPrefs.Email)) {
-                    editProfileRequest.email_address = email;
-                }
-                    //editProfileRequest.email_address = MegafansPrefs.Email;
-                //}
-
-                //editProfileRequest.username = MegafansPrefs.Username;
-                //editProfileRequest.phone_number = MegafansPrefs.PhoneNumber;
-
-                string url = Megafans.Instance.ServerBaseUrl() + EditProfileUrl;
-                Request<EditProfileResponse>(editProfileRequest, url, responseCallback, failureCallback);
-            }, (string error) => {
-                MegafansUI.Instance.HideLoadingBar();
-                failureCallback(error);
-            });
+            Request<LoginResponse>(otpRequest, url, responseCallback, failureCallback);
         }
 
+        public void LoginPhone(string phoneNumber, Action<LoginResponse> responseCallback,
+            Action<string> failureCallback)
+        {
+
+            LoginRequestPhone loginRequest = new LoginRequestPhone();
+            loginRequest.appGameUid = Megafans.Instance.GameUID;
+            loginRequest.phone_number = phoneNumber;
+            loginRequest.device_token = DeviceInfo.DeviceToken;
+            //loginRequest.device_type = DeviceInfo.DeviceType;
+            loginRequest.registerType = MegafansConstants.PHONE;
+
+            string url = Megafans.Instance.ServerBaseUrl() + LoginUrlPhone;
+            Request<LoginResponse>(loginRequest, url, responseCallback, failureCallback);
+        }
+
+        public void LoginEmail(string email, string password, Action<LoginResponse> responseCallback,
+            Action<string> failureCallback)
+        {
+
+            LoginRequestEmail loginRequest = new LoginRequestEmail();
+            loginRequest.email = email;
+            loginRequest.appGameUid = Megafans.Instance.GameUID;
+            loginRequest.password = password;
+            loginRequest.device_token = DeviceInfo.DeviceToken;
+            //loginRequest.device_type = DeviceInfo.DeviceType;
+
+            string url = Megafans.Instance.ServerBaseUrl() + LoginUrlEmail;
+            Request<LoginResponse>(loginRequest, url, responseCallback, failureCallback);
+        }
+
+        //public void LoginFB(Action<LoginResponse> responseCallback, Action<string> failureCallback)
+        //{
+        //    MegafansUI.Instance.ShowLoadingBar();
+
+        //    fbHelper.LoginRequest((string userId, string email, string username) =>
+        //    {
+        //        MegafansUI.Instance.HideLoadingBar();
+
+        //        LoginRequestFB loginRequest = new LoginRequestFB();
+        //        loginRequest.facebook_login_id = userId;
+        //        loginRequest.appGameUid = Megafans.Instance.GameUID;
+        //        //loginRequest.username = username;
+        //        //loginRequest.email = email;
+        //        loginRequest.device_token = DeviceInfo.DeviceToken;
+        //        //loginRequest.device_type = DeviceInfo.DeviceType;
+        //        loginRequest.registerType = MegafansConstants.FB;
+
+        //        string url = Megafans.Instance.ServerBaseUrl() + LoginUrlFB;
+        //        Request<LoginResponse>(loginRequest, url, responseCallback, failureCallback);
+        //    },
+        //        (string error) =>
+        //        {
+        //            MegafansUI.Instance.HideLoadingBar();
+        //            failureCallback(error);
+        //        });
+        //}
+
+        //public void LinkFB(Action<EditProfileResponse> responseCallback, Action<string> failureCallback)
+        //{
+        //    MegafansUI.Instance.ShowLoadingBar();
+
+        //    fbHelper.LoginRequest((string userId, string email, string username) =>
+        //    {
+        //        MegafansUI.Instance.HideLoadingBar();
+
+        //        EditProfileRequest editProfileRequest = new EditProfileRequest();
+        //        //editProfileRequest.facebook_login_id = "10216538300784796"; 
+        //        editProfileRequest.facebook_login_id = userId;
+
+        //        if (string.IsNullOrEmpty(MegafansPrefs.Email))
+        //        {
+        //            editProfileRequest.email_address = email;
+        //        }
+        //        //editProfileRequest.email_address = MegafansPrefs.Email;
+        //        //}
+
+        //        //editProfileRequest.username = MegafansPrefs.Username;
+        //        //editProfileRequest.phone_number = MegafansPrefs.PhoneNumber;
+
+        //        string url = Megafans.Instance.ServerBaseUrl() + EditProfileUrl;
+        //        Request<EditProfileResponse>(editProfileRequest, url, responseCallback, failureCallback);
+        //    }, (string error) =>
+        //    {
+        //        MegafansUI.Instance.HideLoadingBar();
+        //        failureCallback(error);
+        //    });
+        //}
+
         public void ResetPassword(string email, Action<Response> responseCallback,
-			Action<string> failureCallback) {
+            Action<string> failureCallback)
+        {
 
-			ResetPasswordRequest resetRequest = new ResetPasswordRequest ();
-			resetRequest.email = email;
-			//resetRequest.device_type = DeviceInfo.DeviceType;
+            ResetPasswordRequest resetRequest = new ResetPasswordRequest();
+            resetRequest.email = email;
+            //resetRequest.device_type = DeviceInfo.DeviceType;
 
-			string url = Megafans.Instance.ServerBaseUrl() + ResetPasswordUrl;
-			Request<Response> (resetRequest, url, responseCallback, failureCallback);
-		}
+            string url = Megafans.Instance.ServerBaseUrl() + ResetPasswordUrl;
+            Request<Response>(resetRequest, url, responseCallback, failureCallback);
+        }
 
-		public void GetLevels(string appGameId, GameType gameType, Action<LevelsResponse> responseCallback,
-			Action<string> failureCallback) {
+        public void GetLevels(string appGameId, GameType gameType, Action<LevelsResponse> responseCallback,
+            Action<string> failureCallback)
+        {
 
-			GetLevelsRequest levelsRequest = new GetLevelsRequest ();
-			levelsRequest.app_game_uid = appGameId;
-			levelsRequest.game_type_id = (int)gameType;
+            GetLevelsRequest levelsRequest = new GetLevelsRequest();
+            levelsRequest.app_game_uid = appGameId;
+            levelsRequest.game_type_id = (int)gameType;
 
-			string url = Megafans.Instance.ServerBaseUrl() + GetTournamentsUrl;
-			Request<LevelsResponse> (levelsRequest, url, responseCallback, failureCallback);
-		}
+            string url = Megafans.Instance.ServerBaseUrl() + GetTournamentsUrl;
+            Request<LevelsResponse>(levelsRequest, url, responseCallback, failureCallback);
+        }
 
-		public void ViewProfile(string code, Action<ViewProfileResponse> responseCallback,
-			Action<string> failureCallback) {
+        public void ViewProfile(string code, Action<ViewProfileResponse> responseCallback,
+            Action<string> failureCallback)
+        {
 
-			ViewProfileRequest profileRequest = new ViewProfileRequest ();
+            ViewProfileRequest profileRequest = new ViewProfileRequest();
             profileRequest.appGameUID = Megafans.Instance.GameUID;
             bool spinnerIsHidden = true;
-            if (!string.IsNullOrEmpty(code)) {
+            if (!string.IsNullOrEmpty(code))
+            {
                 profileRequest.code = code;
                 spinnerIsHidden = false;
             }
 
-			string url = Megafans.Instance.ServerBaseUrl() + ViewProfileUrl;
-            Request<ViewProfileResponse> (profileRequest, url, responseCallback, failureCallback, spinnerIsHidden);
-		}
+            string url = Megafans.Instance.ServerBaseUrl() + ViewProfileUrl;
+            Request<ViewProfileResponse>(profileRequest, url, responseCallback, failureCallback, spinnerIsHidden);
+        }
 
-		public void EditProfile(string username, string addPhoneNumber, string addEmailAddress,
-            Action<EditProfileResponse> responseCallback, Action<string> failureCallback) {
+        public void EditProfile(string username, string addPhoneNumber, string addEmailAddress,
+            Action<EditProfileResponse> responseCallback, Action<string> failureCallback)
+        {
 
-			EditProfileRequest editRequest = new EditProfileRequest ();
-			editRequest.username = username;
+            EditProfileRequest editRequest = new EditProfileRequest();
+            editRequest.username = username;
             editRequest.email_address = addEmailAddress;
             editRequest.phone_number = addPhoneNumber;
-       
+
             string url = Megafans.Instance.ServerBaseUrl() + EditProfileUrl;
-			Request<EditProfileResponse> (editRequest, url, responseCallback, failureCallback);
-		}
+            Request<EditProfileResponse>(editRequest, url, responseCallback, failureCallback);
+        }
 
-		public void GetCredits(int userId, Action<CheckCreditsResponse> responseCallback,
-			Action<string> failureCallback) {
+        public void GetCredits(int userId, Action<CheckCreditsResponse> responseCallback,
+            Action<string> failureCallback)
+        {
 
-			CheckCreditsRequest creditsRequest = new CheckCreditsRequest ();
-			creditsRequest.userId = userId.ToString ();
+            CheckCreditsRequest creditsRequest = new CheckCreditsRequest();
+            creditsRequest.userId = userId.ToString();
 
-			string url = Megafans.Instance.ServerBaseUrl() + CheckCreditsUrl;
-			Request<CheckCreditsResponse> (creditsRequest, url, responseCallback, failureCallback);
-		}
+            string url = Megafans.Instance.ServerBaseUrl() + CheckCreditsUrl;
+            Request<CheckCreditsResponse>(creditsRequest, url, responseCallback, failureCallback);
+        }
 
-		public void FetchImage(string url, Action<Texture2D> successCallback, Action<string> failureCallback,
-			bool isSilent = true) {
+        public void GetFreeTokensCount(Action<GetFreeTokensCountResponse> responseCallback,
+                                       Action<string> failureCallback)
+        {
 
-			if (string.IsNullOrEmpty(url)) {
-				return;
-			}
+            GetFreeTokensCountRequest creditsRequest = new GetFreeTokensCountRequest();
+            string url = Megafans.Instance.ServerBaseUrl() + FreeTokensCountURL;
+            Request<GetFreeTokensCountResponse>(creditsRequest, url, responseCallback, failureCallback,true);
+        }
 
-			StartCoroutine (FetchImageCo (url, successCallback, failureCallback, isSilent));
-		}
+        public void GetCheckPassword(int tournamentId, string password, Action<GetPasswordCheckResponse> responseCallback,
+                               Action<string> failureCallback)
+        {
+            GetPasswordCheckRequest passwordRequest = new GetPasswordCheckRequest();
 
-		private IEnumerator FetchImageCo(string url, Action<Texture2D> successCallback,
-			Action<string> failureCallback, bool isSilent) {
+            passwordRequest.tournamentID = tournamentId.ToString();
+            passwordRequest.password = password;
 
-			if (!isSilent) {
-				MegafansUI.Instance.ShowLoadingBar ();
-			}
+            string url = Megafans.Instance.ServerBaseUrl() + CheckPassword;
+            Request<GetPasswordCheckResponse>(passwordRequest, url, responseCallback, failureCallback, true);
+        }
 
-			WWW www = new WWW (url);
-			yield return www;
+        public void FetchImage(string url, Action<Texture2D> successCallback, Action<string> failureCallback,
+            bool isSilent = true)
+        {
 
-			if (!isSilent) {
-				MegafansUI.Instance.HideLoadingBar ();
-			}
+            if (string.IsNullOrEmpty(url))
+            {
+                return;
+            }
 
-			if (String.IsNullOrEmpty (www.error)) {
-				successCallback (www.texture);
-			}
-			else {
-				failureCallback (www.error);
-			}
-		}
+            StartCoroutine(FetchImageCo(url, successCallback, failureCallback, isSilent));
+        }
 
-		public void JoinTournament(int tournamentId, Action<JoinMatchResponse> responseCallback, Action<string> failureCallback) {
-			JoinMatchRequest joinRequest = new JoinMatchRequest ();
+        private IEnumerator FetchImageCo(string url, Action<Texture2D> successCallback,
+            Action<string> failureCallback, bool isSilent)
+        {
+
+            if (!isSilent)
+            {
+                MegafansUI.Instance.ShowLoadingBar();
+            }
+
+            WWW www = new WWW(url);
+            yield return www;
+
+            if (!isSilent)
+            {
+                MegafansUI.Instance.HideLoadingBar();
+            }
+
+            if (String.IsNullOrEmpty(www.error))
+            {
+                successCallback(www.texture);
+            }
+            else
+            {
+                failureCallback(www.error);
+            }
+        }
+
+        public void JoinTournament(int tournamentId, string lastLocation, Action<JoinMatchResponse> responseCallback, Action<string> failureCallback)
+        {
+            JoinMatchRequest joinRequest = new JoinMatchRequest();
             joinRequest.tournament_id = tournamentId;
-			string url = Megafans.Instance.ServerBaseUrl() + EnterTournamentUrl;
-			Request<JoinMatchResponse> (joinRequest, url, responseCallback, failureCallback);
-		}
+            joinRequest.lastLocationValue = lastLocation;
+            string url = Megafans.Instance.ServerBaseUrl() + EnterTournamentUrl;
+            Request<JoinMatchResponse>(joinRequest, url, responseCallback, failureCallback);
+        }
 
-        public void PracticeTournament(string appGameId, Action<JoinMatchResponse> responseCallback, Action<string> failureCallback) {
+        public void PracticeTournament(string appGameId, Action<JoinMatchResponse> responseCallback, Action<string> failureCallback)
+        {
             JoinMatchRequest joinRequest = new JoinMatchRequest();
             joinRequest.app_game_id = appGameId;
             string url = Megafans.Instance.ServerBaseUrl() + EnterPracticeUrl;
@@ -461,83 +545,145 @@ namespace MegafansSDK.Utils {
         {
             TermsOrPrivacyPolicyRequest termsRequest = new TermsOrPrivacyPolicyRequest();
             string url = Megafans.Instance.ServerBaseUrl() + GetTermsOfUseUrl;
-			Request<TermsOrPrivacyPolicyResponse>(termsRequest, url, responseCallback, failureCallback);
+            Request<TermsOrPrivacyPolicyResponse>(termsRequest, url, responseCallback, failureCallback);
         }
 
         public void GetPrivacyInfo(Action<TermsOrPrivacyPolicyResponse> responseCallback, Action<string> failureCallback)
         {
-                TermsOrPrivacyPolicyRequest termsRequest = new TermsOrPrivacyPolicyRequest();
-                string url = Megafans.Instance.ServerBaseUrl() + GetPrivacyPolicyUrl;
-				Request<TermsOrPrivacyPolicyResponse>(termsRequest, url, responseCallback, failureCallback);
+            TermsOrPrivacyPolicyRequest termsRequest = new TermsOrPrivacyPolicyRequest();
+            string url = Megafans.Instance.ServerBaseUrl() + GetPrivacyPolicyUrl;
+            Request<TermsOrPrivacyPolicyResponse>(termsRequest, url, responseCallback, failureCallback);
         }
 
-        public void SaveScore(string token, float score, Action<SaveScoreResponse> responseCallback, Action<string> failureCallback) {
+        public void SaveScore(string token, float score, string lastLocation, Action<SaveScoreResponse> responseCallback, Action<string> failureCallback)
+        {
 
-			SaveScoreRequest scoreRequest = new SaveScoreRequest ();
+            SaveScoreRequest scoreRequest = new SaveScoreRequest();
 
             scoreRequest.score = score;
             scoreRequest.token = token;
+            scoreRequest.lastLocationValue = lastLocation;
 
-			string url = Megafans.Instance.ServerBaseUrl() + SaveScoreUrl;
-			Request<SaveScoreResponse> (scoreRequest, url, responseCallback, failureCallback);
-		}
+            string url = Megafans.Instance.ServerBaseUrl() + SaveScoreUrl;
+            Request<SaveScoreResponse>(scoreRequest, url, responseCallback, failureCallback);
+        }
 
         public void ViewScoreboard(string appGameId, bool currentUserScores, GameType gameType,
-			Action<ViewScoreboardResponse> responseCallback, Action<string> failureCallback, string userCode = null) {
+            Action<ViewScoreboardResponse> responseCallback, Action<string> failureCallback, string userCode = null)
+        {
 
-			ViewScoreboardRequest scoreboardRequest = new ViewScoreboardRequest ();
-			scoreboardRequest.app_game_uid = appGameId;
+            ViewScoreboardRequest scoreboardRequest = new ViewScoreboardRequest();
+            scoreboardRequest.app_game_uid = appGameId;
 
             string url = Megafans.Instance.ServerBaseUrl();
-            if (gameType == GameType.PRACTICE) {
-                if (currentUserScores) {
+            if (gameType == GameType.PRACTICE)
+            {
+                if (currentUserScores)
+                {
                     url += ViewCurrentUserPracticeScoreboardUrl;
-                } else {
+                }
+                else
+                {
                     url += ViewPracticeScoreboardUrl;
                 }
-            } else {
-                if (currentUserScores) {
+            }
+            else
+            {
+                if (currentUserScores)
+                {
                     url += ViewCurrentUserScoreboardUrl;
-                } else {
+                }
+                else
+                {
                     url += ViewScoreboardUrl;
                 }
             }
 
-            if (userCode != null) {
+            if (userCode != null)
+            {
                 scoreboardRequest.code = userCode;
             }
-            Request<ViewScoreboardResponse> (scoreboardRequest, url, responseCallback, failureCallback, true);
-		}
 
-		public void ViewLeaderboard(string appGameId, GameType gameType,
-			Action<ViewLeaderboardResponse> responseCallback, Action<string> failureCallback) {
+            Request<ViewScoreboardResponse>(scoreboardRequest, url, responseCallback, failureCallback, true);
+        }
 
-			ViewLeaderboardRequest leaderboardRequest = new ViewLeaderboardRequest ();
-			leaderboardRequest.app_game_uid = appGameId;
-			
+        public void ViewLastTournamentResult(string leaderboardpage,
+                                             string leaderboardsize,
+                                             Action<LastTournamentResultResponse> responseCallback,
+                                             Action<string> failureCallback)
+        {
+            LastTournamentResultRequest lastTournament = new LastTournamentResultRequest();
+
+            lastTournament.leaderboardpage = leaderboardpage;
+            lastTournament.leaderboardsize = leaderboardsize;
+
+            string url = Megafans.Instance.ServerBaseUrl() + LastTournamentResults;
+
+            Request<LastTournamentResultResponse>(lastTournament,
+                                                  url,
+                                                  responseCallback,
+                                                  failureCallback);
+        }
+
+        public void ViewLeaderboard(string appGameId, int tournamentId, string leaderboardpage, string leaderboardsize, GameType gameType,
+            Action<ViewLeaderboardResponse> responseCallback, Action<string> failureCallback)
+        {
+
+            ViewLeaderboardRequest leaderboardRequest = new ViewLeaderboardRequest();
+            leaderboardRequest.app_game_uid = appGameId;
+            leaderboardRequest.tournament_id = tournamentId.ToString();
+            leaderboardRequest.leaderboardpage = leaderboardpage;
+            leaderboardRequest.leaderboardsize = leaderboardsize;
+
             string url = Megafans.Instance.ServerBaseUrl();
-            if (gameType == GameType.PRACTICE) {
+            /*
+            if (gameType == GameType.PRACTICE)
+            {
                 url += ViewPracticeLeaderboardUrl;
-            } else {
-                url += ViewleaderboardUrl;
             }
-			Request<ViewLeaderboardResponse> (leaderboardRequest, url, responseCallback, failureCallback, true);
-		}
+            else
+            {
+                url += ViewleaderboardUrl;
+            }*/
 
-		public void BuyTokens(string appGameId, int numberOfTokens, string transactionNumber, string productId, string receipt, Action<BuyTokensResponse> responseCallback, Action<string> failureCallback) {
-			BuyTokensRequest tokensRequest = new BuyTokensRequest ();
-			tokensRequest.app_game_uid = appGameId;
-			tokensRequest.tokens = numberOfTokens.ToString ();		
-			tokensRequest.transaction_number = transactionNumber;
-            tokensRequest.receipt = receipt;
-            tokensRequest.productId = productId;
+            url += ViewleaderboardUrl;
+
+            Request<ViewLeaderboardResponse>(leaderboardRequest, url, responseCallback, failureCallback, true);
+        }
+
+        public void BuyTokens(string appGameId, int numberOfTokens, string transactionNumber, string productId, string receipt, Action<BuyTokensResponse> responseCallback, Action<string> failureCallback)
+        {
+            BuyTokensRequest tokensRequest = new BuyTokensRequest();
+            tokensRequest.app_game_uid = appGameId;
             //tokensRequest.deviceType = DeviceInfo.DeviceType;
-
+            tokensRequest.tokens = numberOfTokens.ToString();
+            tokensRequest.receipt = receipt;
+            tokensRequest.transaction_number = transactionNumber;
+            tokensRequest.productId = productId;
+            Text logText = GameObject.Find("ErrorLog").GetComponent<Text>();
+            logText.text = logText.text + "\n" + tokensRequest.app_game_uid;
+            //logText.text = logText.text + "\n" + tokensRequest.deviceType;
+            logText.text = logText.text + "\n" + tokensRequest.tokens;
+            logText.text = logText.text + "\n" + tokensRequest.transaction_number;
+            logText.text = logText.text + "\n" + tokensRequest.receipt;
+            logText.text = logText.text + "\n" + tokensRequest.productId;
             string url = Megafans.Instance.ServerBaseUrl() + BuyTokensUrl;
-			Request<BuyTokensResponse> (tokensRequest, url, responseCallback, failureCallback);
-		}
+            Request<BuyTokensResponse>(tokensRequest, url, responseCallback, failureCallback);
+        }
 
-        public void RefreshAccessToken(Action<RefreshAccessTokenResponse> responseCallback, Action<string> failureCallback) {
+        public void OfferwallAddTokens(string appUserId, string numberOfTokens, Action<OfferwallTokensResponse> responseCallback, Action<string> failureCallback)
+        {
+            OfferwallTokenRequest offerwallRequest = new OfferwallTokenRequest();
+            offerwallRequest.userID = appUserId;
+            offerwallRequest.token = numberOfTokens;
+
+            string url = Megafans.Instance.ServerBaseUrl() + OfferwallUrl;
+            Request<OfferwallTokensResponse>(offerwallRequest, url, responseCallback, failureCallback);
+        }
+
+
+        public void RefreshAccessToken(Action<RefreshAccessTokenResponse> responseCallback, Action<string> failureCallback)
+        {
             RefreshAccessTokenRequest accessTokensRequest = new RefreshAccessTokenRequest();
             accessTokensRequest.refresh_token = MegafansPrefs.RefreshToken;
             accessTokensRequest.access_token = MegafansPrefs.AccessToken;
@@ -629,7 +775,8 @@ namespace MegafansSDK.Utils {
         //}
 
         public void ResendEmailVerification(Action<Response> responseCallback,
-            Action<string> failureCallback) {
+            Action<string> failureCallback)
+        {
 
             ResendVerificationEmailRequest resetRequest = new ResendVerificationEmailRequest();
             //resetRequest.device_type = DeviceInfo.DeviceType;
@@ -639,27 +786,30 @@ namespace MegafansSDK.Utils {
         }
 
         public void Logout(Action<LogoutResponse> responseCallback,
-			Action<string> failureCallback) {
+            Action<string> failureCallback)
+        {
 
-			LogoutRequest logoutRequest = new LogoutRequest ();
+            LogoutRequest logoutRequest = new LogoutRequest();
             logoutRequest.appGameUid = Megafans.Instance.GameUID;
             string url = Megafans.Instance.ServerBaseUrl() + LogoutUrl;
-			Request<LogoutResponse> (logoutRequest, url, responseCallback, failureCallback);
-		}
+            Request<LogoutResponse>(logoutRequest, url, responseCallback, failureCallback);
+        }
 
-		public void FBLogout() {
-			fbHelper.Logout ();
-		}
+        //public void FBLogout()
+        //{
+        //    fbHelper.Logout();
+        //}
 
-		public static string Authenticate(string username, string password) {
-			return "Basic " + System.Convert.ToBase64String(
-				System.Text.Encoding.ASCII.GetBytes(username + ":" + password));
-		}
+        public static string Authenticate(string username, string password)
+        {
+            return "Basic " + System.Convert.ToBase64String(
+                System.Text.Encoding.ASCII.GetBytes(username + ":" + password));
+        }
 
         public static string GetBearerToken()
         {
             string token = MegafansPrefs.AccessToken;
-            Debug.Log(MegafansPrefs.AccessToken);
+            Debug.Log("bearer token :" + MegafansPrefs.AccessToken);
             return "Bearer " + MegafansPrefs.AccessToken;
         }
 

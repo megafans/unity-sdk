@@ -4,25 +4,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace MegafansSDK.UI {
+namespace MegafansSDK.UI
+{
 
-	public class LandingScreenUI : MonoBehaviour {
+    public class LandingScreenUI : MonoBehaviour
+    {
 
-		[SerializeField] private GameObject background;
-		[SerializeField] private GameObject landingWindow;
-		[SerializeField] private GameObject registrationWindow;
-		[SerializeField] private GameObject verifyPhoneWindow;
-		[SerializeField] private GameObject loginWindow;
+        [SerializeField] private GameObject background;
+        [SerializeField] private GameObject landingWindow;
+        [SerializeField] private GameObject registrationWindow;
+        [SerializeField] private GameObject verifyPhoneWindow;
+        [SerializeField] private GameObject loginWindow;
         [SerializeField] private GameObject registrationSuccessWindow;
         [SerializeField] private GameObject termsOfUseAndRulesWindow;
 
         private List<GameObject> windows;
 
-		void Awake() {
-			FillWindows ();
-		}
+        void Awake()
+        {
+            FillWindows();
+        }
 
-		public void ShowLandingWindow(bool isLogin = false, bool isLinking = false) {
+        public void ShowLandingWindow(bool isLogin = false, bool isLinking = false)
+        {
             this.HideAllWindows();
             LandingWindowUI handler = landingWindow.GetComponent<LandingWindowUI>();
             if (handler != null)
@@ -30,10 +34,11 @@ namespace MegafansSDK.UI {
                 handler.IsLogin = isLogin;
                 handler.IsLinking = isLinking;
             }
-            ShowWindow (landingWindow);
-		}
+            ShowWindow(landingWindow);
+        }
 
-		public void ShowRegistrationWindowPhone(bool isLinking = false) {
+        public void ShowRegistrationWindowPhone(bool isLinking = false)
+        {
             RegistrationWindowUI handler = registrationWindow.GetComponent<RegistrationWindowUI>();
             if (handler != null)
             {
@@ -43,7 +48,8 @@ namespace MegafansSDK.UI {
             ShowWindow(registrationWindow);
         }
 
-        public void ShowRegistrationWindowEmail(bool isLinking = false) {
+        public void ShowRegistrationWindowEmail(bool isLinking = false)
+        {
             RegistrationWindowUI handler = registrationWindow.GetComponent<RegistrationWindowUI>();
             if (handler != null)
             {
@@ -63,7 +69,8 @@ namespace MegafansSDK.UI {
             ShowWindow(loginWindow);
         }
 
-        public void ShowLoginWindowPhone() {
+        public void ShowLoginWindowPhone()
+        {
             LoginWindowUI handler = loginWindow.GetComponent<LoginWindowUI>();
             if (handler != null)
             {
@@ -72,19 +79,21 @@ namespace MegafansSDK.UI {
             ShowWindow(loginWindow);
         }
 
-        public void ShowVerifyPhoneWindow(string phoneNumberToVerify, bool isRegistering, UnityAction backBtnAction) {
-			ShowWindow (verifyPhoneWindow);
+        public void ShowVerifyPhoneWindow(string phoneNumberToVerify, bool isRegistering, UnityAction backBtnAction)
+        {
+            ShowWindow(verifyPhoneWindow);
 
-			VerifyPhoneWindowUI handler = verifyPhoneWindow.GetComponent<VerifyPhoneWindowUI> ();
-			if(handler != null) {
-				handler.PhoneNumberToVerify = phoneNumberToVerify;
-				handler.IsRegistering = isRegistering;
-				handler.SetBackBtnAction (backBtnAction);
-			}
-		}
+            VerifyPhoneWindowUI handler = verifyPhoneWindow.GetComponent<VerifyPhoneWindowUI>();
+            if (handler != null)
+            {
+                handler.PhoneNumberToVerify = phoneNumberToVerify;
+                handler.IsRegistering = isRegistering;
+                handler.SetBackBtnAction(backBtnAction);
+            }
+        }
 
         public void ShowVerifyPhoneWindowEdit(string phoneNumberToVerify, UnityAction backBtnAction)
-        {       
+        {
             VerifyPhoneWindowUI handler = verifyPhoneWindow.GetComponent<VerifyPhoneWindowUI>();
             if (handler != null)
             {
@@ -96,12 +105,14 @@ namespace MegafansSDK.UI {
             ShowWindow(verifyPhoneWindow);
         }
 
-        public void BackFromVerifyOTP() {
+        public void BackFromVerifyOTP()
+        {
             background.gameObject.SetActive(false);
             verifyPhoneWindow.gameObject.SetActive(false);
         }
 
-        public void ShowRegistrationSuccessWindow(bool isEmail) {        
+        public void ShowRegistrationSuccessWindow(bool isEmail)
+        {
             RegistrationSuccessUI handler = registrationSuccessWindow.GetComponent<RegistrationSuccessUI>();
             if (handler != null)
             {
@@ -120,46 +131,62 @@ namespace MegafansSDK.UI {
             termsOfUseAndRulesWindow.gameObject.SetActive(true);
         }
 
-        public void HideTermsOfUseOrPrivacyWindow() {
+        public void HideTermsOfUseOrPrivacyWindow()
+        {
             termsOfUseAndRulesWindow.gameObject.SetActive(false);
         }
 
-        private void FillWindows() {
-			if (windows == null) {
-				windows = new List<GameObject> ();
-			}
-			else {
-				windows.Clear ();
-			}
+        public void HideLinkToWindow()
+        {
+            landingWindow.SetActive(false);
+            background.gameObject.SetActive(false);
+        }
 
-			windows.Add (background);
-			windows.Add (landingWindow);
-			windows.Add (registrationWindow);
-			windows.Add (verifyPhoneWindow);
-			windows.Add (loginWindow);
+        private void FillWindows()
+        {
+            if (windows == null)
+            {
+                windows = new List<GameObject>();
+            }
+            else
+            {
+                windows.Clear();
+            }
+
+            windows.Add(background);
+            windows.Add(landingWindow);
+            windows.Add(registrationWindow);
+            windows.Add(verifyPhoneWindow);
+            windows.Add(loginWindow);
             windows.Add(registrationSuccessWindow);
-		}
+        }
 
-		private void ShowWindow(GameObject windowToShow) {
-			foreach (GameObject window in windows) {
-				if (window == windowToShow || window == background) {
-					window.SetActive (true);
-				}
-				else {
-					window.SetActive (false);
-				}
-			}
-		}
+        private void ShowWindow(GameObject windowToShow)
+        {
+            foreach (GameObject window in windows)
+            {
+                if (window == windowToShow || window == background)
+                {
+                    window.SetActive(true);
+                }
+                else
+                {
+                    window.SetActive(false);
+                }
+            }
+        }
 
-		public void HideAllWindows() {
-            if (windows != null) {
+        public void HideAllWindows()
+        {
+            if (windows != null)
+            {
                 foreach (GameObject window in windows)
                 {
                     window.SetActive(false);
                 }
             }
-		}
+        }
 
-	}
+    }
 
 }

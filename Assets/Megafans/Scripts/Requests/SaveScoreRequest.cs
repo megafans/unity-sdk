@@ -11,8 +11,9 @@ namespace MegafansSDK.Utils {
 
 		public string token;
 		public float score;
+        public string lastLocationValue;
 
-		public override WWW GetWWW(string url) {
+        public override WWW GetWWW(string url) {
             Dictionary<string, string> body = new Dictionary<string, string>();
             body.Add("token", token);
             body.Add("score", score.ToString());
@@ -24,6 +25,7 @@ namespace MegafansSDK.Utils {
             headers.Add("Content-Type", "application/json");
             headers.Add("Accept", "application/json");
             headers.Add("MegaFansSDKVersion", MegafansConstants.MegafansSDKVersion);
+            headers.Add("gpslocation", lastLocationValue);
 
             byte[] pData = Encoding.ASCII.GetBytes(jsonString.ToCharArray());
 

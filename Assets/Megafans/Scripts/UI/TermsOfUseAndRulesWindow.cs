@@ -9,9 +9,11 @@ using UnityEngine.UI;
 using MegafansSDK.Utils;
 
 
-namespace MegafansSDK.UI {
+namespace MegafansSDK.UI
+{
 
-    public class TermsOfUseAndRulesWindow : MonoBehaviour {
+    public class TermsOfUseAndRulesWindow : MonoBehaviour
+    {
 
         [SerializeField] Text headerLabelTxt;
         [SerializeField] Button backToGameBtn;
@@ -23,46 +25,52 @@ namespace MegafansSDK.UI {
 
         LevelsResponseData levelInfo;
 
-
-
-
-        public void Init(LevelsResponseData levelInfo) {
+        public void Init(LevelsResponseData levelInfo)
+        {
             this.levelInfo = levelInfo;
             if (this.levelInfo != null)
                 headerLabelTxt.text = "Tournament Rules";
         }
 
-        public void Init(string informationType, bool isSignUp) {
+        public void Init(string informationType, bool isSignUp)
+        {
             this.levelInfo = null;
 
-            if (informationType == MegafansConstants.TERMS_OF_USE) {
+            if (informationType == MegafansConstants.TERMS_OF_USE)
+            {
                 headerLabelTxt.text = "Terms of Use";
                 MegafansWebService.Instance.GetTermsOfUse(OnGetTournamentTermsOrPrivacyPolicyResponse, LogError);
             }
-            else if (informationType == MegafansConstants.PRIVACY_POLICY) {
+            else if (informationType == MegafansConstants.PRIVACY_POLICY)
+            {
                 headerLabelTxt.text = "Privacy Policy";
                 MegafansWebService.Instance.GetPrivacyInfo(OnGetTournamentTermsOrPrivacyPolicyResponse, LogError);
             }
 
-            backToGameBtn.gameObject.SetActive(!isSignUp);
+            //backToGameBtn.gameObject.SetActive(!isSignUp);
         }
 
-        void OnEnable() {
-            if (levelInfo != null) {
+        void OnEnable()
+        {
+            if (levelInfo != null)
+            {
                 MegafansWebService.Instance.GetTournamentRules(this.levelInfo.id, OnGetTournamentRulesResponse, LogError);
             }
         }
 
-        void OnDisable() {
+        void OnDisable()
+        {
             foreach (var text in textBoxes)
                 text.text = "";
         }
 
-        public void CloseTermsAndConditions() {
+        public void CloseTermsAndConditions()
+        {
             MegafansUI.Instance.BackFromTermsOfUseOrRulesWindow();
         }
 
-        void OnGetTournamentRulesResponse(TournamentRulesResponse response) {
+        void OnGetTournamentRulesResponse(TournamentRulesResponse response)
+        {
             if (!response.success.Equals(MegafansConstants.SUCCESS_CODE) || response.data?.Count < 1)
                 return;
 
@@ -73,7 +81,8 @@ namespace MegafansSDK.UI {
             SetUnityTextObjects(text);
         }
 
-        void OnGetTournamentTermsOrPrivacyPolicyResponse(TermsOrPrivacyPolicyResponse response) {
+        void OnGetTournamentTermsOrPrivacyPolicyResponse(TermsOrPrivacyPolicyResponse response)
+        {
             if (!response.success.Equals(MegafansConstants.SUCCESS_CODE) || response.data?.description == null)
                 return;
 
@@ -81,11 +90,13 @@ namespace MegafansSDK.UI {
             SetUnityTextObjects(HTMLDataToText(response.data.description));
         }
 
-        void LogError(string error) {
+        void LogError(string error)
+        {
             Debug.LogError(error);
         }
 
-        string HTMLDataToText (string html) {
+        string HTMLDataToText(string html)
+        {
             var data = html;
             data = data.Insert(0, Environment.NewLine + Environment.NewLine); //For spacing
             data = data.Replace("<strong>", "<b>"); data = data.Replace("</strong>", "</b>");
@@ -100,31 +111,39 @@ namespace MegafansSDK.UI {
             data = data.Replace("&ndash;", "–");
             data = data.Replace("&ldquo;", "\"");
             data = data.Replace("&rdquo;", "\"");
-            for (int i = 0; i < data.Length; ) {
-                if(data[i] == '<' && (data[i + 1] == 's' || data[i + 1] == 'l' || data[i + 1] == 'a' || data[i + 1] == 'o')) {
+            for (int i = 0; i < data.Length;)
+            {
+                if (data[i] == '<' && (data[i + 1] == 's' || data[i + 1] == 'l' || data[i + 1] == 'a' || data[i + 1] == 'o'))
+                {
                     int c = 0;
-                    while(data[i + c] != '>')
+                    while (data[i + c] != '>')
                         c++;
                     data = data.Remove(i, c + 1);
                 }
-                else {
+                else
+                {
                     i++;
                 }
             }
             return data;
         }
 
-        void SetUnityTextObjects (string text) {
-            string[] spiltData = text.Split(new string[1] {Environment.NewLine}, StringSplitOptions.None);
-            for (int i = 0; i < spiltData.Length; i++) {
-                if(i < textBoxes.Count) {
+        void SetUnityTextObjects(string text)
+        {
+            string[] spiltData = text.Split(new string[1] { Environment.NewLine }, StringSplitOptions.None);
+            for (int i = 0; i < spiltData.Length; i++)
+            {
+                if (i < textBoxes.Count)
+                {
                     textBoxes[i].text = spiltData[i];
                     textBoxes[i].transform.localScale = Vector3.one;
-                } else {
+                }
+                else
+                {
                     //TODO: merge short paragraphs before creating new instantiated text prefabs
                     //Need to create multiple text objects because of a hard limit on number of char
                     var instText = Instantiate<Text>(textPrefab);
-                    instText.transform.parent = contentHolderForText;
+                    instText.transform.SetParent(contentHolderForText);
                     instText.transform.localScale = Vector3.one;
                     instText.fontSize = 32;
                     instText.text = spiltData[i];
@@ -133,7 +152,8 @@ namespace MegafansSDK.UI {
             }
 
             //Clear up extra text boxes from the last use
-            if(textBoxes.Count - spiltData.Length > 0) {
+            if (textBoxes.Count - spiltData.Length > 0)
+            {
                 for (int i = spiltData.Length; i < textBoxes.Count; i++)
                     Destroy(textBoxes[i].gameObject);
                 textBoxes.RemoveRange(spiltData.Length, textBoxes.Count - spiltData.Length);
@@ -145,7 +165,8 @@ namespace MegafansSDK.UI {
 
 
         //We do this because
-        IEnumerator WaitTwoFramesForScrollBar() {
+        IEnumerator WaitTwoFramesForScrollBar()
+        {
             yield return null;
             yield return null;
             scrollbarForText.value = 1f;

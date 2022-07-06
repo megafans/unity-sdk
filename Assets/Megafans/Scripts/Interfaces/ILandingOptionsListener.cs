@@ -16,7 +16,7 @@ namespace MegafansSDK {
 		/// <summary>
 		/// Called when the user registers with the MegaFans Platform.
 		/// </summary>
-		void OnUserRegistered();
+		void OnUserRegistered(string userId);
 
 	}
 

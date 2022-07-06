@@ -61,13 +61,13 @@ public class Game : MonoBehaviour, ILandingOptionsListener, IJoinGameCallback {
 		StartGame ();
 	}
 
-	public void OnUserLoggedIn(string withUserId) {
+	public void OnUserLoggedIn(string userId) { 
 		Debug.Log ("User logged in");
         Debug.Log("SHOW LOBBY");
         Megafans.Instance.ShowTournamentLobby (this, this);
 	}
 
-    public void OnUserRegistered() {
+    public void OnUserRegistered(string userId) {
 		Debug.Log ("User registered");
 	}
 

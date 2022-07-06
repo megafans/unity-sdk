@@ -11,6 +11,7 @@ namespace MegafansSDK.Utils {
 
 		public int tournament_id;
         public string app_game_id;
+        public string lastLocationValue;
 
         public override WWW GetWWW(string url) {
             string queryUrl;
@@ -30,6 +31,8 @@ namespace MegafansSDK.Utils {
             headers.Add("Authorization", authorization);
             headers.Add("Content-Type", "application/json");
             headers.Add("MegaFansSDKVersion", MegafansConstants.MegafansSDKVersion);
+            headers.Add("gpslocation", lastLocationValue);
+
             WWW www = new WWW(queryUrl, null, headers);
 
             return www;

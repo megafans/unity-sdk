@@ -21,6 +21,7 @@ namespace MegafansSDK.UI
 
         public void SignUpBtn_OnClick()
         {
+            gameObject.SetActive(false);
             MegafansUI.Instance.ShowLandingWindow(false);
         }
     }

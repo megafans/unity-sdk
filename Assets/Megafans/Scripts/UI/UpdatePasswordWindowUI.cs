@@ -17,10 +17,6 @@ namespace MegafansSDK.UI {
         [SerializeField] Button showNewPasswordBtn;
         [SerializeField] Button showConfirmPasswordBtn;
         [SerializeField] Button savePasswordBtn;
-        [SerializeField] RawImage inputFieldHighlightedImage;
-
-        private Sprite activeInputBackground;
-        private Sprite inactiveInputBackground;
 
         bool IsFormValid
             => MegafansUtils.IsPasswordValid(oldPasswordField.text) &&
@@ -32,20 +28,20 @@ namespace MegafansSDK.UI {
 
         void Awake()
         {
-            Texture2D activeSpriteTexture = (Texture2D)inputFieldHighlightedImage.texture;
-            inactiveInputBackground = oldPasswordField.image.sprite;
-            activeInputBackground = Sprite.Create(activeSpriteTexture, new Rect(0, 0, activeSpriteTexture.width, activeSpriteTexture.height), new Vector2(0.5f, 0.5f));
+           
         }
 
 
         void OnEnable() {
             userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
             oldPasswordField.text = "";
-            oldPasswordField.image.sprite = inactiveInputBackground;
             newPasswordField.text = "";
-            newPasswordField.image.sprite = inactiveInputBackground;
             newPasswordConfirmField.text = "";
-            newPasswordConfirmField.image.sprite = inactiveInputBackground;
+        }
+
+        public void UpdateCreditUI()
+        {
+            userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         void OnUpdatePasswordResponse(UpdatePasswordResponse response) {
@@ -133,24 +129,6 @@ namespace MegafansSDK.UI {
             }
 
             MegafansWebService.Instance.UpdatePassword(oldPasswordField.text, newPasswordField.text, OnUpdatePasswordResponse, OnUpdatePasswordFailure);
-        }
-
-        void Update()
-        {
-            if (oldPasswordField.GetComponent<InputField>().isFocused == true && oldPasswordField.image.sprite != activeInputBackground)
-            {
-                oldPasswordField.image.sprite = activeInputBackground;
-            }
-
-            if (newPasswordField.GetComponent<InputField>().isFocused == true && newPasswordField.image.sprite != activeInputBackground)
-            {
-                newPasswordField.image.sprite = activeInputBackground;
-            }
-
-            if (newPasswordConfirmField.GetComponent<InputField>().isFocused == true && newPasswordConfirmField.image.sprite != activeInputBackground)
-            {
-                newPasswordConfirmField.image.sprite = activeInputBackground;
-            }
         }
     }
 }

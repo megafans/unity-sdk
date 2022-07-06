@@ -57,6 +57,13 @@ namespace MegafansSDK.UI {
 			buyBtn.onClick.AddListener (buyBtnAction);
 		}
 
-	}
+        //Free Tokens Button
+        public void SetValues(UnityAction buyBtnAction)
+        {
+            buyBtn.onClick.RemoveAllListeners();
+            buyBtn.onClick.AddListener(buyBtnAction);
+        }
+
+    }
 
 }

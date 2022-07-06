@@ -15,7 +15,6 @@ namespace MegafansSDK.UI
     {
 
         [SerializeField] private InputField usernameField;
-        [SerializeField] private Image usernameFieldHighlightedImage;
         [SerializeField] private Image isValidUserName;
 
         private Sprite focusedIcon;
@@ -24,14 +23,14 @@ namespace MegafansSDK.UI
 
         void OnEnable()
         {
-            if (MegafansPrefs.Username != null) {
+            if (MegafansPrefs.Username != null)
+            {
                 usernameField.text = MegafansPrefs.Username;
             }
         }
 
         void Awake()
         {
-        
             matchAssistant = this.gameObject.AddComponent<JoinMatchAssistant>();
         }
 
@@ -42,11 +41,15 @@ namespace MegafansSDK.UI
                 string msg = "Please enter a username";
                 MegafansUI.Instance.ShowPopup("ERROR", msg);
                 return;
-            } else if (usernameField.text != MegafansPrefs.Username) {
-                MegafansUI.Instance.ShowLoadingBar ();
+            }
+            else if (usernameField.text != MegafansPrefs.Username)
+            {
+                MegafansUI.Instance.ShowLoadingBar();
                 MegafansWebService.Instance.EditProfile(usernameField.text, null, null,
                     OnEditProfileResponse, OnEditProfileFailure);
-            } else {
+            }
+            else
+            {
                 MegafansUI.Instance.ShowLoadingBar();
                 MegafansWebService.Instance.GetLevels(Megafans.Instance.GameUID, GameType.TOURNAMENT,
                     OnGetTournamentsResponse, OnGetTournamentsFailure);
@@ -72,8 +75,14 @@ namespace MegafansSDK.UI
                 {
                     MegafansPrefs.Username = usernameField.text;
                 }
+
                 MegafansUI.Instance.HideLoadingBar();
-                matchAssistant.JoinPracticeMatch();
+
+                MegafansWebService.Instance.GetLevels(Megafans.Instance.GameUID, GameType.TOURNAMENT,
+                    OnGetTournamentsFromProfileResponse, OnGetTournamentsFromProfileFailure);
+
+                //TODO: Send user to free tourmanent
+                //matchAssistant.JoinPracticeMatch();
             }
             else
             {
@@ -103,38 +112,45 @@ namespace MegafansSDK.UI
             }
         }
 
-        void Update()
-        {
-            if (usernameField.GetComponent<InputField>().isFocused == true)
-            {
-                usernameFieldHighlightedImage.gameObject.SetActive(true);
-            }
-        }
-
         private void OnGetTournamentsResponse(LevelsResponse response)
         {
             MegafansUI.Instance.HideLoadingBar();
             if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
             {
                 List<LevelsResponseData> levelsData = response.data;
+
                 if (levelsData.Count == 0 || levelsData == null)
                 {
-                    matchAssistant.JoinPracticeMatch();
+                    //TODO: Send user to free tourmanent
+                    //matchAssistant.JoinPracticeMatch();
+                    OnGetTournamentsFailure("ERROR - Failed to join tournament");
                 }
                 else
                 {
                     LevelsResponseData currentF2PLevel = null;
                     foreach (LevelsResponseData level in levelsData)
                     {
-                        if (level.secondsLeft > 0 && level.f2p) {
+                        if (level.secondsLeft > 0 && level.f2p)
+                        {
                             currentF2PLevel = level;
                         }
                     }
 
-                    if (currentF2PLevel != null) {
-                        matchAssistant.JoinTournamentMatch(currentF2PLevel.id);
-                    } else {
-                        matchAssistant.JoinPracticeMatch();
+                    Megafans.Instance.m_AllTournaments = levelsData;
+
+                    MegafansUI.Instance.tournamentLobbyScreenUI.tournamentLobby.GetComponent<TournamentLobbyUI>().listBox.SetUpForScreenCount(levelsData.Count);
+                    MegafansUI.Instance.tournamentLobbyScreenUI.tournamentLobby.GetComponent<TournamentLobbyUI>().listBox.ManualDrag(Megafans.Instance.m_AllTournaments.FindIndex(w => w.id == currentF2PLevel.id));
+                    MegafansUI.Instance.ShowTournamentLobby();
+
+                    if (currentF2PLevel != null)
+                    {
+                        matchAssistant.JoinTournamentMatch(currentF2PLevel.id);                       
+                    }
+                    else
+                    {
+                        //TODO: Send user to free tourmanent
+                        //matchAssistant.JoinPracticeMatch();
+                        OnGetTournamentsFailure("ERROR - Failed to join tournament");
                     }
                 }
             }
@@ -145,6 +161,53 @@ namespace MegafansSDK.UI
             Debug.LogError(error);
             MegafansUI.Instance.HideLoadingBar();
         }
+
+        //TODO: Temporary fix for profile change verification
+        private void OnGetTournamentsFromProfileResponse(LevelsResponse response)
+        {
+            MegafansUI.Instance.HideLoadingBar();
+            if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
+            {
+                List<LevelsResponseData> levelsData = response.data;
+                if (levelsData.Count == 0 || levelsData == null)
+                {
+                    //TODO: Send user to free tourmanent
+                    //matchAssistant.JoinPracticeMatch();
+                    OnGetTournamentsFromProfileFailure("ERROR - Failed to join tournament");
+                }
+                else
+                {
+                    LevelsResponseData currentF2PLevel = null;
+                    foreach (LevelsResponseData level in levelsData)
+                    {
+                        if (level.secondsLeft > 0 && level.f2p)
+                        {
+                            currentF2PLevel = level;
+                        }
+                    }
+
+                    if (currentF2PLevel != null)
+                    {
+                        matchAssistant.JoinTournamentMatch(currentF2PLevel.id);
+                    }
+                    else
+                    {
+                        //TODO: Send user to free tourmanent
+                        //matchAssistant.JoinPracticeMatch();
+                        OnGetTournamentsFromProfileFailure("ERROR - Failed to join tournament");
+                    }
+                }
+            }
+        }
+
+        private void OnGetTournamentsFromProfileFailure(string error)
+        {
+            Debug.LogError(error);
+            MegafansUI.Instance.HideLoadingBar();
+            string errorString = "Error updating profile.  Please try again.";
+            MegafansUI.Instance.ShowPopup("Error", errorString);
+        }
+        //
 
         //private void OnVerifyPhoneResponse(LoginResponse response)
         //{

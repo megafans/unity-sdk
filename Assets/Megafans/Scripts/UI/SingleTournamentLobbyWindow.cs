@@ -72,14 +72,9 @@ namespace MegafansSDK.UI
                 else
                 {
                     matchAssistant.JoinTournamentMatch(levelInfo.id);
-                    //if (MegafansPrefs.IsRegisteredMegaFansUser)
-                    //{
-                    //    matchAssistant.JoinTournamentMatch(levelInfo.id);
-                    //} else {
-                    //    matchAssistant.JoinTournamentMatch(levelInfo.id);
-                    //    //ShowUnregisteredUserWarning();
-                    //}
                 }
+
+                //ShowCreditsWarning(userCredits);
             }
             catch (Exception e)
             {
@@ -91,12 +86,12 @@ namespace MegafansSDK.UI
 
         public void LeaderboardBtn_OnClick()
         {
-            MegafansUI.Instance.ShowSingleTournamentRankingAndHistoryWindow(GameType.TOURNAMENT, RankingType.RANKING, this.levelInfo);
+            MegafansUI.Instance.ShowSingleTournamentRankingAndHistoryWindow(GameType.TOURNAMENT, RankingType.LEADERBOARD, this.levelInfo);
         }
 
         public void ScoresBtn_OnClick()
         {
-            MegafansUI.Instance.ShowSingleTournamentRankingAndHistoryWindow(GameType.TOURNAMENT, RankingType.SCORE, this.levelInfo);
+            MegafansUI.Instance.ShowSingleTournamentRankingAndHistoryWindow(GameType.TOURNAMENT, RankingType.HISTORY, this.levelInfo);
         }
 
         public void TokenBalanceBtn_OnClick()
@@ -141,10 +136,14 @@ namespace MegafansSDK.UI
         private void ShowCreditsWarning(float currentCredits)
         {
             MegafansUI.Instance.ShowAlertDialog(coinsWarningIcon, "Alert",
-                MegafansConstants.NOT_ENOUGH_TOKENS_WARNING, "Buy Now", "Dismiss",
+                MegafansConstants.NOT_ENOUGH_TOKENS_WARNING, "Buy Now", "Get <color=yellow>Free</color> Tokens",
                 () => {
                     MegafansUI.Instance.HideAlertDialog();
                     MegafansUI.Instance.ShowStoreWindow();
+                },
+                () => {
+                    MegafansUI.Instance.HideAlertDialog();
+                    MegafansSDK.Megafans.Instance.m_AdsManager.ShowOfferwall();
                 },
                 () => {
                     MegafansUI.Instance.HideAlertDialog();

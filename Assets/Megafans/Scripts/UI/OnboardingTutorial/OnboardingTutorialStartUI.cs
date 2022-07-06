@@ -43,12 +43,23 @@ namespace MegafansSDK.UI
                 MegafansPrefs.Username = response.data.username;
                 MegafansPrefs.UserId = response.data.userId;
                 MegafansPrefs.SMSAvailable = response.data.sms;
-                //OneSignal.SetExternalUserId(response.data.userId.ToString());
+             
+                OneSignal.SetExternalUserId(MegafansPrefs.UserId.ToString());
+
+                Megafan.NativeWrapper.MegafanNativeWrapper.RegisterUserWithUserId(response.data.userId.ToString(),
+                                                                  Megafans.Instance.GameUID,
+                                                                  Application.productName);
+                Megafans.Instance.m_AdsManager.initIronSourceWithUserId(MegafansPrefs.UserId.ToString());
             }
             else
             {
                 MegafansUI.Instance.ShowPopup("ERROR", response.message);
             }
+        }
+
+        private void OneSignal_promptForPushNotificationsReponse(bool accepted)
+        {
+            Debug.Log("OneSignal_promptForPushNotificationsReponse: " + accepted);
         }
 
         private void OnRegisterNewUserFailure(string error)

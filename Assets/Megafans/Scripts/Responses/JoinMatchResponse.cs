@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace MegafansSDK.Utils {
+namespace MegafansSDK.Utils
+{
 
     [System.Serializable]
     public class JoinMatchResponse : Response
     {
-
         public JoinMatchData data;
-
     }
 
     [System.Serializable]
