@@ -37,12 +37,12 @@ namespace MegafansSDK.UI
 
         public void LeaderboardBtn_OnClick()
         {
-            MegafansUI.Instance.ShowSingleTournamentRankingAndHistoryWindow(GameType.PRACTICE, RankingType.RANKING);
+            MegafansUI.Instance.ShowSingleTournamentRankingAndHistoryWindow(GameType.PRACTICE, RankingType.LEADERBOARD);
         }
 
         public void ScoresBtn_OnClick()
         {
-            MegafansUI.Instance.ShowSingleTournamentRankingAndHistoryWindow(GameType.PRACTICE, RankingType.SCORE);
+            MegafansUI.Instance.ShowSingleTournamentRankingAndHistoryWindow(GameType.PRACTICE, RankingType.HISTORY);
         }
 
         public void TokenBalanceBtn_OnClick()
@@ -53,11 +53,6 @@ namespace MegafansSDK.UI
         public void BackBtn_OnClick()
         {
             MegafansUI.Instance.ShowTournamentLobby();
-        }
-
-        public void JoinTournamentBtn_OnClick()
-        {
-            MegafansUI.Instance.ShowSingleTournamentWindow(null);
         }
     }
 }

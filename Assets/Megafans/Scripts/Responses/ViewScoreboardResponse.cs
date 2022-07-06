@@ -7,25 +7,14 @@ namespace MegafansSDK.Utils {
 	public class ViewScoreboardResponse : Response {
 
 		public int total_pages;
-		public ScoreboardResponseData data;
+		public List<ScoreboardResponseData> data;
 	}
-
 
     [System.Serializable]
     public class ScoreboardResponseData
     {
-        public List<ScoreboardData> user;
-        public LeaderboardData me;
-    }
-
-    [System.Serializable]
-    public class ScoreboardData
-    {
-
         public long score;
-        public string username;
-        public int rank;
-        public string code;
         public string created_at;
+        public string name;
     }
 }

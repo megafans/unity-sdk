@@ -1,24 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace MegafansSDK.Utils {
+namespace MegafansSDK.Utils
+{
 
-	public class MegafansPrefs {
+    public class MegafansPrefs
+    {
 
-		private const string k_prefix = "Megafans_";
+        private const string k_prefix = "Megafans_";
         private const string k_userId = k_prefix + "UserId";
         private const string k_accessToken = k_prefix + "AccessToken";
         private const string k_refreshToken = k_prefix + "RefreshToken";
         private const string k_emailAddress = k_prefix + "Email";
         private const string k_facebookID = k_prefix + "FacebookID";
         private const string k_username = k_prefix + "Username";
-		private const string k_phoneNumber = k_prefix + "PhoneNumber";
-		private const string k_profilePicUrl = k_prefix + "ProfilePicUrl";
-		private const string k_profilePic = k_prefix + "ProfilePic";
+        private const string k_phoneNumber = k_prefix + "PhoneNumber";
+        private const string k_profilePicUrl = k_prefix + "ProfilePicUrl";
+        private const string k_profilePic = k_prefix + "ProfilePic";
         private const string k_registrationComplete = k_prefix + "RegistrationComplete";
         private const string k_userStatus = k_prefix + "UserStatus";
         private const string k_SMSAvailable = k_prefix + "SMSAvailable";
         private const string k_currentTokenBalance = k_prefix + "CurrentTokenBalance";
+        private const string k_isPhoneVerified = k_prefix + "IsPhoneVerified";
 
         private const string k_deviceTokens = k_prefix + "UsedDeviceTokens";
 
@@ -26,12 +29,12 @@ namespace MegafansSDK.Utils {
         {
             get
             {
-                return PlayerPrefs.GetInt (k_userId, 0);
+                return PlayerPrefs.GetInt(k_userId, 0);
             }
 
             set
             {
-                PlayerPrefs.SetInt (k_userId, value);
+                PlayerPrefs.SetInt(k_userId, value);
             }
         }
 
@@ -47,12 +50,12 @@ namespace MegafansSDK.Utils {
         {
             get
             {
-                return PlayerPrefs.GetString (k_accessToken, "");
+                return PlayerPrefs.GetString(k_accessToken, "");
             }
 
             set
             {
-                PlayerPrefs.SetString (k_accessToken, value);
+                PlayerPrefs.SetString(k_accessToken, value);
             }
         }
 
@@ -60,22 +63,25 @@ namespace MegafansSDK.Utils {
         {
             get
             {
-                return PlayerPrefs.GetString (k_refreshToken, "");
+                return PlayerPrefs.GetString(k_refreshToken, "");
             }
 
             set
             {
-                PlayerPrefs.SetString (k_refreshToken, value);
+                PlayerPrefs.SetString(k_refreshToken, value);
             }
         }
 
-        public static string Email {
-            get {
-                return PlayerPrefs.GetString (k_emailAddress, "");
+        public static string Email
+        {
+            get
+            {
+                return PlayerPrefs.GetString(k_emailAddress, "");
             }
 
-            set {
-                PlayerPrefs.SetString (k_emailAddress, value);
+            set
+            {
+                PlayerPrefs.SetString(k_emailAddress, value);
             }
         }
 
@@ -92,45 +98,57 @@ namespace MegafansSDK.Utils {
             }
         }
 
-        public static string Username {
-			get {
-				return PlayerPrefs.GetString (k_username, "");
-			}
+        public static string Username
+        {
+            get
+            {
+                return PlayerPrefs.GetString(k_username, "");
+            }
 
-			set {
-				PlayerPrefs.SetString (k_username, value);
-			}
-		}
+            set
+            {
+                PlayerPrefs.SetString(k_username, value);
+            }
+        }
 
-		public static string PhoneNumber {
-			get {
-				return PlayerPrefs.GetString (k_phoneNumber, "");
-			}
+        public static string PhoneNumber
+        {
+            get
+            {
+                return PlayerPrefs.GetString(k_phoneNumber, "");
+            }
 
-			set {
-				PlayerPrefs.SetString (k_phoneNumber, value);
-			}
-		}
+            set
+            {
+                PlayerPrefs.SetString(k_phoneNumber, value);
+            }
+        }
 
-		public static string ProfilePicUrl {
-			get {
-				return PlayerPrefs.GetString (k_profilePicUrl, "");
-			}
+        public static string ProfilePicUrl
+        {
+            get
+            {
+                return PlayerPrefs.GetString(k_profilePicUrl, "");
+            }
 
-			set {
-				PlayerPrefs.SetString (k_profilePicUrl, value);
-			}
-		}
+            set
+            {
+                PlayerPrefs.SetString(k_profilePicUrl, value);
+            }
+        }
 
-		public static string ProfilePic {
-			get {
-				return PlayerPrefs.GetString (k_profilePic, "");
-			}
+        public static string ProfilePic
+        {
+            get
+            {
+                return PlayerPrefs.GetString(k_profilePic, "");
+            }
 
-			set {
-				PlayerPrefs.SetString (k_profilePic, value);
-			}
-		}
+            set
+            {
+                PlayerPrefs.SetString(k_profilePic, value);
+            }
+        }
 
         public static int UserStatus
         {
@@ -158,6 +176,34 @@ namespace MegafansSDK.Utils {
             }
         }
 
+        public static bool IsPhoneVerified
+        {
+            get
+            {
+                int value = PlayerPrefs.GetInt(k_isPhoneVerified, 0);
+                if (value == 1)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            set
+            {
+                if (value)
+                {
+                    PlayerPrefs.SetInt(k_isPhoneVerified, 1);
+                }
+                else
+                {
+                    PlayerPrefs.SetInt(k_isPhoneVerified, 0);
+                }
+            }
+        }
+
         public static bool SMSAvailable
         {
             get
@@ -175,9 +221,12 @@ namespace MegafansSDK.Utils {
 
             set
             {
-                if (value) {
+                if (value)
+                {
                     PlayerPrefs.SetInt(k_SMSAvailable, 1);
-                } else {
+                }
+                else
+                {
                     PlayerPrefs.SetInt(k_SMSAvailable, 0);
                 }
             }
@@ -208,13 +257,14 @@ namespace MegafansSDK.Utils {
             }
         }
 
-        public static void ClearPrefs() {
-            PlayerPrefs.DeleteKey (k_accessToken);
-            PlayerPrefs.DeleteKey (k_refreshToken);
-            PlayerPrefs.DeleteKey (k_username);
-			PlayerPrefs.DeleteKey (k_phoneNumber);
-			PlayerPrefs.DeleteKey (k_profilePicUrl);
-			PlayerPrefs.DeleteKey (k_profilePic);
+        public static void ClearPrefs()
+        {
+            PlayerPrefs.DeleteKey(k_accessToken);
+            PlayerPrefs.DeleteKey(k_refreshToken);
+            PlayerPrefs.DeleteKey(k_username);
+            PlayerPrefs.DeleteKey(k_phoneNumber);
+            PlayerPrefs.DeleteKey(k_profilePicUrl);
+            PlayerPrefs.DeleteKey(k_profilePic);
             PlayerPrefs.DeleteKey(k_emailAddress);
             PlayerPrefs.DeleteKey(k_userStatus);
             PlayerPrefs.DeleteKey(k_currentTokenBalance);

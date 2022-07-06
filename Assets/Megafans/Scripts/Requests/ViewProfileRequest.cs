@@ -2,30 +2,30 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace MegafansSDK.Utils {
-
-	[System.Serializable]
-	public class ViewProfileRequest : Request {
-
-		public string code;
+namespace MegafansSDK.Utils
+{
+    [System.Serializable]
+    public class ViewProfileRequest : Request
+    {
+        public string code;
         public string appGameUID;
 
-        public override WWW GetWWW(string url) {
-			Dictionary<string, string> headers = new Dictionary<string, string>();
+        public override WWW GetWWW(string url)
+        {
+            Dictionary<string, string> headers = new Dictionary<string, string>();
             string queryURL = url + "?appGameUid=" + appGameUID;
 
-            if (code != null) {
+            if (code != null)
                 queryURL += ("&code=" + code);
-            }         
+            
             string authorization = MegafansWebService.GetBearerToken();
             headers.Add("Authorization", authorization);
             headers.Add("MegaFansSDKVersion", MegafansConstants.MegafansSDKVersion);
+            Debug.Log("MegaFansSDKVersion: " + MegafansConstants.MegafansSDKVersion);
 
-            WWW www = new WWW (queryURL, null, headers);
+            WWW www = new WWW(queryURL, null, headers);
 
-			return www;
-		}
-
-	}
-
+            return www;
+        }
+    }
 }

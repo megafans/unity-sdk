@@ -23,7 +23,7 @@ namespace MegafansSDK.UI
 
         void Awake()
         {
-            imagePicker = this.gameObject.AddComponent<ImagePicker>();
+            imagePicker = GetComponent<ImagePicker>();
 
             picPlaceholder = (Texture2D)profilePicImg.texture;
         }
@@ -38,23 +38,14 @@ namespace MegafansSDK.UI
 
             MegafansWebService.Instance.ViewProfile("", OnViewProfileResponse, OnViewProfileFailure);
             int status = MegafansPrefs.UserStatus;
-            //if (MegafansPrefs.IsRegisteredMegaFansUser)
-            //{
-                logoutBtn.gameObject.SetActive(true);
-                loginBtn.gameObject.SetActive(false);
-            //}
-            //else
-            //{
-            //    //saveAccountBtn.gameObject.SetActive(true);
-            //    //loginToAccountBtn.gameObject.SetActive(true);
-            //    logoutBtn.gameObject.SetActive(false);
-            //    loginBtn.gameObject.SetActive(true);
-            //}
+
+            logoutBtn.gameObject.SetActive(true);
+            loginBtn.gameObject.SetActive(false);
         }
 
-        void Start()
+        public void UpdateCreditUI()
         {
-
+            userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         public void BackBtn_OnClick()
@@ -64,30 +55,40 @@ namespace MegafansSDK.UI
 
         public void LinkAccountBtn_OnClick()
         {
-            if (!string.IsNullOrEmpty(MegafansPrefs.Email) && !string.IsNullOrEmpty(MegafansPrefs.PhoneNumber) && !string.IsNullOrEmpty(MegafansPrefs.FacebookID)) {
+            if (!string.IsNullOrEmpty(MegafansPrefs.Email) && MegafansPrefs.IsPhoneVerified && !string.IsNullOrEmpty(MegafansPrefs.FacebookID))
+            {
                 MegafansUI.Instance.ShowPopup("Already Linked", "Your account is already linked.");
-            } else {
+            }
+            else
+            {
                 MegafansUI.Instance.ShowLandingWindow(false, MegafansPrefs.IsRegisteredMegaFansUser);
             }
         }
 
         public void UpdatePassword_OnClick()
         {
-            if (!MegafansPrefs.IsRegisteredMegaFansUser) {
+            if (!MegafansPrefs.IsRegisteredMegaFansUser)
+            {
                 MegafansUI.Instance.ShowUpdateProfileWindow();
-            } else if (string.IsNullOrEmpty(MegafansPrefs.Email)) {
+            }
+            else if (string.IsNullOrEmpty(MegafansPrefs.Email))
+            {
                 string msg = "Please link your email address before you are able to add or update your password. Would you like to link your email now?";
 
                 MegafansUI.Instance.ShowAlertDialog(warningIcon, "Link Email",
                   msg, "Link Now", "Link Later",
-                  () => {
+                  () =>
+                  {
                       MegafansUI.Instance.HideAlertDialog();
-                      MegafansUI.Instance.ShowLandingWindow(false, MegafansPrefs.IsRegisteredMegaFansUser);                      
+                      MegafansUI.Instance.ShowLandingWindow(false, MegafansPrefs.IsRegisteredMegaFansUser);
                   },
-                  () => {
+                  () =>
+                  {
                       MegafansUI.Instance.HideAlertDialog();
                   });
-            } else {
+            }
+            else
+            {
                 MegafansUI.Instance.ShowUpdateProfileWindow();
             }
         }
@@ -97,9 +98,12 @@ namespace MegafansSDK.UI
             MegafansUI.Instance.ShowTermsOfUseOrPrivacyWindow(MegafansConstants.TERMS_OF_USE, false);
         }
 
-        public void ProfilePic_OnClick() {
-            imagePicker.PickImage((Texture2D tex, string imagePath) => {
-                if (tex != null) {
+        public void ProfilePic_OnClick()
+        {
+            imagePicker.PickImage((Texture2D tex, string imagePath) =>
+            {
+                if (tex != null)
+                {
                     isPhotoRemoved = false;
                     profilePicImg.texture = tex;
                     string newImageToUpload = MegafansUtils.TextureToString((Texture2D)profilePicImg.texture);
@@ -145,26 +149,31 @@ namespace MegafansSDK.UI
 
         public void LogoutBtn_OnClick()
         {
-            if (MegafansPrefs.IsRegisteredMegaFansUser) {
+            if (MegafansPrefs.IsRegisteredMegaFansUser)
+            {
                 MegafansWebService.Instance.Logout(OnLogoutResponse, OnLogoutFailure);
                 MegafansPrefs.ClearPrefs();
                 MegafansPrefs.DeviceTokens = DeviceInfo.DeviceToken;
                 MegafansUI.Instance.ShowOnboardingStartWindow();
-            } else {
-                string msg = "You are about to logout without saving your progress.  If you don't save your account, all progress, tokens, and history will be lost.  Are you sure you want to logout?" ;
+            }
+            else
+            {
+                string msg = "You are about to logout without saving your progress.  If you don't save your account, all progress, tokens, and history will be lost. \n<color=#FF4500>Are you sure you want to logout?</color>";
 
-                MegafansUI.Instance.ShowAlertDialog (warningIcon, "Confirmation",
+                MegafansUI.Instance.ShowAlertDialog(warningIcon, "Confirmation",
                   msg, "Log Out", "Cancel",
-                  () => {
+                  () =>
+                  {
                       MegafansUI.Instance.HideAlertDialog();
                       MegafansWebService.Instance.Logout(OnLogoutResponse, OnLogoutFailure);
                       MegafansPrefs.ClearPrefs();
                       MegafansPrefs.DeviceTokens = DeviceInfo.DeviceToken;
                       MegafansUI.Instance.ShowOnboardingStartWindow();
                   },
-                  () => {
-                       MegafansUI.Instance.HideAlertDialog();
-                });
+                  () =>
+                  {
+                      MegafansUI.Instance.HideAlertDialog();
+                  });
             }
         }
 
@@ -180,48 +189,13 @@ namespace MegafansSDK.UI
                 MegafansPrefs.FacebookID = response.data.facebookLoginId;
 
                 MegafansWebService.Instance.FetchImage(response.data.image, OnFetchPicSuccess, OnFetchPicFailure);
-
-                //if (MegafansPrefs.IsRegisteredMegaFansUser)
-                //{
-                //    if (System.String.IsNullOrEmpty(response.data.email))
-                //    {
-                //        emailAddressField.gameObject.SetActive(true);
-                //        phoneNumberField.gameObject.SetActive(false);
-                //        phoneNumberPrefixField.gameObject.SetActive(false);
-                //        isEmailProfile = false;
-                //    }
-                //    else
-                //    {
-                //        if (System.String.IsNullOrEmpty(response.data.phoneNumber))
-                //        {
-                //            emailAddressField.gameObject.SetActive(false);
-                //            phoneNumberField.gameObject.SetActive(true);
-                //            phoneNumberPrefixField.gameObject.SetActive(true);
-                //        }
-                //        else
-                //        {
-                //            emailAddressField.gameObject.SetActive(false);
-                //            phoneNumberField.gameObject.SetActive(false);
-                //            phoneNumberPrefixField.gameObject.SetActive(false);
-                //        }
-                //        updatePasswordBtn.gameObject.SetActive(true);
-                //        isEmailProfile = true;
-                //    }
-                //}
-                //else
-                //{
-                //    emailAddressField.gameObject.SetActive(false);
-                //    phoneNumberField.gameObject.SetActive(false);
-                //    phoneNumberPrefixField.gameObject.SetActive(false);
-                //    updatePasswordBtn.gameObject.SetActive(false);
-                //}
             }
         }
 
         private void OnViewProfileFailure(string error)
         {
             Debug.LogError(error);
-        }                
+        }
 
         private void OnFetchPicSuccess(Texture2D tex)
         {
@@ -234,22 +208,29 @@ namespace MegafansSDK.UI
             }
         }
 
-        void OnFetchPicFailure(string error) {
+        void OnFetchPicFailure(string error)
+        {
             Debug.LogError(error);
         }
 
-        void OnLogoutResponse(LogoutResponse response) {
-            //if (response.success.Equals (MegafansConstants.SUCCESS_CODE)) {
+        void OnLogoutResponse(LogoutResponse response)
+        {
             MegafansPrefs.UserId = 0;
             MegafansPrefs.ProfilePicUrl = "";
             MegafansPrefs.ClearPrefs();
-            MegafansWebService.Instance.FBLogout();
+            //MegafansWebService.Instance.FBLogout();
             MegafansUI.Instance.ShowOnboardingStartWindow();
-            //}
+            Megafan.NativeWrapper.MegafanNativeWrapper.LogoutFromIntercom();
         }
 
-        private void OnLogoutFailure(string error) {
+        private void OnLogoutFailure(string error)
+        {
             Debug.LogError(error.ToString());
+        }
+
+        public void WithdrawBtnClicked()
+        {
+            Application.OpenURL(Megafans.Instance.WithdrawURL);
         }
     }
 

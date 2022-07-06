@@ -14,67 +14,148 @@ namespace MegafansSDK.UI
 
         [SerializeField] private Text titleTxt;
         [SerializeField] private GameObject countdownTimer;
-        [SerializeField] private Image tournamentPicImg;
-        [SerializeField] private ListBox payoutListBox;
-        [SerializeField] private GameObject payoutItemPrefab;
+        [SerializeField] private GameObject unlockCountdownTimer;
+        [SerializeField] private GameObject lockPanel;
+        [SerializeField] private RawImage tournamentPicImg;
+        [SerializeField] private Text prizeValueTxt;
+        [SerializeField] private Text winnersFeeValueTxt;
+        [SerializeField] private Text entryFeeValueTxt;
+        [SerializeField] private GameObject joinTournamentButton;
+        [SerializeField] private GameObject passwordLock;
 
         private LevelsResponseData tournamentInfo;
+        [SerializeField] private string tourneyname;
+        [SerializeField] private bool passrequired;
 
         public void SetValues(LevelsResponseData tournamentInfo, bool displayPayouts = false)
         {
-            CountdownTimer timerViewHandler = countdownTimer.GetComponent<CountdownTimer>();
-            if (timerViewHandler != null)
+            if (tournamentInfo.secondsLeft <= 0)
             {
-                if (tournamentInfo.secondsLeft > 0)
+                MegafansWebService.Instance.FetchImage(tournamentInfo.imageUrl, OnFetchPicSuccess, OnFetchPicFailure);
+                tournamentPicImg.gameObject.SetActive(true);
+                titleTxt.text = "N/A";
+                prizeValueTxt.text = "N/A";
+                
+                for(int i = 0; i < prizeValueTxt.transform.childCount; i++)
                 {
-                    timerViewHandler.Init(tournamentInfo.secondsLeft, true);
+                    prizeValueTxt.transform.GetChild(i).gameObject.SetActive(false);
+                }
+
+                winnersFeeValueTxt.text = "N/A";
+                entryFeeValueTxt.text = "N/A";
+
+                for (int i = 0; i < entryFeeValueTxt.transform.childCount; i++)
+                {
+                    entryFeeValueTxt.transform.GetChild(i).gameObject.SetActive(false);
+                }
+
+                lockPanel.SetActive(true);
+                joinTournamentButton.SetActive(false);
+
+                CountdownTimer unlockTimer = unlockCountdownTimer.GetComponent<CountdownTimer>();
+
+                if (unlockTimer != null)
+                {
+                    if (tournamentInfo.secondsToStart > 0)
+                    {
+                        unlockTimer.Init(tournamentInfo.secondsToStart, true);
+                    }
                 }
                 else
-                {
-                    timerViewHandler.Init(tournamentInfo.secondsToStart, true);
-                }
+                    unlockCountdownTimer.SetActive(false);
             }
-            titleTxt.text = tournamentInfo.name;
-            this.tournamentInfo = tournamentInfo;
-                
-            if (displayPayouts) {
-                payoutListBox.ClearList();
+            else
+            {
+                CountdownTimer timerViewHandler = countdownTimer.GetComponent<CountdownTimer>();
 
-                if (tournamentInfo.payouts != null)
+                if (timerViewHandler != null)
                 {
-                    tournamentPicImg.gameObject.SetActive(false);
-                    payoutListBox.gameObject.SetActive(true);
-                    PayoutItem headerViewHandler = payoutListBox.Header.GetComponent<PayoutItem>();
-                    headerViewHandler.SetText(tournamentInfo.payouts.name);
-
-                    for (int j = 0; j < tournamentInfo.payouts.data.Count; j++)
+                    if (tournamentInfo.secondsLeft > 0)
                     {
-                        GameObject item = Instantiate(payoutItemPrefab);
-                        PayoutItem viewHandler = item.GetComponent<PayoutItem>();
-                        if (viewHandler != null)
+                        timerViewHandler.Init(tournamentInfo.secondsLeft, true);
+                    }
+                    else
+                    {
+                        timerViewHandler.Init(tournamentInfo.secondsToStart, true);
+                    }
+                }
+
+                titleTxt.text = tournamentInfo.name;
+                this.tournamentInfo = tournamentInfo;
+
+                passwordLock.SetActive(tournamentInfo.askPassword);
+                tourneyname = tournamentInfo.name;
+                passrequired = tournamentInfo.askPassword;
+
+                if (displayPayouts)
+                {
+                    if (tournamentInfo != null
+                        && tournamentInfo.payouts != null
+                        && tournamentInfo.payouts.data != null
+                        && tournamentInfo.payouts.data.Count > 0)
+                    {
+                        titleTxt.text = tournamentInfo.name;
+
+                        //Gunslinger : Double currency mod
+                        if(tournamentInfo.cash_tournament)
                         {
-                            viewHandler.SetText("Position " + tournamentInfo.payouts.data[j].position + " - " + tournamentInfo.payouts.data[j].amount + " tokens");
-                            payoutListBox.AddItem(item);
+                            prizeValueTxt.transform.GetChild(0).gameObject.SetActive(false);
+                            prizeValueTxt.text = "$" + tournamentInfo.payout;
                         }
+                        else
+                        {
+                            prizeValueTxt.transform.GetChild(0).gameObject.SetActive(true);
+                            prizeValueTxt.text = tournamentInfo.payout;
+                        }
+
+                        if (tournamentInfo.entryFee <= 0f)
+                        {
+                            entryFeeValueTxt.text = "Free";
+                            entryFeeValueTxt.transform.GetChild(0).gameObject.SetActive(false);
+                        }
+                        else if (tournamentInfo.freeEntryTournament && tournamentInfo.freeEntriesRemaining > 0)
+                        {
+                            entryFeeValueTxt.text = tournamentInfo.freeEntriesRemaining + " Free ";
+                            if (tournamentInfo.freeEntriesRemaining == 1)
+                            {
+                                entryFeeValueTxt.text += "Entry";
+                            }
+                            else
+                            {
+                                entryFeeValueTxt.text += "Entries";
+                            }
+                            entryFeeValueTxt.transform.GetChild(0).gameObject.SetActive(false);
+                        }
+                        else
+                        {
+                            entryFeeValueTxt.text = tournamentInfo.entryFee.ToString();
+                            entryFeeValueTxt.transform.GetChild(0).gameObject.SetActive(true);
+                        }
+
+                        winnersFeeValueTxt.text = "Top " + tournamentInfo.payouts.data.Count.ToString();
+
+                        MegafansWebService.Instance.FetchImage(tournamentInfo.imageUrl, OnFetchPicSuccess, OnFetchPicFailure);
+                        tournamentPicImg.gameObject.SetActive(true);
                     }
                 }
                 else
                 {
-                    tournamentPicImg.gameObject.SetActive(true);
-                    payoutListBox.gameObject.SetActive(false);
+                    if (string.IsNullOrEmpty(tournamentInfo.imageUrl))
+                    {
+                        tournamentPicImg.texture = Megafans.Instance.GameTexture;
+                    }
+                    else
+                    {
+                        MegafansWebService.Instance.FetchImage(tournamentInfo.imageUrl, OnFetchPicSuccess, OnFetchPicFailure);
+                        tournamentPicImg.gameObject.SetActive(true);
+                        titleTxt.text = "N/A";
+                        prizeValueTxt.text = "N/A";
+                        winnersFeeValueTxt.text = "N/A";
+                        entryFeeValueTxt.text = "N/A";
+                    }
                 }
-            } else {
-                if (string.IsNullOrEmpty(tournamentInfo.imageUrl))
-                {
-                    tournamentPicImg.sprite = Megafans.Instance.GameIcon;
-                } else {
-                    MegafansWebService.Instance.FetchImage(tournamentInfo.imageUrl, OnFetchPicSuccess, OnFetchPicFailure);
-                    tournamentPicImg.gameObject.SetActive(true);
-                    payoutListBox.gameObject.SetActive(false);
-                }
-            }          
+            }
         }
-
 
         private void OnDestroy()
         {
@@ -84,6 +165,26 @@ namespace MegafansSDK.UI
         private void OnDisable()
         {
 
+        }
+
+        private void OnEnable()
+        {
+            SetJoinButtonAction();
+        }
+
+        void SetJoinButtonAction()
+        {
+            joinTournamentButton.GetComponent<Button>().onClick.AddListener( delegate { OnJoinButtonClick(); } );
+        }
+
+        void OnJoinButtonClick()
+        {
+            TournamentLobbyUI _TLUI = FindObjectOfType<TournamentLobbyUI>();
+
+            if (_TLUI != null)
+            {
+                _TLUI.JoinNowBtn_OnClick();
+            }
         }
 
         public void OnPointerClick(PointerEventData eventData)
@@ -96,9 +197,9 @@ namespace MegafansSDK.UI
 
         private void OnFetchPicSuccess(Texture2D tex)
         {
-            if (tex != null)
+            if (tex != null && tournamentPicImg != null)
             {
-                tournamentPicImg.sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                tournamentPicImg.texture = tex;
             }
         }
 
@@ -106,6 +207,10 @@ namespace MegafansSDK.UI
         {
             Debug.LogError(error);
         }
-    }
 
+        internal Button GetPlayButton()
+        {
+            return joinTournamentButton.GetComponent<Button>();
+        }
+    }
 }

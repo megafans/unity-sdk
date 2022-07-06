@@ -27,6 +27,51 @@ namespace MegafansSDK.Utils {
             }
         }
 
-	}
+        public static string Platform
+        {
+            get
+            {
+
+#if UNITY_IOS
+                return "iOS";
+#else
+                return "Android";
+#endif
+            }
+        }
+
+        public static string NotificationID
+
+        {
+
+            get
+            {
+
+                var status = OneSignal.GetPermissionSubscriptionState();
+
+                if (!status.permissionStatus.hasPrompted)
+                    return "";
+
+                if (status == null || status.subscriptionStatus == null || status.subscriptionStatus.userId == null)
+
+                    return "";
+                else
+                    return status.subscriptionStatus.userId;
+            }
+
+        }
+
+        public static string AdvertisingID
+
+        {
+
+            get
+            {
+                return Megafans.Instance.AdvertisingID;
+            }
+
+        }
+
+    }
 
 }

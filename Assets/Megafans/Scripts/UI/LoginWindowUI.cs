@@ -43,9 +43,9 @@ namespace MegafansSDK.UI {
             }
         }
 
-		public void FBBtn_OnClick() {
-			MegafansWebService.Instance.LoginFB (OnLoginFBResponse, OnLoginFBFailure);
-		}
+		//public void FBBtn_OnClick() {
+		//	MegafansWebService.Instance.LoginFB (OnLoginFBResponse, OnLoginFBFailure);
+		//}
 
 		public void PhoneBtn_OnClick() {
 			emailSection.SetActive (false);

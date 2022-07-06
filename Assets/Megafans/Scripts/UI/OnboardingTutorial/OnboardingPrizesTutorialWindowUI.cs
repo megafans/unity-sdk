@@ -20,7 +20,7 @@ namespace MegafansSDK.UI
 
         public void NextBtn_OnClick()
         {
-            MegafansUI.Instance.ShowOnboardingDetailsWindow();
+            MegafansUI.Instance.ShowOnboardingBoosterWindow();
         }
 
         public IEnumerator StartCountdown(float countdownValue = 7)

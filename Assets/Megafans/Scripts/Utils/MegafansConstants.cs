@@ -17,7 +17,11 @@ namespace MegafansSDK.Utils {
         public const string TERMS_OF_USE = "TERMS_OF_USE";
         public const string PRIVACY_POLICY = "PRIVACY_POLICY";
         public const string LEARN_MORE_URL = "https://www.megafans.com/";
-        public const string MegafansSDKVersion = "1.0.1";
+        public const string MegafansSDKVersion = "1.1.0";
+		public const string LOCATION_SERVICES_DENIED_WARNING = "Please allow location services in order to purchase MegaFans tokens and compete in tournaments." +
+			"\n\nUpdate preferences now?";
+		public const string UNAUTHORIZED_USER_ERROR_TITLE = "Unauthorized";
+		public const string UNAUTHORIZED_USER_ERROR_DESCRIPTION = "Your current session is unauthorized.  Please log back into MegaFans.";
 	}
 
 }

@@ -14,6 +14,9 @@ namespace MegafansSDK.UI
         [SerializeField] private GameObject howMegafansTutorialWindow;
         [SerializeField] private GameObject prizesMegafansTutorialWindow;
         [SerializeField] private GameObject detailsMegafansTutorialWindow;
+        [SerializeField] private GameObject boosterMegafansTutorialWindow;
+        [SerializeField] private GameObject leaderboardMegafansTutorialWindow;
+        [SerializeField] private GameObject freeTokensMegafansTutorialWindow;
         [SerializeField] private GameObject registerNowMegafansTutorialWindow;
 
 
@@ -44,10 +47,24 @@ namespace MegafansSDK.UI
             ShowWindow(detailsMegafansTutorialWindow);
         }
 
+        public void ShowBoosterMegafansWindow()
+        {
+            ShowWindow(boosterMegafansTutorialWindow);
+        }
+
+        public void ShowLeaderboardMegafansWindow()
+        {
+            ShowWindow(leaderboardMegafansTutorialWindow);
+        }
+
+        public void ShowTokensMegafansWindow()
+        {
+            ShowWindow(freeTokensMegafansTutorialWindow);
+        }
+
         public void ShowRegisterNowMegaFansWindow()
         {
             registerNowMegafansTutorialWindow.SetActive(true);
-            //ShowWindow(registerNowMegafansTutorialWindow);
         }
 
         private void FillWindows()
@@ -64,13 +81,17 @@ namespace MegafansSDK.UI
             windows.Add(onboardingTutorialStartWindow);
             windows.Add(howMegafansTutorialWindow);
             windows.Add(prizesMegafansTutorialWindow);
+            windows.Add(boosterMegafansTutorialWindow);
+            windows.Add(leaderboardMegafansTutorialWindow);
+            windows.Add(freeTokensMegafansTutorialWindow);
             windows.Add(detailsMegafansTutorialWindow);
             windows.Add(registerNowMegafansTutorialWindow);
         }
 
         private void ShowWindow(GameObject windowToShow)
         {
-            if (windows != null) {
+            if (windows != null)
+            {
                 foreach (GameObject window in windows)
                 {
                     if (window == windowToShow)
@@ -87,7 +108,8 @@ namespace MegafansSDK.UI
 
         public void HideAllWindows()
         {
-            if (windows != null) {
+            if (windows != null)
+            {
 
                 foreach (GameObject window in windows)
                 {
@@ -96,7 +118,8 @@ namespace MegafansSDK.UI
             }
         }
 
-        public void LoginToAccount() {
+        public void LoginToAccount()
+        {
             MegafansUI.Instance.ShowLandingWindow(true);
         }
 

@@ -65,8 +65,7 @@ namespace MegafansSDK.Utils
             headers.Add("Authorization", authorization);
             headers.Add("Content-Type", "application/json");
             headers.Add("MegaFansSDKVersion", MegafansConstants.MegafansSDKVersion);
-            Debug.Log("Buying Tokens");
-            Debug.Log(jsonString);
+
             WWW www = new WWW(url, pData, headers);
 
             return www;

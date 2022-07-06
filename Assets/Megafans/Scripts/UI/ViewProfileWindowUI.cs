@@ -37,7 +37,8 @@ namespace MegafansSDK.UI
             MegafansWebService.Instance.ViewScoreboard(Megafans.Instance.GameUID, true,
                     gameType, OnScoreboardResponse, OnScoreboardFailure, this.viewingUserCode);
             SetHeader();
-            if (this.currentProfileData != null) {
+            if (this.currentProfileData != null)
+            {
                 userNameTxt.text = "";
                 this.currentProfileData = null;
                 countryFlagImg.texture = null;
@@ -63,12 +64,15 @@ namespace MegafansSDK.UI
             picPlaceholder = (Texture2D)profilePicImg.texture;
         }
 
-        public void BackBtn_OnClick() {
+        public void BackBtn_OnClick()
+        {
             MegafansUI.Instance.BackFromUserProfile();
         }
 
-        public void TournamentBtn_OnClick() {
-            if (this.gameType != GameType.TOURNAMENT) {
+        public void TournamentBtn_OnClick()
+        {
+            if (this.gameType != GameType.TOURNAMENT)
+            {
                 this.gameType = GameType.TOURNAMENT;
                 SelectBtn(tournamentsBtn);
                 SetProfileStats();
@@ -77,8 +81,10 @@ namespace MegafansSDK.UI
             }
         }
 
-        public void PracticeBtn_OnClick() {
-            if (this.gameType != GameType.PRACTICE) {
+        public void PracticeBtn_OnClick()
+        {
+            if (this.gameType != GameType.PRACTICE)
+            {
                 this.gameType = GameType.PRACTICE;
                 SelectBtn(practiceBtn);
                 SetProfileStats();
@@ -96,7 +102,8 @@ namespace MegafansSDK.UI
                 SetProfileStats();
 
                 MegafansWebService.Instance.FetchImage(response.data.image, OnFetchProfilePicSuccess, OnFetchProfilePicFailure, false);
-                if (response.data.countryFlag != null) {
+                if (response.data.countryFlag != null)
+                {
                     MegafansWebService.Instance.FetchImage(response.data.countryFlag, OnFetchCountryFlagSuccess, OnFetchCountryFlagFailure, false);
                 }
             }
@@ -105,7 +112,7 @@ namespace MegafansSDK.UI
         private void OnViewProfileFailure(string error)
         {
             Debug.LogError(error);
-        }            
+        }
 
         private void OnFetchProfilePicSuccess(Texture2D tex)
         {
@@ -136,21 +143,24 @@ namespace MegafansSDK.UI
         private void SetHeader()
         {
 
-            LeaderboardItem headerViewHandler = listBox.Header.GetComponent<LeaderboardItem>();
-            if (headerViewHandler != null)
-            {
-                headerViewHandler.SetValues("SCORE", "LEVEL", "");
-            }                 
+            //LeaderboardItem headerViewHandler = listBox.Header.GetComponent<LeaderboardItem>();
+            //if (headerViewHandler != null)
+            //{
+            //    headerViewHandler.SetValues("SCORE", "LEVEL", "");
+            //}                 
         }
 
         private void SetProfileStats()
         {
 
-            if (this.currentProfileData == null) {
+            if (this.currentProfileData == null)
+            {
                 profileWinCount.text = "0";
                 profileTournamentCount.text = "0";
                 profileHighestScore.text = "0";
-            } else {
+            }
+            else
+            {
                 if (this.gameType == GameType.PRACTICE)
                 {
                     profileTournamentType.text = "Practices";
@@ -238,14 +248,22 @@ namespace MegafansSDK.UI
                 if (response.data != null)
                 {
                     listBox.ClearList();
-                    for (int i = 0; i < response.data.user.Count; i++)
+
+                    for (int i = 0; i < response.data.Count; i++)
                     {
                         GameObject item = Instantiate(leaderboardItemPrefab);
                         LeaderboardItem viewHandler = item.GetComponent<LeaderboardItem>();
                         if (viewHandler != null)
                         {
-                            viewHandler.SetValues(response.data.user[i].score.ToString(), this.gameType.ToString(), response.data.user[i].code);
+                            /*
+                            viewHandler.SetValues(response.data[i].score.ToString(),
+                                this.gameType.ToString(),
+                                response.data.me.score.ToString(),
+                                response.data[i].code);
+                              
                             listBox.AddItem(item);
+                              */
+
                         }
                     }
                 }

@@ -4,40 +4,82 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 
-namespace MegafansSDK.UI {
-	
-	public class AlertDialogHandler : MonoBehaviour {
+namespace MegafansSDK.UI
+{
 
-		[SerializeField] private Image icon;
-		[SerializeField] private Text headingTxt;
-		[SerializeField] private Text messageTxt;
-		[SerializeField] private Button positiveBtn;
-		[SerializeField] private Text positiveBtnTxt;
-		[SerializeField] private Button negativeBtn;
-		[SerializeField] private Text negativeBtnTxt;
+    public class AlertDialogHandler : MonoBehaviour
+    {
 
-		public void ShowAlertDialog(Sprite icon, string heading, string msg, string positiveBtnTxt,
-			string negativeBtnTxt, UnityAction positiveBtnAction, UnityAction negativeBtnAction) {
+        [SerializeField] private Image icon;
+        [SerializeField] private Text headingTxt;
+        [SerializeField] private Text messageTxt;
+        [SerializeField] private Button positiveBtn;
+        [SerializeField] private Text positiveBtnTxt;
+        [SerializeField] private Button negativeBtn;
+        [SerializeField] private Text negativeBtnTxt;
+        [SerializeField] private Button closeBtn;
 
-			this.icon.sprite = icon;
-			headingTxt.text = heading;
-			messageTxt.text = msg;
-			this.positiveBtnTxt.text = positiveBtnTxt;
-			this.negativeBtnTxt.text = negativeBtnTxt;
+        public void ShowAlertDialog(Sprite icon, string heading, string msg, string positiveBtnTxt,
+            string negativeBtnTxt, UnityAction positiveBtnAction, UnityAction negativeBtnAction)
+        {
 
-			positiveBtn.onClick.RemoveAllListeners ();
-			positiveBtn.onClick.AddListener (positiveBtnAction);
+            this.icon.sprite = icon;
+            headingTxt.text = heading;
+            messageTxt.text = msg;
+            this.positiveBtnTxt.text = positiveBtnTxt;
+            this.negativeBtnTxt.text = negativeBtnTxt;
 
-			negativeBtn.onClick.RemoveAllListeners ();
-			negativeBtn.onClick.AddListener (negativeBtnAction);
+            positiveBtn.onClick.RemoveAllListeners();
+            positiveBtn.onClick.AddListener(positiveBtnAction);
 
-			this.gameObject.SetActive (true);
-		}
+            negativeBtn.gameObject.SetActive(false);
+            negativeBtn.onClick.RemoveAllListeners();
+            negativeBtn.onClick.AddListener(negativeBtnAction);
 
-		public void HideAlertDialog() {
-			this.gameObject.SetActive (false);
-		}
+            closeBtn.gameObject.SetActive(true);
+            closeBtn.onClick.RemoveAllListeners();
+            closeBtn.onClick.AddListener(negativeBtnAction);
 
-	}
+            this.gameObject.SetActive(true);
+        }
+
+        public void ShowAlertDialog(Sprite icon, string heading, string msg, string positiveBtnTxt,
+    string negativeBtnTxt, UnityAction positiveBtnAction, UnityAction negativeBtnAction, UnityAction closeBtnAction, bool hideCloseBtn)
+        {
+
+            this.icon.sprite = icon;
+            headingTxt.text = heading;
+            messageTxt.text = msg;
+            this.positiveBtnTxt.text = positiveBtnTxt;
+            this.negativeBtnTxt.text = negativeBtnTxt;
+
+            positiveBtn.onClick.RemoveAllListeners();
+            positiveBtn.onClick.AddListener(positiveBtnAction);
+
+            negativeBtn.gameObject.SetActive(false);
+            negativeBtn.onClick.RemoveAllListeners();
+            negativeBtn.onClick.AddListener(negativeBtnAction);
+
+            if (hideCloseBtn)
+            {
+                closeBtn.gameObject.SetActive(false);
+                closeBtn.onClick.RemoveAllListeners();
+            }
+            else
+            {
+                closeBtn.gameObject.SetActive(true);
+                closeBtn.onClick.RemoveAllListeners();
+                closeBtn.onClick.AddListener(negativeBtnAction);
+            }
+
+            this.gameObject.SetActive(true);
+        }
+
+        public void HideAlertDialog()
+        {
+            this.gameObject.SetActive(false);
+        }
+
+    }
 
 }

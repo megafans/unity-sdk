@@ -4,9 +4,11 @@ using UnityEngine.UI;
 
 using MegafansSDK.Utils;
 
-namespace MegafansSDK.UI {
+namespace MegafansSDK.UI
+{
 
-	public class LandingWindowUI : MonoBehaviour {
+    public class LandingWindowUI : MonoBehaviour
+    {
 
         [SerializeField] private Button withFacebookBtn;
         [SerializeField] private Button withEmailBtn;
@@ -25,7 +27,8 @@ namespace MegafansSDK.UI {
 
         public bool IsLinking = false;
 
-        private void OnEnable() {
+        private void OnEnable()
+        {
             withFacebookBtn.gameObject.SetActive(true);
             withEmailBtn.gameObject.SetActive(true);
             withPhoneBtn.gameObject.SetActive(true);
@@ -36,40 +39,54 @@ namespace MegafansSDK.UI {
             //}
         }
 
-        public void LoginWithFacebookBtn_OnClick() {
-            if (IsLogin)
-            {
-                MegafansWebService.Instance.LoginFB(OnLoginFBResponse, OnLoginFBFailure);
-            } else if (IsLinking) {
-                MegafansWebService.Instance.LinkFB(OnEditProfileResponse, OnLoginFBFailure);
-            } else {
-                MegafansUI.Instance.ShowLoadingBar();
-                MegafansWebService.Instance.RegisterFB(OnRegisterFBResponse, OnRegisterFBFailure);
-            }
-        }
+        //public void LoginWithFacebookBtn_OnClick()
+        //{
+        //    if (IsLogin)
+        //    {
+        //        MegafansWebService.Instance.LoginFB(OnLoginFBResponse, OnLoginFBFailure);
+        //    }
+        //    else if (IsLinking)
+        //    {
+        //        MegafansWebService.Instance.LinkFB(OnEditProfileResponse, OnLoginFBFailure);
+        //    }
+        //    else
+        //    {
+        //        MegafansUI.Instance.ShowLoadingBar();
+        //        MegafansWebService.Instance.RegisterFB(OnRegisterFBResponse, OnRegisterFBFailure);
+        //    }
+        //}
 
-        public void CloseBtn_OnClick(){
+        public void CloseBtn_OnClick()
+        {
             MegafansUI.Instance.HideLandingWindow();
         }
 
-        public void LoginWithEmailBtn_OnClick() {
-            if (IsLogin) {
+        public void LoginWithEmailBtn_OnClick()
+        {
+            if (IsLogin)
+            {
                 MegafansUI.Instance.ShowLoginWindow(true);
-            } else {
+            }
+            else
+            {
                 MegafansUI.Instance.ShowRegistrationWindow(true, IsLinking);
             }
         }
 
         public void LoginWithPhoneBtn_OnClick()
         {
-            if (IsLogin) {
+            if (IsLogin)
+            {
                 MegafansUI.Instance.ShowLoginWindow(false);
-            } else {
+            }
+            else
+            {
                 MegafansUI.Instance.ShowRegistrationWindow(false, IsLinking);
             }
         }
 
-        public void ToggleLoginSignUpBtn_OnClick() {
+        public void ToggleLoginSignUpBtn_OnClick()
+        {
             IsLogin = !IsLogin;
             updateUIForLoginOrSignUp();
         }
@@ -117,7 +134,8 @@ namespace MegafansSDK.UI {
                 //string msg = "You have registered successfully.";
                 //MegafansUI.Instance.ShowPopup("SUCCESS", msg);
                 Debug.Log(response.data);
-                if (!string.IsNullOrEmpty(MegafansPrefs.ProfilePic)) {
+                if (!string.IsNullOrEmpty(MegafansPrefs.ProfilePic))
+                {
                     StartCoroutine(MegafansWebService.Instance.UploadProfilePic(MegafansUtils.StringToTexture(MegafansPrefs.ProfilePic), (obj) =>
                     {
                         Debug.Log("Successfully uploaded profile picture.");
@@ -151,7 +169,8 @@ namespace MegafansSDK.UI {
             MegafansPrefs.Username = null;
         }
 
-        private void updateUIForLoginOrSignUp(){
+        private void updateUIForLoginOrSignUp()
+        {
             smsRegistrationOption.SetActive(MegafansPrefs.SMSAvailable);
             if (IsLogin)
             {
@@ -172,19 +191,27 @@ namespace MegafansSDK.UI {
                 if (!string.IsNullOrEmpty(MegafansPrefs.Email))
                 {
                     withEmailBtn.gameObject.SetActive(false);
-                } else {
+                }
+                else
+                {
                     withEmailBtn.gameObject.SetActive(true);
                 }
 
-                if (!string.IsNullOrEmpty(MegafansPrefs.PhoneNumber)) {
+                if (MegafansPrefs.IsPhoneVerified)
+                {
                     withPhoneBtn.gameObject.SetActive(false);
-                } else {
+                }
+                else
+                {
                     withPhoneBtn.gameObject.SetActive(true);
                 }
 
-                if (!string.IsNullOrEmpty(MegafansPrefs.FacebookID)) {
+                if (!string.IsNullOrEmpty(MegafansPrefs.FacebookID))
+                {
                     withFacebookBtn.gameObject.SetActive(false);
-                } else {
+                }
+                else
+                {
                     withFacebookBtn.gameObject.SetActive(true);
                 }
             }
@@ -200,8 +227,10 @@ namespace MegafansSDK.UI {
             }
         }
 
-        private void OnRegisterNewUserResponse(RegisterFirstTimeResponse response) {
-            if (response.success.Equals(MegafansConstants.SUCCESS_CODE)) {
+        private void OnRegisterNewUserResponse(RegisterFirstTimeResponse response)
+        {
+            if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
+            {
                 MegafansPrefs.AccessToken = response.data.token;
                 MegafansPrefs.RefreshToken = response.data.refresh;
                 MegafansPrefs.Username = response.data.username;
@@ -209,7 +238,8 @@ namespace MegafansSDK.UI {
                 MegafansPrefs.SMSAvailable = response.data.sms;
                 //OneSignal.SetExternalUserId(response.data.userId.ToString());
             }
-            else {
+            else
+            {
                 MegafansUI.Instance.ShowPopup("ERROR", response.message);
             }
         }

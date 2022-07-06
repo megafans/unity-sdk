@@ -11,18 +11,14 @@ namespace MegafansSDK.UI
     {
         [SerializeField] private Text daysTextLabel;
         [SerializeField] private Text daysDisplayTextLabel;
-        [SerializeField] private Image daysTextLabelBG;
         [SerializeField] private Text hoursTextLabel;
         [SerializeField] private Text hoursDisplayTextLabel;
-        [SerializeField] private Image hoursTextLabelBG;
         [SerializeField] private Text minutesTextLabel;
         [SerializeField] private Text minutesDisplayTextLabel;
-        [SerializeField] private Image minutesTextLabelBG;
         [SerializeField] private Text secondsTextLabel;
         [SerializeField] private Text secondsDisplayTextLabel;
         [SerializeField] private Image secondsTextLabelBG;
 
-        [SerializeField] private Sprite purpleCountDownBGImage;
         protected Coroutine counter;
 
         public int secondsRemaining;
@@ -41,21 +37,6 @@ namespace MegafansSDK.UI
                 counter = null;
             }
             counter = StartCoroutine(StartCountdown());
-
-            if (purpleBackground) {
-                daysTextLabelBG.sprite = purpleCountDownBGImage;
-                hoursTextLabelBG.sprite = purpleCountDownBGImage;
-                minutesTextLabelBG.sprite = purpleCountDownBGImage;
-                secondsTextLabelBG.sprite = purpleCountDownBGImage;
-                daysTextLabel.color = new Color32(130, 95, 169, 255);
-                hoursTextLabel.color = new Color32(130, 95, 169, 255);
-                minutesTextLabel.color = new Color32(130, 95, 169, 255);
-                secondsTextLabel.color = new Color32(130, 95, 169, 255);
-                daysDisplayTextLabel.color = new Color32(130, 95, 169, 255);
-                hoursDisplayTextLabel.color = new Color32(130, 95, 169, 255);
-                minutesDisplayTextLabel.color = new Color32(130, 95, 169, 255);
-                secondsDisplayTextLabel.color = new Color32(130, 95, 169, 255);
-            }
         }
 
         void Update()
