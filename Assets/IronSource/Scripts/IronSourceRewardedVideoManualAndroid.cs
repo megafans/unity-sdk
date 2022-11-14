@@ -34,7 +34,7 @@ public class IronSourceRewardedVideoManualAndroid : AndroidJavaProxy, IUnityRewa
     void onRewardedVideoAdLoadFailed(string args) {
         if (this.OnRewardedVideoAdLoadFailed!=null) {
             List<object> argList = IronSourceJSON.Json.Deserialize(args) as List<object>;
-            IronSourceError err = IronSourceUtils.getErrorFromErrorObject(argList[1]);
+            IronSourceError err = IronSourceUtils.getErrorFromErrorObject(argList[0]);
             this.OnRewardedVideoAdLoadFailed(err);
         }
     }

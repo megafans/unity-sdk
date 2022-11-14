@@ -10,6 +10,7 @@ namespace MegafansSDK.UI {
     public class UpdatePasswordWindowUI : MonoBehaviour {
 
         [SerializeField] Text userTokensTxt;
+        [SerializeField] Text SamePasswordWarnig;
         [SerializeField] InputField oldPasswordField;
         [SerializeField] InputField newPasswordField;
         [SerializeField] InputField newPasswordConfirmField;
@@ -37,6 +38,7 @@ namespace MegafansSDK.UI {
             oldPasswordField.text = "";
             newPasswordField.text = "";
             newPasswordConfirmField.text = "";
+            SamePasswordWarnig.gameObject.SetActive(false);
         }
 
         public void UpdateCreditUI()
@@ -67,6 +69,14 @@ namespace MegafansSDK.UI {
         //Called from each password field
         public void PasswordField_OnValueChanged() {
             savePasswordBtn.interactable = IsFormValid;
+            if (newPasswordField.text == oldPasswordField.text && newPasswordConfirmField.text == oldPasswordField.text)
+            {
+                SamePasswordWarnig.gameObject.SetActive(true);
+            }
+            else
+            {
+                SamePasswordWarnig.gameObject.SetActive(false);
+            }
         }
 
         public void BackBtn_OnClick() {

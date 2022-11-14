@@ -90,13 +90,22 @@ namespace MegafansSDK.UI
             return valueAsString;
         }
 
-
         public IEnumerator StartCountdown()
         {           
             while (this.secondsRemaining > 0)
             {
                 yield return new WaitForSeconds(1.0f);
                 this.secondsRemaining -= 1;
+            }
+            if (secondsRemaining == 0)
+            {
+                Megafans.Instance.CleanTokenWhenFinishedTournament();
+                MegafansUI.Instance.EnableUI(false);
+                MegafansHelper helper = GameObject.FindObjectOfType<MegafansHelper>();
+                if (helper != null)
+                {
+                    helper.ShowMegafans();
+                }
             }
         }
     }

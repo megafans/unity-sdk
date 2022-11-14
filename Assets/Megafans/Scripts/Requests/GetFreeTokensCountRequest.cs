@@ -9,7 +9,7 @@ namespace MegafansSDK.Utils
     [System.Serializable]
     public class GetFreeTokensCountRequest : Request
     {
-
+        public string userId;
         public override WWW GetWWW(string url)
         {
             Dictionary<string, string> headers = new Dictionary<string, string>();

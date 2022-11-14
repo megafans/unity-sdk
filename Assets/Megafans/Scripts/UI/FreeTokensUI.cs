@@ -28,16 +28,22 @@ namespace MegafansSDK.UI
                     MegafansSDK.Megafans.Instance.m_AdsManager.ShowRewardedVideo(() =>
                     {
                         Debug.Log("---------------------- Fucking Update UI -------------------");
-                        MegafansWebService.Instance.GetCredits(MegafansPrefs.UserId,
+                        /*MegafansWebService.Instance.GetCredits(MegafansPrefs.UserId,
                                                                OnGetCreditsSuccess,
+                                                               OnGetCreditsFailure);*/
+                        MegafansWebService.Instance.GetFreeTokensCount(OnGetCreditsSuccess,
                                                                OnGetCreditsFailure);
+
+
                     }, true);
                 }
                 else
                 {
-                    MegafansWebService.Instance.GetCredits(MegafansPrefs.UserId,
+                    /*MegafansWebService.Instance.GetCredits(MegafansPrefs.UserId,
                                                                OnGetCreditsSuccess,
-                                                               OnGetCreditsFailure);
+                                                               OnGetCreditsFailure);*/
+                    MegafansWebService.Instance.GetFreeTokensCount(OnGetCreditsSuccess,
+                                                           OnGetCreditsFailure);
                 }
             });
         }
@@ -45,6 +51,18 @@ namespace MegafansSDK.UI
         private void OnGetCreditsFailure(string obj)
         {
             Debug.Log("Getting credits FAILED");
+        }
+        private void OnGetCreditsSuccess(GetFreeTokensCountResponse response)
+        {
+            if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
+            {
+                Debug.Log("trying to add free tokens");
+                Debug.Log(response);
+                //MegafansPrefs.CurrentTokenBalance = response.data.credits;
+                //MegafansPrefs.CurrentTokenBalance = response.data.credits;
+
+                MegafansUI.Instance.UpdateAllTokenTexts();
+            }
         }
 
         private void OnGetCreditsSuccess(CheckCreditsResponse response)

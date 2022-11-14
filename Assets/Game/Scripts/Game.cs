@@ -4,12 +4,16 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using MegafansSDK;
+using MegafansSDK.AdsManagerAPI;
 using MegafansSDK.Utils;
 
 public class Game : MonoBehaviour, ILandingOptionsListener, IJoinGameCallback {
 
 	[SerializeField] private GameObject gameCanvas;
 	[SerializeField] private Text msgTxt;
+	[SerializeField] private GameObject m_MegaFans;
+	[SerializeField] private GameObject m_MegaFansHelper;
+	[SerializeField] private Button redirectionButtonBanner;
 
 	private int minNumber = 1;
 	private int maxNumber = 1000;
@@ -22,6 +26,27 @@ public class Game : MonoBehaviour, ILandingOptionsListener, IJoinGameCallback {
 	void Awake() {
 		gameDescription = "Press the button to roll a number from " + minNumber + " to " +
 		maxNumber + ". Player with the highest number wins!";
+
+		if (MegafansHelper.m_Instance == null)
+			Instantiate(m_MegaFansHelper);
+
+		if (MegafansSDK.Megafans.Instance == null)
+		{
+			//Debug.Log("MainMenuController: Reach here....");
+			GameObject go = (GameObject)Instantiate(m_MegaFans);
+			AdsManager adsManager = go.GetComponent<AdsManager>();
+			/*adsManager.adImage1 = AdBanner;
+			adsManager.adVideo1 = Advideo;
+			adsManager.m_uniGifImage = rawImageView;
+			adsManager.canvasObj = canvasObj;
+			adsManager.crossButtonState = crossButton;
+			adsManager.background = background;
+			adsManager.m_uniGifVideo = rawImageVideo;
+			adsManager.advideo = rawImageVideo.gameObject.GetComponent<RawImage>();*/
+			//adsManager.adImage = rawImageView.gameObject.GetComponent<RawImage>();
+			adsManager.redirectionButtonBanner = redirectionButtonBanner;
+
+		}
 	}
 
 	void Start() {

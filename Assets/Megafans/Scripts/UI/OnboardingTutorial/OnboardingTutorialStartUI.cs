@@ -44,7 +44,7 @@ namespace MegafansSDK.UI
                 MegafansPrefs.UserId = response.data.userId;
                 MegafansPrefs.SMSAvailable = response.data.sms;
              
-                OneSignal.SetExternalUserId(MegafansPrefs.UserId.ToString());
+                //OneSignal.SetExternalUserId(MegafansPrefs.UserId.ToString());
 
                 Megafan.NativeWrapper.MegafanNativeWrapper.RegisterUserWithUserId(response.data.userId.ToString(),
                                                                   Megafans.Instance.GameUID,

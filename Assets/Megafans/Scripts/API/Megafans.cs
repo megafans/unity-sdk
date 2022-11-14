@@ -60,7 +60,6 @@ namespace MegafansSDK
         /// </summary>
         /// <value>The Game Unique Identifier.</value>
         public string GameUID => gameUID;
-
         /// <summary>
         /// Gets or sets the Game Icon, which is needed throughout the MegaFans SDK for your games branding
         /// Set its value once at start.
@@ -141,7 +140,7 @@ namespace MegafansSDK
             {
                 Destroy(gameObject);
             }
-            OneSignal.StartInit(oneSignalAppId).EndInit();
+            //OneSignal.StartInit(oneSignalAppId).EndInit();
             m_AdsManager = GetComponent<AdsManager>();
 
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -229,7 +228,7 @@ namespace MegafansSDK
 #else
             var locationData = "latitude,longitude";
 #endif
-            MegafansWebService.Instance.SaveScore(this.currentTournamentToken, score, locationData,
+            MegafansWebService.Instance.SaveScoreNew(this.currentTournamentToken, score, locationData,
                 (SaveScoreResponse response) =>
                 {
                     //this.currentTournamentToken = "";
@@ -238,6 +237,8 @@ namespace MegafansSDK
                         if (onScoreSaved != null)
                         {
                             Debug.Log("REPORT - SAVE SCORE");
+                            Debug.Log("working with Ciel " + response.message);
+                            Debug.Log(response);
                             onScoreSaved();
                             MegafansUI.Instance.ShowLeaderboardWithScore(gameType, RankingType.LEADERBOARD, score, metaString, currentTournamentToken);
                         }

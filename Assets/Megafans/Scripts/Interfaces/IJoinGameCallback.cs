@@ -20,6 +20,9 @@ namespace MegafansSDK
         /// <param name="numberOfTokens">Number of tokens to be purchased using IAP.</param>
         void PurchaseTokens(int numberOfTokens);
 
+
     }
+
+
 
 }

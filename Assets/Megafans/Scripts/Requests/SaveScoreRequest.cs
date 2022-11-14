@@ -33,7 +33,6 @@ namespace MegafansSDK.Utils {
 
             return www;
 		}
-
 	}
 
 }

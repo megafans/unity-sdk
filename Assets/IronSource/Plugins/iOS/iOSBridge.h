@@ -8,7 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import <IronSource/IronSource.h>
-static NSString *  UnityGitHash = @"fa09648";
+#import "RewardedVideoLevelPlayCallbacksWrapper.h"
+#import "InterstitialLevelPlayCallbacksWrapper.h"
+#import "BannerLevelPlayCallbacksWrapper.h"
+
+static NSString *  UnityGitHash = @"7bb3bad";
+typedef void (*ISUnityBackgroundCallback)(const char* args);
+
 
 @interface iOSBridge : NSObject<ISRewardedVideoDelegate,
 								ISDemandOnlyRewardedVideoDelegate, 

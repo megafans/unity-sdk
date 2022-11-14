@@ -3,6 +3,8 @@ namespace MegafansSDK.Utils {
 
 	public static class MegafansConstants {
 
+		public const int androidBuildVersion = 1;
+		public const int IOSBuildVersion = 1;
 		public const string SUCCESS_CODE = "true";
 		public const string UNAUTHORIZED_CODE = "401";
 		public const string RESOLVE_ERROR = "Cannot resolve";

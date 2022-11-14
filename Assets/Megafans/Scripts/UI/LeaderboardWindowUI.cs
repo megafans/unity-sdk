@@ -248,8 +248,8 @@ namespace MegafansSDK.UI
             GameOverScreen.SetActive(false);
             LeaderboardScreen.SetActive(true);
 
-            //if (!MegafansHelper.m_Instance.m_WasPlayingTournament)
-            //{
+            if (!MegafansHelper.m_Instance.m_WasPlayingTournament)
+            {
                 MegafansSDK.AdsManagerAPI.AdsManager.instance.ApiCall_FullScreen(needtoShowThirdPartyAds => {
 
                     if (needtoShowThirdPartyAds)
@@ -259,7 +259,7 @@ namespace MegafansSDK.UI
 
 
                 });
-            //}
+            }
         }
 
         public void PlayAgainBtn_Click()
@@ -285,7 +285,7 @@ namespace MegafansSDK.UI
                         WatchedDoublerAd.SetActive(false);
                         DoublePointsWithAd.SetActive(false);
 
-                        //MegafansHelper.m_Instance.SaveUserScore(score * MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier, "Level " + LevelManager.Instance.currentLevel);
+                        MegafansHelper.m_Instance.SaveUserScore(score * MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier, "Level " /*+ LevelManager.Instance.currentLevel*/);
 
                         //MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier = Mathf.Clamp(MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier, MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier, MegafansSDK.Megafans.Instance.m_AdsManager.m_MaxMultiplier);
                         MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier = MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier;
@@ -300,7 +300,7 @@ namespace MegafansSDK.UI
                     WatchedDoublerAd.SetActive(false);
                     DoublePointsWithAd.SetActive(false);
 
-                    //MegafansHelper.m_Instance.SaveUserScore(score * MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier, "Level " + LevelManager.Instance.currentLevel);
+                    MegafansHelper.m_Instance.SaveUserScore(score * MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier, "Level " /*+ LevelManager.Instance.currentLevel*/);
 
                     //MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier = Mathf.Clamp(MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier, MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier, MegafansSDK.Megafans.Instance.m_AdsManager.m_MaxMultiplier);
                     MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier = MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier;

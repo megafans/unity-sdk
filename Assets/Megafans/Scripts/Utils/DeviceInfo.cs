@@ -46,6 +46,7 @@ namespace MegafansSDK.Utils {
 
             get
             {
+                return "";/*
 
                 var status = OneSignal.GetPermissionSubscriptionState();
 
@@ -56,7 +57,7 @@ namespace MegafansSDK.Utils {
 
                     return "";
                 else
-                    return status.subscriptionStatus.userId;
+                    return status.subscriptionStatus.userId;*/
             }
 
         }

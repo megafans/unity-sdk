@@ -4,21 +4,21 @@ public interface IronSourceIAgent
 {
 	//******************* Base API *******************//
 
-	void onApplicationPause (bool pause);
+	void onApplicationPause(bool pause);
 
-	void setMediationSegment (string segment);
+	void setMediationSegment(string segment);
 
-	string getAdvertiserId ();
+	string getAdvertiserId();
 
-	void validateIntegration ();
+	void validateIntegration();
 
-	void shouldTrackNetworkState (bool track);
+	void shouldTrackNetworkState(bool track);
 
-	bool setDynamicUserId (string dynamicUserId);
+	bool setDynamicUserId(string dynamicUserId);
 
 	void setAdaptersDebug(bool enabled);
 
-    void setMetaData(string key, string value);
+	void setMetaData(string key, string value);
 
 	void setMetaData(string key, params string[] values);
 
@@ -30,75 +30,75 @@ public interface IronSourceIAgent
 
 	//******************* SDK Init *******************//
 
-	void setUserId (string userId);
+	void setUserId(string userId);
 
-	void init (string appKey);
+	void init(string appKey);
 
-	void init (string appKey, params string[] adUnits);
+	void init(string appKey, params string[] adUnits);
 
-	void initISDemandOnly (string appKey, params string[] adUnits);
+	void initISDemandOnly(string appKey, params string[] adUnits);
 
 	//******************* RewardedVideo API *******************//
 
 	void loadRewardedVideo();
 
-	void showRewardedVideo ();
+	void showRewardedVideo();
 
-	void showRewardedVideo (string placementName);
+	void showRewardedVideo(string placementName);
 
-	bool isRewardedVideoAvailable ();
-	
-	bool isRewardedVideoPlacementCapped (string placementName);
+	bool isRewardedVideoAvailable();
 
-	IronSourcePlacement getPlacementInfo (string name);
-	
+	bool isRewardedVideoPlacementCapped(string placementName);
+
+	IronSourcePlacement getPlacementInfo(string name);
+
 	void setRewardedVideoServerParams(Dictionary<string, string> parameters);
 
-    void clearRewardedVideoServerParams();
+	void clearRewardedVideoServerParams();
 
-    //******************* RewardedVideo DemandOnly API *******************//
+	//******************* RewardedVideo DemandOnly API *******************//
 
-	void showISDemandOnlyRewardedVideo (string instanceId);
+	void showISDemandOnlyRewardedVideo(string instanceId);
 
-	void loadISDemandOnlyRewardedVideo (string instanceId);
+	void loadISDemandOnlyRewardedVideo(string instanceId);
 
-	bool isISDemandOnlyRewardedVideoAvailable (string instanceId);
-    
+	bool isISDemandOnlyRewardedVideoAvailable(string instanceId);
+
 	//******************* Interstitial API *******************//
 
-	void loadInterstitial ();
+	void loadInterstitial();
 
-	void showInterstitial ();
+	void showInterstitial();
 
-	void showInterstitial (string placementName);
+	void showInterstitial(string placementName);
 
-	bool isInterstitialReady ();
+	bool isInterstitialReady();
 
-	bool isInterstitialPlacementCapped (string placementName);
+	bool isInterstitialPlacementCapped(string placementName);
 
 	//******************* Interstitial DemandOnly API *******************//
 
-	void loadISDemandOnlyInterstitial (string instanceId);
+	void loadISDemandOnlyInterstitial(string instanceId);
 
-	void showISDemandOnlyInterstitial (string instanceId);
+	void showISDemandOnlyInterstitial(string instanceId);
 
-	bool isISDemandOnlyInterstitialReady (string instanceId);
+	bool isISDemandOnlyInterstitialReady(string instanceId);
 
 	//******************* Offerwall API *******************//
 
-	void showOfferwall ();
+	void showOfferwall();
 
-	void showOfferwall (string placementName);
+	void showOfferwall(string placementName);
 
-	bool isOfferwallAvailable ();
+	bool isOfferwallAvailable();
 
-	void getOfferwallCredits ();
+	void getOfferwallCredits();
 
 	//******************* Banner API *******************//
-	
-	void loadBanner (IronSourceBannerSize size, IronSourceBannerPosition position);
 
-	void loadBanner (IronSourceBannerSize size, IronSourceBannerPosition position, string placementName);
+	void loadBanner(IronSourceBannerSize size, IronSourceBannerPosition position);
+
+	void loadBanner(IronSourceBannerSize size, IronSourceBannerPosition position, string placementName);
 
 	void destroyBanner();
 
@@ -120,7 +120,7 @@ public interface IronSourceIAgent
 
 	//******************* ILRD API *******************//
 
-	void setAdRevenueData(string  dataSource, Dictionary<string, string> impressionData);
+	void setAdRevenueData(string dataSource, Dictionary<string, string> impressionData);
 }
 
 public static class dataSource
@@ -136,9 +136,9 @@ public static class IronSourceAdUnits
 
 	public static string INTERSTITIAL { get { return "interstitial"; } }
 
-	public static string OFFERWALL { get { return "offerwall"; } } 
+	public static string OFFERWALL { get { return "offerwall"; } }
 
-	public static string BANNER { get { return "banner"; } } 
+	public static string BANNER { get { return "banner"; } }
 }
 
 public class IronSourceBannerSize
@@ -184,7 +184,7 @@ public class IronSourceBannerSize
 
 	public string Description { get { return description; } }
 	public int Width { get { return width; } }
-	public int Height{ get { return height;} }
+	public int Height { get { return height; } }
 }
 
 public enum IronSourceBannerPosition

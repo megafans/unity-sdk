@@ -7,7 +7,7 @@ public class IronSource : IronSourceIAgent
 {
 	private IronSourceIAgent _platformAgent;
 	private static IronSource _instance;
-	public static string UNITY_PLUGIN_VERSION = "7.2.1-r";
+	public static string UNITY_PLUGIN_VERSION = "7.2.3.1-r";
 	private static bool isUnsupportedPlatform;
 
 	private IronSource()
@@ -27,21 +27,30 @@ public class IronSource : IronSourceIAgent
 		{
 			_platformAgent = new UnsupportedPlatformAgent();
 		}
-		var type = typeof(IronSourceEvents);
-		var mgr = new GameObject("IronSourceEvents", type).GetComponent<IronSourceEvents>(); // Creates IronSourceEvents gameObject
+		var ironSourceType = typeof(IronSourceEvents);
+		var ironSourceRewardedType = typeof(IronSourceRewardedVideoEvents);
+		var ironSourceInterstitialType = typeof(IronSourceInterstitialEvents);
+		var ironSourceBannerType = typeof(IronSourceBannerEvents);
+		var ironSourceEvents = new GameObject("IronSourceEvents", ironSourceType).GetComponent<IronSourceEvents>(); // Creates IronSourceEvents gameObject
+		var ironSourceRewardedVideoEvents = new GameObject("IronSourceRewardedVideoEvents", ironSourceRewardedType).GetComponent<IronSourceRewardedVideoEvents>(); // Creates IronSourceRewardedVideoEvents gameObject
+		var ironSourceInterstitialEvents = new GameObject("IronSourceInterstitialEvents", ironSourceInterstitialType).GetComponent<IronSourceInterstitialEvents>(); // Creates IronSourceInterstitialEvents gameObject
+		var ironSourceBannerEvents = new GameObject("IronSourceBannerEvents", ironSourceBannerType).GetComponent<IronSourceBannerEvents>(); // Creates IronSourceBannerEvents gameObject
 	}
 
 	#region IronSourceIAgent implementation
-	public static IronSource Agent {
-		get {
-			if (_instance == null) {
+	public static IronSource Agent
+	{
+		get
+		{
+			if (_instance == null)
+			{
 				_instance = new IronSource();
 			}
 			return _instance;
 		}
 	}
 
-    public static string pluginVersion()
+	public static string pluginVersion()
 	{
 		return UNITY_PLUGIN_VERSION;
 	}
@@ -63,7 +72,7 @@ public class IronSource : IronSourceIAgent
 		_platformAgent.onApplicationPause(pause);
 	}
 
-    [Obsolete("This method has been deprecated and won’t be included in ironSource SDK versions 7.3.0 and above", false)]
+	[Obsolete("This method has been deprecated and won’t be included in ironSource SDK versions 7.3.0 and above", false)]
 	public void setMediationSegment(string segment)
 	{
 		_platformAgent.setMediationSegment(segment);
@@ -105,9 +114,9 @@ public class IronSource : IronSourceIAgent
 	}
 
 	public int? getConversionValue()
-    {
+	{
 		return _platformAgent.getConversionValue();
-    }
+	}
 
 	public void setManualLoadRewardedVideo(bool isOn)
 	{
@@ -121,28 +130,28 @@ public class IronSource : IronSourceIAgent
 
 	//******************* SDK Init *******************//
 
-	public void setUserId (string userId)
+	public void setUserId(string userId)
 	{
-		_platformAgent.setUserId (userId);
+		_platformAgent.setUserId(userId);
 	}
 
-	public void init (string appKey)
+	public void init(string appKey)
 	{
-		_platformAgent.init (appKey);
+		_platformAgent.init(appKey);
 	}
 
-	public void init (string appKey, params string[] adUnits)
+	public void init(string appKey, params string[] adUnits)
 	{
-		_platformAgent.init (appKey, adUnits);
+		_platformAgent.init(appKey, adUnits);
 	}
 
-	public void initISDemandOnly (string appKey, params string[] adUnits)
+	public void initISDemandOnly(string appKey, params string[] adUnits)
 	{
-		_platformAgent.initISDemandOnly (appKey, adUnits);
+		_platformAgent.initISDemandOnly(appKey, adUnits);
 	}
 
 	//******************* RewardedVideo API *******************//
-    [Obsolete("This method has been deprecated and won’t be included in ironSource SDK versions 7.3.0 and above. Please use loadRewardedVideo() instead", false)]
+	[Obsolete("This method has been deprecated and won’t be included in ironSource SDK versions 7.3.0 and above. Please use loadRewardedVideo() instead", false)]
 	public void loadManualRewardedVideo()
 	{
 		_platformAgent.loadRewardedVideo();
@@ -154,161 +163,161 @@ public class IronSource : IronSourceIAgent
 	}
 
 
-	public void showRewardedVideo ()
+	public void showRewardedVideo()
 	{
-		_platformAgent.showRewardedVideo ();
+		_platformAgent.showRewardedVideo();
 	}
 
-	public void showRewardedVideo (string placementName)
+	public void showRewardedVideo(string placementName)
 	{
-		_platformAgent.showRewardedVideo (placementName);
+		_platformAgent.showRewardedVideo(placementName);
 	}
 
-	public IronSourcePlacement getPlacementInfo (string placementName)
+	public IronSourcePlacement getPlacementInfo(string placementName)
 	{
-		return _platformAgent.getPlacementInfo (placementName);
+		return _platformAgent.getPlacementInfo(placementName);
 	}
 
-	public bool isRewardedVideoAvailable ()
+	public bool isRewardedVideoAvailable()
 	{
-		return _platformAgent.isRewardedVideoAvailable ();
+		return _platformAgent.isRewardedVideoAvailable();
 	}
 
-	public bool isRewardedVideoPlacementCapped (string placementName)
+	public bool isRewardedVideoPlacementCapped(string placementName)
 	{
-		return _platformAgent.isRewardedVideoPlacementCapped (placementName);
+		return _platformAgent.isRewardedVideoPlacementCapped(placementName);
 	}
 
-    public void setRewardedVideoServerParams(Dictionary<string, string> parameters)
-    {
-    	_platformAgent.setRewardedVideoServerParams(parameters);
-    }
+	public void setRewardedVideoServerParams(Dictionary<string, string> parameters)
+	{
+		_platformAgent.setRewardedVideoServerParams(parameters);
+	}
 
-    public void clearRewardedVideoServerParams()
-    {
-        _platformAgent.clearRewardedVideoServerParams();	
-    }
+	public void clearRewardedVideoServerParams()
+	{
+		_platformAgent.clearRewardedVideoServerParams();
+	}
 
 	//******************* RewardedVideo DemandOnly API *******************//
 
-	public void showISDemandOnlyRewardedVideo (string instanceId) 
+	public void showISDemandOnlyRewardedVideo(string instanceId)
 	{
 		_platformAgent.showISDemandOnlyRewardedVideo(instanceId);
 	}
 
-	public void loadISDemandOnlyRewardedVideo (string instanceId)
+	public void loadISDemandOnlyRewardedVideo(string instanceId)
 	{
 		_platformAgent.loadISDemandOnlyRewardedVideo(instanceId);
 	}
 
-	public bool isISDemandOnlyRewardedVideoAvailable (string instanceId)
+	public bool isISDemandOnlyRewardedVideoAvailable(string instanceId)
 	{
 		return _platformAgent.isISDemandOnlyRewardedVideoAvailable(instanceId);
 	}
 
 	//******************* Interstitial API *******************//
 
-	public void loadInterstitial ()
+	public void loadInterstitial()
 	{
-		_platformAgent.loadInterstitial ();
+		_platformAgent.loadInterstitial();
 	}
 
-	public void showInterstitial ()
+	public void showInterstitial()
 	{
-		_platformAgent.showInterstitial ();
-	}
-	
-	public void showInterstitial (string placementName)
-	{
-		_platformAgent.showInterstitial (placementName);
+		_platformAgent.showInterstitial();
 	}
 
-	public bool isInterstitialReady ()
+	public void showInterstitial(string placementName)
 	{
-		return _platformAgent.isInterstitialReady ();
+		_platformAgent.showInterstitial(placementName);
 	}
 
-	public bool isInterstitialPlacementCapped (string placementName)
+	public bool isInterstitialReady()
 	{
-		return _platformAgent.isInterstitialPlacementCapped (placementName);
+		return _platformAgent.isInterstitialReady();
+	}
+
+	public bool isInterstitialPlacementCapped(string placementName)
+	{
+		return _platformAgent.isInterstitialPlacementCapped(placementName);
 	}
 
 	//******************* Interstitial DemandOnly API *******************//
 
-	public void loadISDemandOnlyInterstitial (string instanceId)
+	public void loadISDemandOnlyInterstitial(string instanceId)
 	{
 		_platformAgent.loadISDemandOnlyInterstitial(instanceId);
 	}
 
-	public void showISDemandOnlyInterstitial (string instanceId)
+	public void showISDemandOnlyInterstitial(string instanceId)
 	{
 		_platformAgent.showISDemandOnlyInterstitial(instanceId);
 	}
 
-	public bool isISDemandOnlyInterstitialReady (string instanceId)
+	public bool isISDemandOnlyInterstitialReady(string instanceId)
 	{
 		return _platformAgent.isISDemandOnlyInterstitialReady(instanceId);
 	}
-	
+
 	//******************* Offerwall API *******************//
 
-	public void showOfferwall ()
+	public void showOfferwall()
 	{
-		_platformAgent.showOfferwall ();
+		_platformAgent.showOfferwall();
 	}
 
-	public void showOfferwall (string placementName)
+	public void showOfferwall(string placementName)
 	{
-		_platformAgent.showOfferwall (placementName);
+		_platformAgent.showOfferwall(placementName);
 	}
 
-	public void getOfferwallCredits ()
+	public void getOfferwallCredits()
 	{
-		_platformAgent.getOfferwallCredits ();
+		_platformAgent.getOfferwallCredits();
 	}
-	
-	public bool isOfferwallAvailable ()
+
+	public bool isOfferwallAvailable()
 	{
-		return _platformAgent.isOfferwallAvailable ();
+		return _platformAgent.isOfferwallAvailable();
 	}
 
 	//******************* Banner API *******************//
 
-	public void loadBanner (IronSourceBannerSize size, IronSourceBannerPosition position)
+	public void loadBanner(IronSourceBannerSize size, IronSourceBannerPosition position)
 	{
-		_platformAgent.loadBanner (size, position);
+		_platformAgent.loadBanner(size, position);
 	}
-	
-	public void loadBanner (IronSourceBannerSize size, IronSourceBannerPosition position, string placementName)
+
+	public void loadBanner(IronSourceBannerSize size, IronSourceBannerPosition position, string placementName)
 	{
-		_platformAgent.loadBanner (size, position, placementName);
+		_platformAgent.loadBanner(size, position, placementName);
 	}
-	
+
 	public void destroyBanner()
 	{
-		_platformAgent.destroyBanner ();
+		_platformAgent.destroyBanner();
 	}
 
 	public void displayBanner()
 	{
-		_platformAgent.displayBanner ();
+		_platformAgent.displayBanner();
 	}
 
 	public void hideBanner()
 	{
-		_platformAgent.hideBanner ();
+		_platformAgent.hideBanner();
 	}
 
 
 	public bool isBannerPlacementCapped(string placementName)
 	{
-		return _platformAgent.isBannerPlacementCapped (placementName);
+		return _platformAgent.isBannerPlacementCapped(placementName);
 
 	}
 
 	public void setSegment(IronSourceSegment segment)
 	{
-		_platformAgent.setSegment (segment);
+		_platformAgent.setSegment(segment);
 	}
 
 	public void setConsent(bool consent)
@@ -319,9 +328,9 @@ public class IronSource : IronSourceIAgent
 	//******************* ConsentView API *******************//
 
 	public void loadConsentViewWithType(string consentViewType)
-    {
+	{
 		_platformAgent.loadConsentViewWithType(consentViewType);
-    }
+	}
 
 	public void showConsentViewWithType(string consentViewType)
 	{
@@ -332,8 +341,8 @@ public class IronSource : IronSourceIAgent
 
 	public void setAdRevenueData(string dataSource, Dictionary<string, string> impressionData)
 	{
-		_platformAgent.setAdRevenueData( dataSource , impressionData);
+		_platformAgent.setAdRevenueData(dataSource, impressionData);
 	}
 
-    #endregion
+	#endregion
 }

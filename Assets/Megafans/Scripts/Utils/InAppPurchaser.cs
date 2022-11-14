@@ -5,7 +5,6 @@ using UnityEngine.Purchasing;
 using UnityEngine.Purchasing.Extension;
 using MegafansSDK;
 using MegafansSDK.UI;
-using UnityEngine.UI;
 
 namespace MegafansSDK.Utils
 {
@@ -215,7 +214,6 @@ namespace MegafansSDK.Utils
                 {
                     megaFans_StoreController.ConfirmPendingPurchase(args.purchasedProduct);
                     MegafansUI.Instance.ShowPopup("Error", "Error purchasing tokens.  You were not charged for this transaction.  Please try again.");
-                    GameObject.Find("ErrorLog").GetComponent<Text>().text = GameObject.Find("ErrorLog").GetComponent<Text>().text + "\n" + error;
                     if (!string.IsNullOrEmpty(error))
                     {
                         Debug.LogError(error);

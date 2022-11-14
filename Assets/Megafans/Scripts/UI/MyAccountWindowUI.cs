@@ -100,8 +100,10 @@ namespace MegafansSDK.UI
 
         public void ProfilePic_OnClick()
         {
+            Debug.Log("working here 0");
             imagePicker.PickImage((Texture2D tex, string imagePath) =>
             {
+                Debug.Log("working here 3");
                 if (tex != null)
                 {
                     isPhotoRemoved = false;
@@ -124,6 +126,7 @@ namespace MegafansSDK.UI
                     MegafansUI.Instance.ShowPopup("ERROR", msg);
                 }
             }, 750, "Select your profile photo");
+            Debug.Log("working here 4");
         }
 
         public void RemovePicBtn_OnClick()
@@ -175,6 +178,58 @@ namespace MegafansSDK.UI
                       MegafansUI.Instance.HideAlertDialog();
                   });
             }
+        }
+
+        public void DeleteAccount_OnClick()
+        {
+            if (MegafansPrefs.IsRegisteredMegaFansUser)
+            {
+                string msg = "You are about to Delete your account. If you do, all progress, tokens, and history will be lost. \n<color=#FF4500>Are you sure you want to delete account?</color>";
+
+                MegafansUI.Instance.ShowAlertDialog(warningIcon, "Confirmation",
+                  msg, "Delete Account", "Cancel",
+                  () =>
+                  {
+                      MegafansWebService.Instance.deleteAccount(OnDeleteAccountResponse, OnLogoutFailure);
+                      MegafansPrefs.ClearPrefs();
+                      MegafansPrefs.DeviceTokens = DeviceInfo.DeviceToken;
+                      MegafansUI.Instance.ShowOnboardingStartWindow();
+                      MegafansUI.Instance.HideAlertDialog();
+                  },
+                  () =>
+                  {
+                      MegafansUI.Instance.HideAlertDialog();
+                  });
+            }
+            else
+            {
+                string msg = "You are about to Delete your account. If you do, all progress, tokens, and history will be lost. \n<color=#FF4500>Are you sure you want to Delete?</color>";
+
+                MegafansUI.Instance.ShowAlertDialog(warningIcon, "Confirmation",
+                  msg, "Delete Account", "Cancel",
+                  () =>
+                  {
+                      MegafansUI.Instance.HideAlertDialog();
+                      MegafansWebService.Instance.Logout(OnLogoutResponse, OnLogoutFailure);
+                      MegafansPrefs.ClearPrefs();
+                      MegafansPrefs.DeviceTokens = DeviceInfo.DeviceToken;
+                      MegafansUI.Instance.ShowOnboardingStartWindow();
+                  },
+                  () =>
+                  {
+                      MegafansUI.Instance.HideAlertDialog();
+                  });
+            }
+        }
+
+        void OnDeleteAccountResponse(DeleteAccountResponse response)
+        {
+            MegafansPrefs.UserId = 0;
+            MegafansPrefs.ProfilePicUrl = "";
+            MegafansPrefs.ClearPrefs();
+            //MegafansWebService.Instance.FBLogout();
+            MegafansUI.Instance.ShowOnboardingStartWindow();
+            //Megafans.NativeWrapper.MegafanNativeWrapper.LogoutFromIntercom();
         }
 
         private void OnViewProfileResponse(ViewProfileResponse response)

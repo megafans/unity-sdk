@@ -68,7 +68,7 @@ namespace MegafansSDK.Utils
 
         public void ReplayTournamentMatch()
         {
-            //MegafansHelper.m_Instance.m_WasPlayingTournament = false;
+            MegafansHelper.m_Instance.m_WasPlayingTournament = false;
             isReplay = true;
 #if !UNITY_EDITOR
             if (Megafans.Instance.lastLocationData != null)

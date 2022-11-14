@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using MegafansSDK.Utils;
+using System;
 
 namespace MegafansSDK.UI
 {
@@ -30,6 +31,7 @@ namespace MegafansSDK.UI
         [SerializeField] private LoadingBar loadingBar;
         [SerializeField] private BuyCoinsSuccessScreen tokenPurchaseSuccessWindow;
         [SerializeField] internal FreeTokensUI freeTokensUI;
+        [SerializeField] private GameObject ForceUpdateUI;
 
         private GameType backToLeaderboardGameType;
         private RankingType backToLeaderboardRankingType;
@@ -75,10 +77,10 @@ namespace MegafansSDK.UI
 
         public void Update()
         {
-            //if (uiParent.activeInHierarchy)
-            //{
-            //    AdsManagerAPI.AdsManager.instance.redirectionButtonBanner.interactable = false;
-            //}
+            if (uiParent.activeInHierarchy)
+            {
+                AdsManagerAPI.AdsManager.instance.redirectionButtonBanner.interactable = false;
+            }
             Refresh();
         }
 
@@ -142,13 +144,11 @@ namespace MegafansSDK.UI
                     Debug.Log("Ashish: EnableUI1 " + needtoShowThirdPartyAds);
                     if (needtoShowThirdPartyAds)
                     {
-                        AdsManagerAPI.AdsManager.instance.adImage.enabled = false;
-                        AdsManagerAPI.AdsManager.instance.adImage1.enabled = false;
+                        //AdsManagerAPI.AdsManager.instance.adImage.enabled = false;
+                        //AdsManagerAPI.AdsManager.instance.adImage1.enabled = false;
                         Debug.Log("Ashish: EnableUI2 " + needtoShowThirdPartyAds);
                         IronSource.Agent.displayBanner();
                     }
-
-
                 });
                 
             }
@@ -183,8 +183,6 @@ namespace MegafansSDK.UI
                         Debug.Log("Ashish: HideLandingWindow 2" + needtoShowThirdPartyAds);
                         IronSource.Agent.displayBanner();
                     }
-
-
                 });
             }
         }
@@ -313,6 +311,25 @@ namespace MegafansSDK.UI
             {
                 onboardingTutorialUI.ShowRegisterNowMegaFansWindow();
             }
+        }
+
+        void takeThemToStore()
+        {
+#if UNITY_ANDROID
+            Application.OpenURL("https://play.google.com/store/apps/details?id="+Application.identifier);
+#elif UNITY_IOS
+            Application.OpenURL("https://apps.apple.com/us/app/subway-surfers/id1447419350");
+#endif
+            ForceUpdate();
+        }
+
+        internal void ForceUpdate()
+        {
+            if (!uiParent.activeInHierarchy)
+            {
+                uiParent.SetActive(true);
+            }
+            ShowPopup("Update Required", "This is an older version of application please update.", () => takeThemToStore());
         }
 
         public void ShowLeaderboardWithScore(GameType gameType, RankingType rankingType, int score, string level = null, string matchId = null)
@@ -503,5 +520,4 @@ namespace MegafansSDK.UI
             Debug.LogError(error.ToString());
         }
     }
-
 }

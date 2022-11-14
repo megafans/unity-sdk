@@ -21,6 +21,7 @@ namespace MegafansSDK.Utils
         private static MegafansWebService instance = null;
         public static MegafansWebService Instance => instance;
 
+        const string Current_Version = "/current_version";
         const string RegisterUrlEmail = "/register_usernamepassword";
         const string RegisterUrlNewUser = "/register_newuser";
         const string RegisterUrlFB = "/register_facebook";
@@ -39,6 +40,7 @@ namespace MegafansSDK.Utils
         const string EnterTournamentUrl = "/enter_tournament";
         const string EnterPracticeUrl = "/enter_practice";
         const string SaveScoreUrl = "/save_game_scores";
+        const string SaveScoreUrlNew = "/save_game_scores_new";
         const string ViewPracticeScoreboardUrl = "/practice_score_leaderboard";
         const string ViewScoreboardUrl = "/tournament_score_leaderboard";
         const string ViewCurrentUserPracticeScoreboardUrl = "/practice_my_leaderboard";
@@ -56,10 +58,11 @@ namespace MegafansSDK.Utils
         const string LastTournamentResults = "/last_leaderboard";
         const string FreeTokensCountURL = "/ad_tokens";
         const string CheckPassword = "/checkpassword";
+        const string deletAccountUrl = "/delete_user";
 
         //private MegafansFBHelper fbHelper;
         private bool isRefreshingToken = false;
-
+        public VersionHandler _vH;
         void Awake()
         {
             if (instance == null)
@@ -80,7 +83,7 @@ namespace MegafansSDK.Utils
 
         void Start()
         {
-
+            StartCoroutine(CheckLatestVersion());
         }
 
 
@@ -120,6 +123,9 @@ namespace MegafansSDK.Utils
             //	Debug.Log (request.ToJson ());
             WWW www = request.GetWWW(url);
             yield return www;
+
+            while (!www.isDone)
+                yield return true;
 
             if (!isSilent)
             {
@@ -209,6 +215,68 @@ namespace MegafansSDK.Utils
                 }
 
                 failureCallback(www.error);
+            }
+        }
+
+        public void deleteAccount(Action<DeleteAccountResponse> responseCallback,
+    Action<string> failureCallback)
+        {
+            DeleteAccountRequest deleteAccountRequest = new DeleteAccountRequest();
+            deleteAccountRequest.appGameUid = Megafans.Instance.GameUID;
+            string url = Megafans.Instance.ServerBaseUrl() + deletAccountUrl;
+            Request<DeleteAccountResponse>(deleteAccountRequest, url, responseCallback, failureCallback);
+        }
+
+        public IEnumerator CheckLatestVersion()
+        {
+            string url = Megafans.Instance.ServerBaseUrl() + Current_Version + "?appGameUid=" + Megafans.Instance.GameUID; ;
+            /*Debug.Log(url);
+            Dictionary<string, string> headers = new Dictionary<string, string>();
+            string authorization = MegafansWebService.GetBearerToken();
+            Debug.Log(authorization);
+            headers.Add("Authorization", authorization);*/
+            //headers.Add("Content-Type", "application/json");
+            //headers.Add("MegaFansSDKVersion", MegafansConstants.MegafansSDKVersion);
+            //Debug.Log(authorization);
+            Debug.Log(Application.version);
+
+            //WWW www = new WWW(url, null ,headers);
+            WWW www = new WWW(url);
+            yield return www;
+
+            if (String.IsNullOrEmpty(www.error))
+            {
+                Debug.Log("RESPONSE:");
+                Debug.Log(www.text);
+
+                try
+                {
+                    _vH = JsonUtility.FromJson<VersionHandler>(www.text);
+                    string versionOnCloud = "";
+#if UNITY_ANDROID
+                    versionOnCloud = _vH.data.CurrentAndroidVersion;
+                    if (int.Parse(versionOnCloud) > MegafansConstants.androidBuildVersion)
+                    {
+                        PlayerPrefs.SetInt("versionOnCloud", int.Parse(versionOnCloud));
+                        MegafansUI.Instance.ForceUpdate();
+                    }
+#elif UNITY_IOS
+                    versionOnCloud = _vH.data.CurrentIosVersion;
+                    if (int.Parse(versionOnCloud) > MegafansConstants.IOSBuildVersion)
+                    {
+                        PlayerPrefs.SetInt("versionOnCloud", int.Parse(versionOnCloud));
+                        MegafansUI.Instance.ForceUpdate();
+                    }
+#endif
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e.ToString());
+                }
+            }
+            else
+            {
+                Debug.Log("ERROR RESPONSE:" + www.text);
             }
         }
 
@@ -456,11 +524,20 @@ namespace MegafansSDK.Utils
             Request<CheckCreditsResponse>(creditsRequest, url, responseCallback, failureCallback);
         }
 
+        public void GetFreeTokensCount(int userId, Action<GetFreeTokensCountResponse> responseCallback,
+                                       Action<string> failureCallback)
+        {
+            GetFreeTokensCountRequest creditsRequest = new GetFreeTokensCountRequest();
+
+            string url = Megafans.Instance.ServerBaseUrl() + FreeTokensCountURL;
+            Request<GetFreeTokensCountResponse>(creditsRequest, url, responseCallback, failureCallback, true);
+        }
+
         public void GetFreeTokensCount(Action<GetFreeTokensCountResponse> responseCallback,
                                        Action<string> failureCallback)
         {
-
             GetFreeTokensCountRequest creditsRequest = new GetFreeTokensCountRequest();
+
             string url = Megafans.Instance.ServerBaseUrl() + FreeTokensCountURL;
             Request<GetFreeTokensCountResponse>(creditsRequest, url, responseCallback, failureCallback,true);
         }
@@ -500,6 +577,9 @@ namespace MegafansSDK.Utils
 
             WWW www = new WWW(url);
             yield return www;
+
+            while (!www.isDone)
+                yield return true;
 
             if (!isSilent)
             {
@@ -565,6 +645,20 @@ namespace MegafansSDK.Utils
             scoreRequest.lastLocationValue = lastLocation;
 
             string url = Megafans.Instance.ServerBaseUrl() + SaveScoreUrl;
+            Request<SaveScoreResponse>(scoreRequest, url, responseCallback, failureCallback);
+        }
+
+        public void SaveScoreNew(string token, float score, string lastLocation, Action<SaveScoreResponse> responseCallback, Action<string> failureCallback)
+        {
+
+            SaveScoreRequestNew scoreRequest = new SaveScoreRequestNew();
+            var enc = new Encryption();
+            scoreRequest.score = enc.Base64Encode(enc.EncryptString(score.ToString(), "CeilandMegaFansPassword"));
+            Debug.Log("working with Sohaib " + enc.DecryptString(enc.Base64Decode(scoreRequest.score), "CeilandMegaFansPassword"));
+            scoreRequest.token = token;
+            scoreRequest.lastLocationValue = lastLocation;
+
+            string url = Megafans.Instance.ServerBaseUrl() + SaveScoreUrlNew;
             Request<SaveScoreResponse>(scoreRequest, url, responseCallback, failureCallback);
         }
 
@@ -660,13 +754,13 @@ namespace MegafansSDK.Utils
             tokensRequest.receipt = receipt;
             tokensRequest.transaction_number = transactionNumber;
             tokensRequest.productId = productId;
-            Text logText = GameObject.Find("ErrorLog").GetComponent<Text>();
+            /*Text logText = GameObject.Find("ErrorLog").GetComponent<Text>();
             logText.text = logText.text + "\n" + tokensRequest.app_game_uid;
             //logText.text = logText.text + "\n" + tokensRequest.deviceType;
             logText.text = logText.text + "\n" + tokensRequest.tokens;
             logText.text = logText.text + "\n" + tokensRequest.transaction_number;
             logText.text = logText.text + "\n" + tokensRequest.receipt;
-            logText.text = logText.text + "\n" + tokensRequest.productId;
+            logText.text = logText.text + "\n" + tokensRequest.productId;*/
             string url = Megafans.Instance.ServerBaseUrl() + BuyTokensUrl;
             Request<BuyTokensResponse>(tokensRequest, url, responseCallback, failureCallback);
         }
@@ -742,6 +836,9 @@ namespace MegafansSDK.Utils
 
             yield return www.SendWebRequest();
 
+            while (!www.isDone)
+                yield return true;
+
             if (www.isNetworkError || www.isHttpError)
             {
                 Debug.Log(www.error);
@@ -813,6 +910,11 @@ namespace MegafansSDK.Utils
             return "Bearer " + MegafansPrefs.AccessToken;
         }
 
+
+        public void OnApplicationFocus(bool focus)
+        {
+            StartCoroutine(CheckLatestVersion());
+        }
     }
 
 }

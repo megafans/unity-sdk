@@ -46,7 +46,7 @@ namespace MegafansSDK.UI
             listBox.ClearList();
             if (!string.IsNullOrEmpty(MegafansPrefs.AccessToken))
             {
-                //MegafansWebService.Instance.ViewProfile("", OnViewProfileResponse, OnViewProfileFailure);
+                MegafansWebService.Instance.ViewProfile("", OnViewProfileResponse, OnViewProfileFailure);
                 MegafansWebService.Instance.GetFreeTokensCount(OnFreeTokensCountResponse, OnFreeTokensCountFailure);
                 MegafansWebService.Instance.ViewLastTournamentResult("", "",
                 OnLastTournamentResponse, OnFreeTokensCountFailure);
@@ -137,7 +137,10 @@ namespace MegafansSDK.UI
             {
                 _tr.GetComponent<TournamentCardItem>().GetPlayButton().interactable = false;
             }
-
+            if (index == -1)
+            {
+                index = 0;
+            }
             listBox.GetItem(index).GetComponent<TournamentCardItem>().GetPlayButton().interactable = true;
 
             CountdownTimer timer = listBox.GetItem(index).transform.GetChild(1).gameObject.GetComponent<CountdownTimer>();
@@ -243,7 +246,8 @@ namespace MegafansSDK.UI
         public void ViewTournamentRulesBtn_OnClick()
         {
             LevelsResponseData tournament = Megafans.Instance.m_AllTournaments[listBox.currentIndex];
-
+            ///Debug.LogError("working with Sohaib");
+            Debug.Log(tournament.message);
             if (tournament != null)
                 MegafansUI.Instance.ShowRulesWindow(tournament);
         }

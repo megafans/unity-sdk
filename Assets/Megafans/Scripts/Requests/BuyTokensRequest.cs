@@ -47,14 +47,14 @@ namespace MegafansSDK.Utils
 #if UNITY_IPHONE
             AppleReceiptData deSerializedReceipt = MegafansJsonHelper.FromJson<AppleReceiptData>(receipt);
             body.Add("receipt", deSerializedReceipt.Payload);
-            body.Add("device_type", "iOS");
+            body.Add("deviceType", "iOS");
 #endif
 #if UNITY_ANDROID
             //GoogleReceiptData deSerializedReceipt = MegafansJsonHelper.FromJson<GoogleReceiptData>(receipt);
             byte[] bytes = Encoding.ASCII.GetBytes(receipt);
             string converted = Convert.ToBase64String(bytes);
             body.Add("receipt", converted);
-            body.Add("device_type", "Android");
+            body.Add("deviceType", "Android");
             body.Add("package_name", appID);
 #endif
             string jsonString = JsonConvert.SerializeObject(body);

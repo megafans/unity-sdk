@@ -1,0 +1,38 @@
+﻿#pragma warning disable 618
+using UnityEngine;
+using System.Collections.Generic;
+using System.Text;
+using Newtonsoft.Json;
+
+namespace MegafansSDK.Utils {
+
+	[System.Serializable]
+	public class SaveScoreRequestNew : Request {
+
+		public string token;
+		public string score;
+        public string lastLocationValue;
+
+        public override WWW GetWWW(string url) {
+            Dictionary<string, string> body = new Dictionary<string, string>();
+            body.Add("token", token);
+            body.Add("score", score.ToString());
+            string jsonString = JsonConvert.SerializeObject(body);
+
+            Dictionary<string, string> headers = new Dictionary<string, string>();
+            string authorization = MegafansWebService.GetBearerToken();
+            headers.Add("Authorization", authorization);
+            headers.Add("Content-Type", "application/json");
+            headers.Add("Accept", "application/json");
+            headers.Add("MegaFansSDKVersion", MegafansConstants.MegafansSDKVersion);
+            headers.Add("gpslocation", lastLocationValue);
+
+            byte[] pData = Encoding.ASCII.GetBytes(jsonString.ToCharArray());
+
+            WWW www = new WWW(url, pData, headers);
+
+            return www;
+		}
+	}
+
+}

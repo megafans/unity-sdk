@@ -33,7 +33,7 @@ namespace MegafansSDK.UI
             {
                 MegafansWebService.Instance.FetchImage(tournamentInfo.imageUrl, OnFetchPicSuccess, OnFetchPicFailure);
                 tournamentPicImg.gameObject.SetActive(true);
-                titleTxt.text = "N/A";
+                titleTxt.text = tournamentInfo.name;
                 prizeValueTxt.text = "N/A";
                 
                 for(int i = 0; i < prizeValueTxt.transform.childCount; i++)
