@@ -22,9 +22,11 @@ namespace MegafansSDK.UI
         [SerializeField] private Text userTokensValueTxt;
         [SerializeField] internal ListBox listBox;
         [SerializeField] private GameObject tournamentCardItemPrefab;
+        [SerializeField] private GameObject tournamentCardItemPrefabLandScape;
         [SerializeField] private GameObject lastTournamentItemPrefab;
         [SerializeField] private ListBox lastTournamentListBox;
         [SerializeField] private TournamentPasswordUI tournamentPasswordUI;
+        [SerializeField] private GameObject content;
 
         //Moved from Old tournament window
         [SerializeField] private Sprite coinsWarningIcon;
@@ -35,6 +37,14 @@ namespace MegafansSDK.UI
         void Awake()
         {
             matchAssistant = this.gameObject.AddComponent<JoinMatchAssistant>();
+            if (Screen.orientation != ScreenOrientation.Portrait)
+            {
+                content.GetComponent<HorizontalLayoutGroup>().padding.top = 200;
+                content.GetComponent<HorizontalLayoutGroup>().childControlHeight = false;
+                content.GetComponent<HorizontalLayoutGroup>().childControlWidth = false;
+
+            }
+
         }
 
 
@@ -294,6 +304,7 @@ namespace MegafansSDK.UI
         {
             listBox.SetUpForScreenCount(data.Count);
 
+            GameObject tournamentItem;
             for (int i = 0; i < data.Count; i++)
             {
                 LevelsResponseData levelInfo = data[i];
@@ -301,7 +312,17 @@ namespace MegafansSDK.UI
                 {
                     SetCountDownTimer_ForTournament(levelInfo);
                 }
-                GameObject tournamentItem = Instantiate(tournamentCardItemPrefab);
+
+
+                Debug.Log("Sohaib + " + Screen.orientation);
+                if (Screen.orientation == ScreenOrientation.Portrait)
+                {
+                    tournamentItem = Instantiate(tournamentCardItemPrefab);
+                }
+                else
+                {
+                    tournamentItem = Instantiate(tournamentCardItemPrefabLandScape);
+                }
                 TournamentCardItem viewHandler = tournamentItem.GetComponent<TournamentCardItem>();
                 if (viewHandler != null)
                 {

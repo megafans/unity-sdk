@@ -61,18 +61,19 @@ namespace MegafansSDK.UI
             {
                 Instantiate(eventSystemPrefab, this.transform);
             }
-            
+
+            Refresh();
         }
 
         private void OnEnable()
         {
+            Refresh();
             if (tournamentLobbyScreenUI != null)
             {
                 LobbyScreenPanel = tournamentLobbyScreenUI.transform.GetComponent<RectTransform>();
                 LandingScreenPanel = landingScreenUI.transform.GetComponent<RectTransform>();
                 OnboardingTutorialPanel = onboardingTutorialUI.transform.GetComponent<RectTransform>();
             }
-            Refresh();
         }
 
         public void Update()
@@ -82,6 +83,7 @@ namespace MegafansSDK.UI
                 AdsManagerAPI.AdsManager.instance.redirectionButtonBanner.interactable = false;
             }
             Refresh();
+            Debug.Log(Input.deviceOrientation);
         }
 
         void Refresh()
@@ -94,7 +96,16 @@ namespace MegafansSDK.UI
 
         Rect GetSafeArea()
         {
-            return Screen.safeArea;
+            if (Screen.orientation == ScreenOrientation.Portrait)
+            {
+                return Screen.safeArea;
+            }
+            else
+            {
+                Debug.Log("Sohaib = " + Screen.safeArea);
+                Rect obj = new Rect(Screen.safeArea.x, 0, Screen.safeArea.width, Screen.height);
+                return obj;
+            }
         }
 
         void ApplySafeArea(Rect r)
@@ -108,8 +119,10 @@ namespace MegafansSDK.UI
             anchorMin.y /= Screen.height;
             anchorMax.x /= Screen.width;
             anchorMax.y /= Screen.height;
+
             if (LobbyScreenPanel)
             {
+                Debug.Log("Sohaib " + anchorMin + " " + anchorMax);
                 LobbyScreenPanel.anchorMin = anchorMin;
                 LobbyScreenPanel.anchorMax = anchorMax;
             }
@@ -124,7 +137,7 @@ namespace MegafansSDK.UI
                 OnboardingTutorialPanel.anchorMax = anchorMax;
             }
 
-            Debug.LogFormat("New safe area applied to {0}: x={1}, y={2}, w={3}, h={4} on full extents w={5}, h={6}",
+            Debug.LogFormat("Sohaib New safe area applied to {0}: x={1}, y={2}, w={3}, h={4} on full extents w={5}, h={6}",
                 name, r.x, r.y, r.width, r.height, Screen.width, Screen.height);
         }
 

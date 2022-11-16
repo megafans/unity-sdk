@@ -38,7 +38,10 @@ namespace MegafansSDK.UI
 
         public GameObject Header => header;
 
+        private void Start()
+        {
 
+        }
         public void AddItem(GameObject item)
         {
             item.transform.SetParent(listItemsHolder.transform, false);
