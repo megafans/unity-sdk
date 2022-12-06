@@ -14,7 +14,13 @@ using System.Collections;
 
 namespace MegafansSDK
 {
-
+    [System.Serializable]
+    public class InAppId
+    {
+        public string AndroidId;
+        public string iosId;
+        public string value;
+    }
     public class Megafans : MonoBehaviour
     {
 
@@ -30,10 +36,10 @@ namespace MegafansSDK
         [SerializeField] string IOSIntercomAppKey;
         [SerializeField] public string discordChannelURL;
         [Space(10), Header("Purchase IDs:")]
-        [SerializeField] string tokenPurchase200ProductID;
-        [SerializeField] string tokenPurchase1000ProductID;
-        [SerializeField] string tokenPurchase3000ProductID;
-        [SerializeField] string tokenPurchase10000ProductID;
+        [SerializeField] InAppId tokenPurchase200ProductID;
+        [SerializeField] InAppId tokenPurchase1000ProductID;
+        [SerializeField] InAppId tokenPurchase3000ProductID;
+        [SerializeField] InAppId tokenPurchase10000ProductID;
         [Space(10), Header("Deployment Environment:")]
         [SerializeField] Deployment deployment;
         [SerializeField] string customDeployment;
@@ -79,27 +85,26 @@ namespace MegafansSDK
         /// Set its value once at start.
         /// </summary>
         /// <value>The ProductID for 200 MegaFans Token Purchase.</value>
-        public string ProductID200Tokens => tokenPurchase200ProductID;
-
+        [HideInInspector]public string ProductID200Tokens;
         /// <summary>
         /// Gets or sets the In-App ProductID for the purchase of 1000 MegaFans Tokens. This is the product ID given to you from the Apple App Store and Google Play store, should be the same for both stores.
         /// Set its value once at start.
         /// </summary>
         /// <value>The ProductID for 1000 MegaFans Token Purchase.</value>
-        public string ProductID1000Tokens => tokenPurchase1000ProductID;
+        [HideInInspector]public string ProductID1000Tokens;
 
         /// <summary>
         /// Gets or sets the In-App ProductID for the purchase of 3000 MegaFans Tokens. This is the product ID given to you from the Apple App Store and Google Play store, should be the same for both stores.
         /// Set its value once at start.
         /// </summary>
         /// <value>The ProductID for 3000 MegaFans Token Purchase.</value>
-        public string ProductID3000Tokens => tokenPurchase3000ProductID;
+        [HideInInspector]public string ProductID3000Tokens;
 
         /// <summary>
         /// Gets or sets the In-App ProductID for the purchase of 10000 MegaFans Tokens. This is the product ID given to you from the Apple App Store and Google Play store, should be the same for both stores.
         /// </summary>
         /// <value>The ProductID for 10000 MegaFans Token Purchase.</value>
-        public string ProductID10000Tokens => tokenPurchase10000ProductID;
+        [HideInInspector]public string ProductID10000Tokens;
 
         /// <summary>
         /// Gets a value indicating whether the user is currently logged in to MegaFans.
@@ -126,34 +131,6 @@ namespace MegafansSDK
                 {
                     MegafansUI.Instance.HideAlertDialog();
                 }
-            }
-        }
-
-        void Awake()
-        {
-            if (instance == null)
-            {
-                instance = this;
-                DontDestroyOnLoad(this.gameObject);
-            }
-            else if (instance != this)
-            {
-                Destroy(gameObject);
-            }
-            //OneSignal.StartInit(oneSignalAppId).EndInit();
-            m_AdsManager = GetComponent<AdsManager>();
-
-#if UNITY_ANDROID && !UNITY_EDITOR
-            MegafanNativeWrapper.InitIntercom(AndroidIntercomAppId, AndroidIntercomAppKey);
-            MegafanNativeWrapper.HideIntercom();
-#elif UNITY_IOS && !UNITY_EDITOR
-            MegafanNativeWrapper.InitIntercom(IOSIntercomAppId,IOSIntercomAppKey);
-            MegafanNativeWrapper.HideIntercom();
-#endif
-
-            if (Instance.IsUserLoggedIn)
-            {
-                Megafans.Instance.m_AdsManager.initIronSourceWithUserId(MegafansPrefs.UserId.ToString());
             }
         }
 
@@ -249,6 +226,47 @@ namespace MegafansSDK
                     }
                 },
                 (error) => onFailed?.Invoke(error));
+        }
+
+        void Awake()
+        {
+            if (instance == null)
+            {
+                instance = this;
+                DontDestroyOnLoad(this.gameObject);
+            }
+            else if (instance != this)
+            {
+                Destroy(gameObject);
+            }
+            //OneSignal.StartInit(oneSignalAppId).EndInit();
+            m_AdsManager = GetComponent<AdsManager>();
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+            MegafanNativeWrapper.InitIntercom(AndroidIntercomAppId, AndroidIntercomAppKey);
+            MegafanNativeWrapper.HideIntercom();
+#elif UNITY_IOS && !UNITY_EDITOR
+            MegafanNativeWrapper.InitIntercom(IOSIntercomAppId,IOSIntercomAppKey);
+            MegafanNativeWrapper.HideIntercom();
+#endif
+
+
+#if UNITY_ANDROID
+            ProductID200Tokens = tokenPurchase200ProductID.AndroidId;
+            ProductID1000Tokens = tokenPurchase1000ProductID.AndroidId;
+            ProductID3000Tokens = tokenPurchase3000ProductID.AndroidId;
+            ProductID10000Tokens = tokenPurchase10000ProductID.AndroidId;
+#elif UNITY_IOS
+            ProductID200Tokens = tokenPurchase200ProductID.iosId;
+                ProductID1000Tokens = tokenPurchase1000ProductID.iosId;
+                ProductID3000Tokens = tokenPurchase3000ProductID.iosId;
+                ProductID10000Tokens = tokenPurchase10000ProductID.iosId;
+#endif
+
+            if (Instance.IsUserLoggedIn)
+            {
+                Megafans.Instance.m_AdsManager.initIronSourceWithUserId(MegafansPrefs.UserId.ToString());
+            }
         }
 
         /// <summary>

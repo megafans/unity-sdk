@@ -23,6 +23,8 @@ namespace MegafansSDK.Utils {
                 return "iOS";
 #elif UNITY_ANDROID
                 return "Android";
+#else
+                return "Web";
 #endif
             }
         }

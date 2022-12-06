@@ -83,7 +83,6 @@ namespace MegafansSDK.UI
                 AdsManagerAPI.AdsManager.instance.redirectionButtonBanner.interactable = false;
             }
             Refresh();
-            Debug.Log(Input.deviceOrientation);
         }
 
         void Refresh()
@@ -102,7 +101,6 @@ namespace MegafansSDK.UI
             }
             else
             {
-                Debug.Log("Sohaib = " + Screen.safeArea);
                 Rect obj = new Rect(Screen.safeArea.x, 0, Screen.safeArea.width, Screen.height);
                 return obj;
             }
@@ -139,36 +137,6 @@ namespace MegafansSDK.UI
 
             Debug.LogFormat("Sohaib New safe area applied to {0}: x={1}, y={2}, w={3}, h={4} on full extents w={5}, h={6}",
                 name, r.x, r.y, r.width, r.height, Screen.width, Screen.height);
-        }
-
-        public void EnableUI(bool enable)
-        {
-            uiParent.SetActive(enable);
-            UIenabled = enable;
-
-            if (!enable)
-            {
-                onboardingTutorialUI.HideAllWindows();
-                landingScreenUI.HideAllWindows();
-                tournamentLobbyScreenUI.HideAllWindows();
-
-                Debug.Log("Ashish: EnableUI ");
-                MegafansSDK.AdsManagerAPI.AdsManager.instance.ApiCall_Banner(needtoShowThirdPartyAds => {
-                    Debug.Log("Ashish: EnableUI1 " + needtoShowThirdPartyAds);
-                    if (needtoShowThirdPartyAds)
-                    {
-                        //AdsManagerAPI.AdsManager.instance.adImage.enabled = false;
-                        //AdsManagerAPI.AdsManager.instance.adImage1.enabled = false;
-                        Debug.Log("Ashish: EnableUI2 " + needtoShowThirdPartyAds);
-                        IronSource.Agent.displayBanner();
-                    }
-                });
-                
-            }
-            else
-            {
-                IronSource.Agent.hideBanner();
-            }
         }
 
         public void ShowLandingWindow(bool IsLogin, bool IsLinking = false)
@@ -311,6 +279,35 @@ namespace MegafansSDK.UI
             landingScreenUI.HideTermsOfUseOrPrivacyWindow();
         }
 
+        public void EnableUI(bool enable)
+        {
+            uiParent.SetActive(enable);
+            UIenabled = enable;
+
+            if (!enable)
+            {
+                onboardingTutorialUI.HideAllWindows();
+                landingScreenUI.HideAllWindows();
+                tournamentLobbyScreenUI.HideAllWindows();
+
+                Debug.Log("Ashish: EnableUI ");
+                MegafansSDK.AdsManagerAPI.AdsManager.instance.ApiCall_Banner(needtoShowThirdPartyAds => {
+                    Debug.Log("Ashish: EnableUI1 " + needtoShowThirdPartyAds);
+                    if (needtoShowThirdPartyAds)
+                    {
+                        //AdsManagerAPI.AdsManager.instance.adImage.enabled = false;
+                        //AdsManagerAPI.AdsManager.instance.adImage1.enabled = false;
+                        Debug.Log("Ashish: EnableUI2 " + needtoShowThirdPartyAds);
+                        IronSource.Agent.displayBanner();
+                    }
+                });
+
+            }
+            else
+            {
+                IronSource.Agent.hideBanner();
+            }
+        }
         public void ShowLeaderboard(GameType gameType, RankingType rankingType)
         {
             if (MegafansPrefs.IsRegisteredMegaFansUser)

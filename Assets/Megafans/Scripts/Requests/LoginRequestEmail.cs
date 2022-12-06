@@ -19,6 +19,9 @@ namespace MegafansSDK.Utils {
             headers.Add ("Content-Type", "application/json");
             headers.Add("MegaFansSDKVersion", MegafansConstants.MegafansSDKVersion);
 
+
+            Debug.Log("Sohaib : " + authorization);
+            Debug.Log("Sohaib : " + queryUrl);
             byte[] pData = Encoding.ASCII.GetBytes(jsonString.ToCharArray());
 
             WWW www = new WWW (queryUrl, pData, headers);

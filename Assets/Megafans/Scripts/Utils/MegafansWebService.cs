@@ -229,18 +229,7 @@ namespace MegafansSDK.Utils
 
         public IEnumerator CheckLatestVersion()
         {
-            string url = Megafans.Instance.ServerBaseUrl() + Current_Version + "?appGameUid=" + Megafans.Instance.GameUID; ;
-            /*Debug.Log(url);
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-            string authorization = MegafansWebService.GetBearerToken();
-            Debug.Log(authorization);
-            headers.Add("Authorization", authorization);*/
-            //headers.Add("Content-Type", "application/json");
-            //headers.Add("MegaFansSDKVersion", MegafansConstants.MegafansSDKVersion);
-            //Debug.Log(authorization);
-            Debug.Log(Application.version);
-
-            //WWW www = new WWW(url, null ,headers);
+            string url = Megafans.Instance.ServerBaseUrl() + Current_Version + "?appGameUid=" + Megafans.Instance.GameUID;
             WWW www = new WWW(url);
             yield return www;
 
@@ -471,35 +460,6 @@ namespace MegafansSDK.Utils
             Request<Response>(resetRequest, url, responseCallback, failureCallback);
         }
 
-        public void GetLevels(string appGameId, GameType gameType, Action<LevelsResponse> responseCallback,
-            Action<string> failureCallback)
-        {
-
-            GetLevelsRequest levelsRequest = new GetLevelsRequest();
-            levelsRequest.app_game_uid = appGameId;
-            levelsRequest.game_type_id = (int)gameType;
-
-            string url = Megafans.Instance.ServerBaseUrl() + GetTournamentsUrl;
-            Request<LevelsResponse>(levelsRequest, url, responseCallback, failureCallback);
-        }
-
-        public void ViewProfile(string code, Action<ViewProfileResponse> responseCallback,
-            Action<string> failureCallback)
-        {
-
-            ViewProfileRequest profileRequest = new ViewProfileRequest();
-            profileRequest.appGameUID = Megafans.Instance.GameUID;
-            bool spinnerIsHidden = true;
-            if (!string.IsNullOrEmpty(code))
-            {
-                profileRequest.code = code;
-                spinnerIsHidden = false;
-            }
-
-            string url = Megafans.Instance.ServerBaseUrl() + ViewProfileUrl;
-            Request<ViewProfileResponse>(profileRequest, url, responseCallback, failureCallback, spinnerIsHidden);
-        }
-
         public void EditProfile(string username, string addPhoneNumber, string addEmailAddress,
             Action<EditProfileResponse> responseCallback, Action<string> failureCallback)
         {
@@ -566,6 +526,35 @@ namespace MegafansSDK.Utils
             StartCoroutine(FetchImageCo(url, successCallback, failureCallback, isSilent));
         }
 
+        public void GetLevels(string appGameId, GameType gameType, Action<LevelsResponse> responseCallback,
+    Action<string> failureCallback)
+        {
+
+            GetLevelsRequest levelsRequest = new GetLevelsRequest();
+            levelsRequest.app_game_uid = appGameId;
+            levelsRequest.game_type_id = (int)gameType;
+
+            string url = Megafans.Instance.ServerBaseUrl() + GetTournamentsUrl;
+            Request<LevelsResponse>(levelsRequest, url, responseCallback, failureCallback);
+        }
+
+        public void ViewProfile(string code, Action<ViewProfileResponse> responseCallback,
+            Action<string> failureCallback)
+        {
+
+            ViewProfileRequest profileRequest = new ViewProfileRequest();
+            profileRequest.appGameUID = Megafans.Instance.GameUID;
+            bool spinnerIsHidden = true;
+            if (!string.IsNullOrEmpty(code))
+            {
+                profileRequest.code = code;
+                spinnerIsHidden = false;
+            }
+
+            string url = Megafans.Instance.ServerBaseUrl() + ViewProfileUrl;
+            Request<ViewProfileResponse>(profileRequest, url, responseCallback, failureCallback, spinnerIsHidden);
+        }
+
         private IEnumerator FetchImageCo(string url, Action<Texture2D> successCallback,
             Action<string> failureCallback, bool isSilent)
         {
@@ -621,13 +610,6 @@ namespace MegafansSDK.Utils
             Request<TournamentRulesResponse>(rulesRequest, url, responseCallback, failureCallback);
         }
 
-        public void GetTermsOfUse(Action<TermsOrPrivacyPolicyResponse> responseCallback, Action<string> failureCallback)
-        {
-            TermsOrPrivacyPolicyRequest termsRequest = new TermsOrPrivacyPolicyRequest();
-            string url = Megafans.Instance.ServerBaseUrl() + GetTermsOfUseUrl;
-            Request<TermsOrPrivacyPolicyResponse>(termsRequest, url, responseCallback, failureCallback);
-        }
-
         public void GetPrivacyInfo(Action<TermsOrPrivacyPolicyResponse> responseCallback, Action<string> failureCallback)
         {
             TermsOrPrivacyPolicyRequest termsRequest = new TermsOrPrivacyPolicyRequest();
@@ -635,18 +617,12 @@ namespace MegafansSDK.Utils
             Request<TermsOrPrivacyPolicyResponse>(termsRequest, url, responseCallback, failureCallback);
         }
 
-        public void SaveScore(string token, float score, string lastLocation, Action<SaveScoreResponse> responseCallback, Action<string> failureCallback)
+        public void GetTermsOfUse(Action<TermsOrPrivacyPolicyResponse> responseCallback, Action<string> failureCallback)
         {
-
-            SaveScoreRequest scoreRequest = new SaveScoreRequest();
-
-            scoreRequest.score = score;
-            scoreRequest.token = token;
-            scoreRequest.lastLocationValue = lastLocation;
-
-            string url = Megafans.Instance.ServerBaseUrl() + SaveScoreUrl;
-            Request<SaveScoreResponse>(scoreRequest, url, responseCallback, failureCallback);
-        }
+            TermsOrPrivacyPolicyRequest termsRequest = new TermsOrPrivacyPolicyRequest();
+            string url = Megafans.Instance.ServerBaseUrl() + GetTermsOfUseUrl;
+            Request<TermsOrPrivacyPolicyResponse>(termsRequest, url, responseCallback, failureCallback);
+        }        
 
         public void SaveScoreNew(string token, float score, string lastLocation, Action<SaveScoreResponse> responseCallback, Action<string> failureCallback)
         {
@@ -730,16 +706,6 @@ namespace MegafansSDK.Utils
             leaderboardRequest.leaderboardsize = leaderboardsize;
 
             string url = Megafans.Instance.ServerBaseUrl();
-            /*
-            if (gameType == GameType.PRACTICE)
-            {
-                url += ViewPracticeLeaderboardUrl;
-            }
-            else
-            {
-                url += ViewleaderboardUrl;
-            }*/
-
             url += ViewleaderboardUrl;
 
             Request<ViewLeaderboardResponse>(leaderboardRequest, url, responseCallback, failureCallback, true);
@@ -871,16 +837,7 @@ namespace MegafansSDK.Utils
         //    Request<ViewLeaderboardResponse>(leaderboardRequest, url, responseCallback, failureCallback);
         //}
 
-        public void ResendEmailVerification(Action<Response> responseCallback,
-            Action<string> failureCallback)
-        {
-
-            ResendVerificationEmailRequest resetRequest = new ResendVerificationEmailRequest();
-            //resetRequest.device_type = DeviceInfo.DeviceType;
-
-            string url = Megafans.Instance.ServerBaseUrl() + ResendVerificationEmailUrl;
-            Request<Response>(resetRequest, url, responseCallback, failureCallback);
-        }
+        
 
         public void Logout(Action<LogoutResponse> responseCallback,
             Action<string> failureCallback)
@@ -892,6 +849,16 @@ namespace MegafansSDK.Utils
             Request<LogoutResponse>(logoutRequest, url, responseCallback, failureCallback);
         }
 
+        public void ResendEmailVerification(Action<Response> responseCallback,
+            Action<string> failureCallback)
+        {
+
+            ResendVerificationEmailRequest resetRequest = new ResendVerificationEmailRequest();
+            //resetRequest.device_type = DeviceInfo.DeviceType;
+
+            string url = Megafans.Instance.ServerBaseUrl() + ResendVerificationEmailUrl;
+            Request<Response>(resetRequest, url, responseCallback, failureCallback);
+        }
         //public void FBLogout()
         //{
         //    fbHelper.Logout();

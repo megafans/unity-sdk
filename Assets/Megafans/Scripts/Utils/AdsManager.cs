@@ -71,18 +71,18 @@ namespace MegafansSDK.AdsManagerAPI
 
             IronSourceEvents.onInterstitialAdOpenedEvent += () =>
             {
-                //MusicBase.Instance.ToggleMusic(false);
+                MusicBase.Instance.ToggleMusic(false);
             };
             IronSourceEvents.onInterstitialAdClosedEvent += () =>
             {
-                /*MusicBase.Instance.ToggleMusic(true);
-                IronSource.Agent.loadInterstitial();*/
+                MusicBase.Instance.ToggleMusic(true);
+                IronSource.Agent.loadInterstitial();
             };
 
             IronSourceEvents.onOfferwallClosedEvent += OfferwallClosedEvent;
 
-            IronSourceEvents.onRewardedVideoAdOpenedEvent += () => { /*MusicBase.Instance.ToggleMusic(false);*/ };
-            IronSourceEvents.onRewardedVideoAdClosedEvent += () => { /*MusicBase.Instance.ToggleMusic(true);*/ };
+            IronSourceEvents.onRewardedVideoAdOpenedEvent += () => { MusicBase.Instance.ToggleMusic(false); };
+            IronSourceEvents.onRewardedVideoAdClosedEvent += () => { MusicBase.Instance.ToggleMusic(true); };
             IronSourceEvents.onRewardedVideoAdRewardedEvent += placement => { onReward?.Invoke(); onReward = null; };
 
 
@@ -102,7 +102,7 @@ namespace MegafansSDK.AdsManagerAPI
                 IronSourceEvents.onBannerAdLoadedEvent += BannerAdLoadedEvent;
                 IronSourceEvents.onBannerAdLoadFailedEvent += IronSourceEvents_onBannerAdLoadFailedEvent;
 
-                /*IronSourceEvents.onInterstitialAdOpenedEvent += () =>
+                IronSourceEvents.onInterstitialAdOpenedEvent += () =>
                 {
                     MusicBase.Instance.ToggleMusic(false);
                 };
@@ -110,7 +110,7 @@ namespace MegafansSDK.AdsManagerAPI
                 {
                     MusicBase.Instance.ToggleMusic(true);
                     IronSource.Agent.loadInterstitial();
-                };*/
+                };
 
                 IronSourceEvents.onOfferwallClosedEvent += OfferwallClosedEvent;
                 IronSourceEvents.onOfferwallShowFailedEvent += OfferwallShowFailedEvent;
@@ -301,10 +301,10 @@ namespace MegafansSDK.AdsManagerAPI
                     string message = tokenParams["message"];
                     bool ironsourceBool = tokenParams["data"]["ironsource"];
                     string size = tokenParams["data"]["size"];
-                    /*if (value == 0)
+                    if (value == 0)
                         Refresh.Instance.bannercode = tokenParams["data"]["code"];
                     else
-                        Refresh.Instance.interstialcode = tokenParams["data"]["code"];*/
+                        Refresh.Instance.interstialcode = tokenParams["data"]["code"];
                     string adUrl = tokenParams["data"]["imageUrl"];
                     Debug.Log(adUrl + " adurl is");
                     if (String.IsNullOrEmpty(adUrl))
@@ -318,9 +318,9 @@ namespace MegafansSDK.AdsManagerAPI
                     if (adUrl.Contains(".gif"))
                     {
                         Debug.Log("i am gif");
-                        if ((ironsourceBool == false /*&& Refresh.Instance.adUrl != null*/) && value == 0)
+                        if ((ironsourceBool == false && Refresh.Instance.adUrl != null) && value == 0)
                         {
-                            //Refresh.Instance.adUrl = adUrl;
+                            Refresh.Instance.adUrl = adUrl;
                             Debug.Log("Hi, i am Banner Ad");
                             m_mutex = true;
                             IronSource.Agent.hideBanner();
@@ -331,16 +331,16 @@ namespace MegafansSDK.AdsManagerAPI
                             /*if (LevelManager.Instance != null)
                             {
                                 LevelManager.Instance.UpdateUIToFitBanner(true);
-                            }
-                            Refresh.Instance.redirectionButton.interactable = true;*/
+                            }*/
+                            Refresh.Instance.redirectionButton.interactable = true;
                         }
-                        else if ((ironsourceBool == false /*&& Refresh.Instance.adUrl != null*/) && value == 1)
+                        else if ((ironsourceBool == false && Refresh.Instance.adUrl != null) && value == 1)
                         {
                             canvasObj.SetActive(true);
                             adImage.enabled = false;
                             adImage1.enabled = false;
                             IronSource.Agent.hideBanner();
-                            //Refresh.Instance.adUrl = adUrl;
+                            Refresh.Instance.adUrl = adUrl;
                             Debug.Log("ironsource   " + ironsourceBool);
                             m_mutex = true;
                             Debug.Log("Hi, I am interstial ad.");
@@ -348,38 +348,38 @@ namespace MegafansSDK.AdsManagerAPI
                             advideo.enabled = true;
                             adVideo1.enabled = false;
                             background.SetActive(true);
-                            //Refresh.Instance.redirectionButton.interactable = true;
+                            Refresh.Instance.redirectionButton.interactable = true;
                             Invoke("CrossButton", 10.0f);
 
                         }
                     }
                     else if (adUrl.Contains(".png") || adUrl.Contains(".jpg"))
                     {
-                        if ((ironsourceBool == false /*&& Refresh.Instance.adUrl != null*/) && value == 0)
+                        if ((ironsourceBool == false && Refresh.Instance.adUrl != null) && value == 0)
                         {
                             StartCoroutine(GetTextureRequest(adUrl, (response) => {
-                                //adImage1.sprite = response;
-                                //adImage1.enabled = true;
+                                adImage1.sprite = response;
+                                adImage1.enabled = true;
                                 redirectionButtonBanner.interactable = true;
-                                /*Refresh.Instance.redirectionButton.interactable = true;
-                                if (LevelManager.Instance != null)
+                                Refresh.Instance.redirectionButton.interactable = true;
+                                /*if (LevelManager.Instance != null)
                                 {
                                     LevelManager.Instance.UpdateUIToFitBanner(true);
                                 }*/
                             }));
                         }
-                        else if ((ironsourceBool == false /*&& Refresh.Instance.adUrl != null*/) && value == 1)
+                        else if ((ironsourceBool == false && Refresh.Instance.adUrl != null) && value == 1)
                         {
-                            //adImage.enabled = false;
-                            //adImage1.enabled = false;
+                            adImage.enabled = false;
+                            adImage1.enabled = false;
                             StartCoroutine(GetTextureRequest(adUrl, (response) => {
                                 IronSource.Agent.hideBanner();
-                                //canvasObj.SetActive(true);
-                                //adVideo1.sprite = response;
-                                //adVideo1.enabled = true;
-                                //advideo.enabled = false;
-                                //background.SetActive(true);
-                                //Refresh.Instance.redirectionButton.interactable = true;
+                                canvasObj.SetActive(true);
+                                adVideo1.sprite = response;
+                                adVideo1.enabled = true;
+                                advideo.enabled = false;
+                                background.SetActive(true);
+                                Refresh.Instance.redirectionButton.interactable = true;
                                 Invoke("CrossButton", 10.0f);
                             }));
                         }
@@ -415,7 +415,7 @@ namespace MegafansSDK.AdsManagerAPI
         public void CrossButton()
         {
 
-            //crossButtonState.SetActive(true);
+            crossButtonState.SetActive(true);
         }
         private IEnumerator ViewGifCoroutineForVideo()
         {
@@ -423,22 +423,22 @@ namespace MegafansSDK.AdsManagerAPI
             {
                 Debug.Log("Null value..111.");
             }
-            yield return StartCoroutine(m_uniGifVideo.SetGifFromUrlCoroutine(/*Refresh.Instance.adUrl*/""));
+            yield return StartCoroutine(m_uniGifVideo.SetGifFromUrlCoroutine(Refresh.Instance.adUrl));
             m_mutex = false;
         }
         private IEnumerator ViewGifCoroutine()
         {
-            //Debug.Log(Refresh.Instance.adUrl);
+            Debug.Log(Refresh.Instance.adUrl);
             if (m_uniGifImage == null)
             {
                 Debug.Log("Null value...");
             }
-            yield return StartCoroutine(m_uniGifImage.SetGifFromUrlCoroutine(/*Refresh.Instance.adUrl*/""));
+            yield return StartCoroutine(m_uniGifImage.SetGifFromUrlCoroutine(Refresh.Instance.adUrl));
             m_mutex = false;
         }
         public void ApiCall_Banner(Action<bool> isShowing)
         {
-            //adImage.enabled = false;
+            adImage.enabled = false;
             IronSource.Agent.hideBanner();
             StartCoroutine(GetRequest(baseUrl + "direct_banner?appGameUid=" + Megafans.Instance.GameUID, 0, isShowing));
         }
@@ -449,3 +449,7 @@ namespace MegafansSDK.AdsManagerAPI
         }
     }
 }
+
+
+
+

@@ -13,7 +13,7 @@ public class Game : MonoBehaviour, ILandingOptionsListener, IJoinGameCallback {
 	[SerializeField] private Text msgTxt;
 	[SerializeField] private GameObject m_MegaFans;
 	[SerializeField] private GameObject m_MegaFansHelper;
-	[SerializeField] private Button redirectionButtonBanner;
+	[SerializeField] private GameObject m_canvasRefresh;
 
 	private int minNumber = 1;
 	private int maxNumber = 1000;
@@ -24,37 +24,39 @@ public class Game : MonoBehaviour, ILandingOptionsListener, IJoinGameCallback {
 	private GameType gameType;
 
 	void Awake() {
-		gameDescription = "Press the button to roll a number from " + minNumber + " to " +
-		maxNumber + ". Player with the highest number wins!";
-
 		if (MegafansHelper.m_Instance == null)
+        {
 			Instantiate(m_MegaFansHelper);
+		}			
 
 		if (MegafansSDK.Megafans.Instance == null)
 		{
-			//Debug.Log("MainMenuController: Reach here....");
 			GameObject go = (GameObject)Instantiate(m_MegaFans);
-			AdsManager adsManager = go.GetComponent<AdsManager>();
-			/*adsManager.adImage1 = AdBanner;
-			adsManager.adVideo1 = Advideo;
-			adsManager.m_uniGifImage = rawImageView;
-			adsManager.canvasObj = canvasObj;
-			adsManager.crossButtonState = crossButton;
-			adsManager.background = background;
-			adsManager.m_uniGifVideo = rawImageVideo;
-			adsManager.advideo = rawImageVideo.gameObject.GetComponent<RawImage>();*/
-			//adsManager.adImage = rawImageView.gameObject.GetComponent<RawImage>();
-			adsManager.redirectionButtonBanner = redirectionButtonBanner;
+			GameObject AC = (GameObject)Instantiate(m_canvasRefresh);
+			Refresh obj = AC.GetComponent<Refresh>();
 
+			AdsManager adsManager = go.GetComponent<AdsManager>();
+			adsManager.adImage1 = obj.adImage1;
+			adsManager.adVideo1 = obj.adVideo1;
+			adsManager.m_uniGifImage = obj.m_uniGifImage;
+			adsManager.canvasObj = obj.canvasObj;
+			adsManager.crossButtonState = obj.crossButtonState;
+			adsManager.background = obj.background;
+			adsManager.m_uniGifVideo = obj.m_uniGifImage;
+			adsManager.advideo = obj.advideo;
+			adsManager.adImage = obj.adImage;
+			adsManager.redirectionButtonBanner = obj.redirectionButtonBanner;
 		}
 	}
 
 	void Start() {
-		if (!Megafans.Instance.IsUserLoggedIn) {
-			Megafans.Instance.ShowLandingScreen (this, this);
+		if (!Megafans.Instance.IsUserLoggedIn)
+		{
+			Megafans.Instance.ShowLandingScreen(this, this);
 		}
-		else {
-            Megafans.Instance.ShowTournamentLobby (this, this);
+		else
+		{
+			Megafans.Instance.ShowTournamentLobby(this, this);
 		}
 	}
 

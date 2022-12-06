@@ -140,6 +140,7 @@ namespace MegafansSDK.UI
         {
             landingWindow.SetActive(false);
             background.gameObject.SetActive(false);
+            MegafansUI.Instance.EnableUI(false);
         }
 
         private void FillWindows()
