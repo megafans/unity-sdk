@@ -155,7 +155,7 @@ namespace MegafansSDK.UI
                 verifyAcctView.SetActive(false);
                 loadingView.SetActive(true);
                 MegafansWebService.Instance.ViewLeaderboard(Megafans.Instance.GameUID,
-                    Megafans.Instance.GetCurrentTournamentData().id, "", "",
+                    Megafans.Instance.GetCurrentTournamentData().guid, "", "",
                     gameType, OnLeaderboardResponse, OnLeaderboardFailure);
             }
             else if (rankingType == RankingType.HISTORY)
@@ -285,7 +285,7 @@ namespace MegafansSDK.UI
                 verifyAcctView.SetActive(false);
                 loadingView.SetActive(true);
                 MegafansWebService.Instance.ViewLeaderboard(Megafans.Instance.GameUID,
-                     Megafans.Instance.GetCurrentTournamentData().id, "", "",
+                     Megafans.Instance.GetCurrentTournamentData().guid, "", "",
                     gameType, OnLeaderboardResponse, OnLeaderboardFailure);
             }
             else

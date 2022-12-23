@@ -1,1 +1,0 @@
-# MegaFans Unity SDK

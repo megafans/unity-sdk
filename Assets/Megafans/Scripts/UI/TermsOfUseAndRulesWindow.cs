@@ -54,7 +54,7 @@ namespace MegafansSDK.UI
         {
             if (levelInfo != null)
             {
-                MegafansWebService.Instance.GetTournamentRules(this.levelInfo.id, OnGetTournamentRulesResponse, LogError);
+                MegafansWebService.Instance.GetTournamentRules(this.levelInfo.guid, OnGetTournamentRulesResponse, LogError);
             }
         }
 

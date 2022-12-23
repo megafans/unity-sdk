@@ -33,7 +33,7 @@ namespace MegafansSDK.Utils
                     metaData = new Dictionary<string, string>();
                 }
                 //metaData.Add("level", "12");
-                Megafans.Instance.ReportStartGame(tournamentToken, 0, GameType.PRACTICE, metaData);
+                Megafans.Instance.ReportStartGame(tournamentToken, "", GameType.PRACTICE, metaData);
             }
         }
 
@@ -42,7 +42,7 @@ namespace MegafansSDK.Utils
             Debug.LogError(error);
         }
 
-        public void JoinTournamentMatch(int tournamentID)
+        public void JoinTournamentMatch(string tournamentID)
         {
             isReplay = false;
             Megafans.Instance.CurrentTournamentId = tournamentID;

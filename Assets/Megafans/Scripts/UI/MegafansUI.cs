@@ -120,7 +120,6 @@ namespace MegafansSDK.UI
 
             if (LobbyScreenPanel)
             {
-                Debug.Log("Sohaib " + anchorMin + " " + anchorMax);
                 LobbyScreenPanel.anchorMin = anchorMin;
                 LobbyScreenPanel.anchorMax = anchorMax;
             }
@@ -134,9 +133,6 @@ namespace MegafansSDK.UI
                 OnboardingTutorialPanel.anchorMin = anchorMin;
                 OnboardingTutorialPanel.anchorMax = anchorMax;
             }
-
-            Debug.LogFormat("Sohaib New safe area applied to {0}: x={1}, y={2}, w={3}, h={4} on full extents w={5}, h={6}",
-                name, r.x, r.y, r.width, r.height, Screen.width, Screen.height);
         }
 
         public void ShowLandingWindow(bool IsLogin, bool IsLinking = false)

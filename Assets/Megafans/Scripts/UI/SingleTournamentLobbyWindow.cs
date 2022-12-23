@@ -54,7 +54,7 @@ namespace MegafansSDK.UI
         }
 
         public void PlayNowBtn_OnClick() {
-            Megafans.Instance.CurrentTournamentId = levelInfo.id;
+            Megafans.Instance.CurrentTournamentId = levelInfo.guid;
             try
             {
                 float userCredits = MegafansPrefs.CurrentTokenBalance;
@@ -71,7 +71,7 @@ namespace MegafansSDK.UI
                 }
                 else
                 {
-                    matchAssistant.JoinTournamentMatch(levelInfo.id);
+                    matchAssistant.JoinTournamentMatch(levelInfo.guid);
                 }
 
                 //ShowCreditsWarning(userCredits);

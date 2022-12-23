@@ -9,22 +9,23 @@ namespace MegafansSDK.Utils {
 	[System.Serializable]
 	public class JoinMatchRequest : Request {
 
-		public int tournament_id;
+		public string tournament_id;
+		//public string GUID;
         public string app_game_id;
         public string lastLocationValue;
 
         public override WWW GetWWW(string url) {
             string queryUrl;
-            if (tournament_id != 0) {
+            if (tournament_id != "") {
                 queryUrl = url + "?tournamentId=" + tournament_id;
             } else {
-                queryUrl = url + "?appGameUid=" + app_game_id;
+                //queryUrl = url + "?appGameUid=" + app_game_id;
+                queryUrl = url + "?tournamentId=" + app_game_id;
             }
             //Dictionary<string, string> body = new Dictionary<string, string>();
             //body.Add("appGameUid", app_game_id);
             //string jsonString = JsonConvert.SerializeObject(body);
             //byte[] pData = Encoding.ASCII.GetBytes(jsonString.ToCharArray());
-
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
             string authorization = MegafansWebService.GetBearerToken();

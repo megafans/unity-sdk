@@ -33,11 +33,14 @@ namespace MegafansSDK.Utils
         const string ResetPasswordUrl = "/forgot_password"; //Not updated
         const string UpdatePasswordUrl = "/change_password";
         const string GetTournamentsUrl = "/view_all_tournaments";
+        const string GetTournamentsUrlV2 = "/view_all_tournaments_V2";
         const string ViewProfileUrl = "/view_profile";
+        const string ViewProfileUrlV2 = "/view_profile_V2";
         const string EditProfileUrl = "/edit_profile"; //Not updated
         const string UploadImageUrl = "/image_upload";
         const string CheckCreditsUrl = "/show_credit";
         const string EnterTournamentUrl = "/enter_tournament";
+        const string EnterTournamentUrlV2 = "/enter_tournament_V2";
         const string EnterPracticeUrl = "/enter_practice";
         const string SaveScoreUrl = "/save_game_scores";
         const string SaveScoreUrlNew = "/save_game_scores_new";
@@ -46,10 +49,12 @@ namespace MegafansSDK.Utils
         const string ViewCurrentUserPracticeScoreboardUrl = "/practice_my_leaderboard";
         const string ViewCurrentUserScoreboardUrl = "/my_history";//"/tournament_my_leaderboard";
         const string ViewleaderboardUrl = "/leaderboard";//" / tournament_rank_leaderboard";
+        const string ViewleaderboardUrlV2 = "/leaderboard_V2";//" / tournament_rank_leaderboard";
         const string GetTournamentRulesUrl = "/rules";
         const string GetTermsOfUseUrl = "/TermsAndConditions";
         const string GetPrivacyPolicyUrl = "/Privacy";
         const string ViewPracticeLeaderboardUrl = "/practice_rank_leaderboard";
+        const string BuyTokensUrlv2 = "/buy_tokens_v2";
         const string BuyTokensUrl = "/buy_tokens";
         const string OfferwallUrl = "/ispostback";
         const string RefreshAccessTokenUrl = "/refresh";
@@ -502,12 +507,12 @@ namespace MegafansSDK.Utils
             Request<GetFreeTokensCountResponse>(creditsRequest, url, responseCallback, failureCallback,true);
         }
 
-        public void GetCheckPassword(int tournamentId, string password, Action<GetPasswordCheckResponse> responseCallback,
-                               Action<string> failureCallback)
+        //public void GetCheckPassword(int tournamentId, string password, Action<GetPasswordCheckResponse> responseCallback, Action<string> failureCallback)
+        public void GetCheckPassword(string tournamentGUID, string password, Action<GetPasswordCheckResponse> responseCallback, Action<string> failureCallback)
         {
             GetPasswordCheckRequest passwordRequest = new GetPasswordCheckRequest();
 
-            passwordRequest.tournamentID = tournamentId.ToString();
+            passwordRequest.tournamentID = tournamentGUID.ToString();
             passwordRequest.password = password;
 
             string url = Megafans.Instance.ServerBaseUrl() + CheckPassword;
@@ -534,7 +539,7 @@ namespace MegafansSDK.Utils
             levelsRequest.app_game_uid = appGameId;
             levelsRequest.game_type_id = (int)gameType;
 
-            string url = Megafans.Instance.ServerBaseUrl() + GetTournamentsUrl;
+            string url = Megafans.Instance.ServerBaseUrl() + GetTournamentsUrlV2;
             Request<LevelsResponse>(levelsRequest, url, responseCallback, failureCallback);
         }
 
@@ -551,7 +556,7 @@ namespace MegafansSDK.Utils
                 spinnerIsHidden = false;
             }
 
-            string url = Megafans.Instance.ServerBaseUrl() + ViewProfileUrl;
+            string url = Megafans.Instance.ServerBaseUrl() + ViewProfileUrlV2;
             Request<ViewProfileResponse>(profileRequest, url, responseCallback, failureCallback, spinnerIsHidden);
         }
 
@@ -585,12 +590,13 @@ namespace MegafansSDK.Utils
             }
         }
 
-        public void JoinTournament(int tournamentId, string lastLocation, Action<JoinMatchResponse> responseCallback, Action<string> failureCallback)
+        //public void JoinTournament(int tournamentId, string lastLocation, Action<JoinMatchResponse> responseCallback, Action<string> failureCallback)
+        public void JoinTournament(string tournamentId, string lastLocation, Action<JoinMatchResponse> responseCallback, Action<string> failureCallback)
         {
             JoinMatchRequest joinRequest = new JoinMatchRequest();
             joinRequest.tournament_id = tournamentId;
             joinRequest.lastLocationValue = lastLocation;
-            string url = Megafans.Instance.ServerBaseUrl() + EnterTournamentUrl;
+            string url = Megafans.Instance.ServerBaseUrl() + EnterTournamentUrlV2;
             Request<JoinMatchResponse>(joinRequest, url, responseCallback, failureCallback);
         }
 
@@ -602,10 +608,12 @@ namespace MegafansSDK.Utils
             Request<JoinMatchResponse>(joinRequest, url, responseCallback, failureCallback);
         }
 
-        public void GetTournamentRules(int tournamentId, Action<TournamentRulesResponse> responseCallback, Action<string> failureCallback)
+        
+        //public void GetTournamentRules(int tournamentId, Action<TournamentRulesResponse> responseCallback, Action<string> failureCallback)
+        public void GetTournamentRules(string tournamentGUID, Action<TournamentRulesResponse> responseCallback, Action<string> failureCallback)
         {
             TournamentRulesRequest rulesRequest = new TournamentRulesRequest();
-            rulesRequest.tournament_id = tournamentId;
+            rulesRequest.tournament_id = tournamentGUID;
             string url = Megafans.Instance.ServerBaseUrl() + GetTournamentRulesUrl;
             Request<TournamentRulesResponse>(rulesRequest, url, responseCallback, failureCallback);
         }
@@ -630,7 +638,6 @@ namespace MegafansSDK.Utils
             SaveScoreRequestNew scoreRequest = new SaveScoreRequestNew();
             var enc = new Encryption();
             scoreRequest.score = enc.Base64Encode(enc.EncryptString(score.ToString(), "CeilandMegaFansPassword"));
-            Debug.Log("working with Sohaib " + enc.DecryptString(enc.Base64Decode(scoreRequest.score), "CeilandMegaFansPassword"));
             scoreRequest.token = token;
             scoreRequest.lastLocationValue = lastLocation;
 
@@ -695,18 +702,17 @@ namespace MegafansSDK.Utils
                                                   failureCallback);
         }
 
-        public void ViewLeaderboard(string appGameId, int tournamentId, string leaderboardpage, string leaderboardsize, GameType gameType,
+        public void ViewLeaderboard(string appGameId, string tournamentGUID, string leaderboardpage, string leaderboardsize, GameType gameType,
             Action<ViewLeaderboardResponse> responseCallback, Action<string> failureCallback)
         {
 
             ViewLeaderboardRequest leaderboardRequest = new ViewLeaderboardRequest();
             leaderboardRequest.app_game_uid = appGameId;
-            leaderboardRequest.tournament_id = tournamentId.ToString();
+            leaderboardRequest.tournamentId = tournamentGUID.ToString();
             leaderboardRequest.leaderboardpage = leaderboardpage;
             leaderboardRequest.leaderboardsize = leaderboardsize;
 
-            string url = Megafans.Instance.ServerBaseUrl();
-            url += ViewleaderboardUrl;
+            string url = Megafans.Instance.ServerBaseUrl() + ViewleaderboardUrlV2;
 
             Request<ViewLeaderboardResponse>(leaderboardRequest, url, responseCallback, failureCallback, true);
         }
@@ -727,7 +733,7 @@ namespace MegafansSDK.Utils
             logText.text = logText.text + "\n" + tokensRequest.transaction_number;
             logText.text = logText.text + "\n" + tokensRequest.receipt;
             logText.text = logText.text + "\n" + tokensRequest.productId;*/
-            string url = Megafans.Instance.ServerBaseUrl() + BuyTokensUrl;
+            string url = Megafans.Instance.ServerBaseUrl() + BuyTokensUrlv2;
             Request<BuyTokensResponse>(tokensRequest, url, responseCallback, failureCallback);
         }
 

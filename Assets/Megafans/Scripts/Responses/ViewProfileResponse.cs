@@ -21,6 +21,7 @@ namespace MegafansSDK.Utils
         public string gender;
         public string dateOfBirth;
         public float clientBalance;
+        public float TournamentEntryTokens;
         public string image;
         public string role;
         public int? status;

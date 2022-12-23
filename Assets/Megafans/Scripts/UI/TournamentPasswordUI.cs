@@ -8,7 +8,7 @@ namespace MegafansSDK.UI
     {
         public InputField passwordInput;
         public GameObject wrongPassword;
-        internal int currentTournamentID;
+        internal string currentTournamentID;
 
         private void OnEnable()
         {

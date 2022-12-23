@@ -140,7 +140,7 @@ namespace MegafansSDK.UI
                             }
                             else
                             {
-                                matchAssistant.JoinTournamentMatch(levelInfo.id);
+                                matchAssistant.JoinTournamentMatch(levelInfo.guid);
                             }
                         }
                         catch (Exception e)

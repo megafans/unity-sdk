@@ -16,7 +16,9 @@ namespace MegafansSDK.Utils
     public class LevelsResponseData
     {
         public bool cash_tournament;
-        public int id;
+        public string guid;
+        //public string tournamentId;
+        //public int id;
         public string name;
         public string message;
         public float entryFee;

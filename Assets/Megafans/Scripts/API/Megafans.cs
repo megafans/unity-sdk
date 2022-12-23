@@ -56,7 +56,7 @@ namespace MegafansSDK
 
         internal AdsManager m_AdsManager;
         internal List<LevelsResponseData> m_AllTournaments;
-        internal int CurrentTournamentId;
+        internal string CurrentTournamentId;
         internal int CurrentTounamentFreeEntries;
         internal bool CurrentUsingFreeEntry;
 
@@ -334,7 +334,7 @@ namespace MegafansSDK
             landingOptionsListener?.OnUserLoggedIn(userId);
         }
 
-        internal void ReportStartGame(string tournamentToken, int tournamentID, GameType gameType, Dictionary<string, string> metaData)
+        internal void ReportStartGame(string tournamentToken, string tournamentGUID, GameType gameType, Dictionary<string, string> metaData)
         {
             if (joinGameCallback != null)
             {
@@ -356,12 +356,12 @@ namespace MegafansSDK
 
         internal LevelsResponseData GetCurrentTournamentData()
         {
-            return m_AllTournaments.Find(w => w.id == CurrentTournamentId);
+            return m_AllTournaments.Find(w => w.guid == CurrentTournamentId);
         }
 
         internal int GetCurrentTournamentIndex()
         {
-            return m_AllTournaments.FindIndex(w => w.id == CurrentTournamentId);
+            return m_AllTournaments.FindIndex(w => w.guid == CurrentTournamentId);
         }
 
         public void CheckForLocationPermissions()

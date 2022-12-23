@@ -335,7 +335,7 @@ namespace MegafansSDK.UI
                 rankingType = _rankingType;
                 loadingView.SetActive(true);
                 MegafansWebService.Instance.ViewLeaderboard(Megafans.Instance.GameUID,
-                    Megafans.Instance.GetCurrentTournamentData().id, "","",
+                    Megafans.Instance.GetCurrentTournamentData().guid, "","",
                     gameType, OnLeaderboardResponse, OnLeaderboardFailure);
             }
         }

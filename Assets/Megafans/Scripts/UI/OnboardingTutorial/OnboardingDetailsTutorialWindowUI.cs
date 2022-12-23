@@ -139,12 +139,12 @@ namespace MegafansSDK.UI
                     Megafans.Instance.m_AllTournaments = levelsData;
 
                     MegafansUI.Instance.tournamentLobbyScreenUI.tournamentLobby.GetComponent<TournamentLobbyUI>().listBox.SetUpForScreenCount(levelsData.Count);
-                    MegafansUI.Instance.tournamentLobbyScreenUI.tournamentLobby.GetComponent<TournamentLobbyUI>().listBox.ManualDrag(Megafans.Instance.m_AllTournaments.FindIndex(w => w.id == currentF2PLevel.id));
+                    MegafansUI.Instance.tournamentLobbyScreenUI.tournamentLobby.GetComponent<TournamentLobbyUI>().listBox.ManualDrag(Megafans.Instance.m_AllTournaments.FindIndex(w => w.guid == currentF2PLevel.guid));
                     MegafansUI.Instance.ShowTournamentLobby();
 
                     if (currentF2PLevel != null)
                     {
-                        matchAssistant.JoinTournamentMatch(currentF2PLevel.id);                       
+                        matchAssistant.JoinTournamentMatch(currentF2PLevel.guid);                       
                     }
                     else
                     {
@@ -188,7 +188,7 @@ namespace MegafansSDK.UI
 
                     if (currentF2PLevel != null)
                     {
-                        matchAssistant.JoinTournamentMatch(currentF2PLevel.id);
+                        matchAssistant.JoinTournamentMatch(currentF2PLevel.guid);
                     }
                     else
                     {

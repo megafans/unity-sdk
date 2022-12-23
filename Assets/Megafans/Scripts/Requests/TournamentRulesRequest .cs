@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace MegafansSDK.Utils {
     [System.Serializable]
     public class TournamentRulesRequest : Request {
-        public int tournament_id;
+        public string tournament_id;
                 //public string app_game_id;
 
          public override WWW GetWWW(string url) {        

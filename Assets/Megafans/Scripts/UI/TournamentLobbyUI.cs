@@ -156,7 +156,7 @@ namespace MegafansSDK.UI
             CountdownTimer timer = listBox.GetItem(index).transform.GetChild(1).gameObject.GetComponent<CountdownTimer>();
             LevelsResponseData tournamentAtIndex = Megafans.Instance.m_AllTournaments[index];
 
-            Megafans.Instance.CurrentTournamentId = tournamentAtIndex.id;
+            Megafans.Instance.CurrentTournamentId = tournamentAtIndex.guid;
 
             SetCountDownTimer_ForTournament(tournamentAtIndex, timer.secondsRemaining);
         }
@@ -174,14 +174,14 @@ namespace MegafansSDK.UI
             Debug.Log(tournament.askPassword);
             if (tournament.askPassword)
             {
-                tournamentPasswordUI.currentTournamentID = tournament.id;
+                tournamentPasswordUI.currentTournamentID = tournament.guid;
                 tournamentPasswordUI.gameObject.SetActive(true);
             }
             else
             {
                 try
                 {
-                    matchAssistant.JoinTournamentMatch(tournament.id);
+                    matchAssistant.JoinTournamentMatch(tournament.guid);
                 }
                 catch (Exception e)
                 {
@@ -256,7 +256,6 @@ namespace MegafansSDK.UI
         public void ViewTournamentRulesBtn_OnClick()
         {
             LevelsResponseData tournament = Megafans.Instance.m_AllTournaments[listBox.currentIndex];
-            ///Debug.LogError("working with Sohaib");
             Debug.Log(tournament.message);
             if (tournament != null)
                 MegafansUI.Instance.ShowRulesWindow(tournament);
@@ -313,8 +312,6 @@ namespace MegafansSDK.UI
                     SetCountDownTimer_ForTournament(levelInfo);
                 }
 
-
-                Debug.Log("Sohaib + " + Screen.orientation);
                 if (Screen.orientation == ScreenOrientation.Portrait)
                 {
                     tournamentItem = Instantiate(tournamentCardItemPrefab);
@@ -396,7 +393,7 @@ namespace MegafansSDK.UI
 
                     FillLevels(levelsData);
 
-                    if (Megafans.Instance.CurrentTournamentId == 0)
+                    if (Megafans.Instance.CurrentTournamentId == "")
                         ScrollViewDidFinishScrollingOnIndex(0);
                     else
                         ScrollViewDidFinishScrollingOnIndex(Megafans.Instance.GetCurrentTournamentIndex());
