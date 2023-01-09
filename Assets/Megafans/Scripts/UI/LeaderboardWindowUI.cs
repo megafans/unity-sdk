@@ -239,7 +239,7 @@ namespace MegafansSDK.UI
             if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
             {
                 MegafansPrefs.CurrentTokenBalance = response.data.credits;
-                userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+                userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString() + " : " + MegafansPrefs.TournamentEntryTokens.ToString();
             }
         }
 

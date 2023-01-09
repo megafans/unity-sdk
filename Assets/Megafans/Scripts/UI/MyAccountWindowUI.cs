@@ -241,10 +241,13 @@ namespace MegafansSDK.UI
                 MegafansPrefs.Username = response.data.username;
                 MegafansPrefs.UserStatus = response.data.status ?? 7;
                 MegafansPrefs.CurrentTokenBalance = response.data.clientBalance;
+                MegafansPrefs.TournamentEntryTokens = response.data.TournamentEntryTokens;
                 MegafansPrefs.FacebookID = response.data.facebookLoginId;
 
                 MegafansWebService.Instance.FetchImage(response.data.image, OnFetchPicSuccess, OnFetchPicFailure);
             }
+
+            Debug.Log("ssssSSss : " + response.data);
         }
 
         private void OnViewProfileFailure(string error)

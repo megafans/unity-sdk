@@ -7,9 +7,6 @@ public class ControllerOctus : MonoBehaviour
 {
     private void Start()
     {
-        Destroy(GameObject.Find("fff"));
-        //gameObject.activeInHierarchy();
-        
-        //Destroy(GameObject.Find("fff"));
+        print("SSss : " + SystemInfo.deviceUniqueIdentifier);
     }
 }

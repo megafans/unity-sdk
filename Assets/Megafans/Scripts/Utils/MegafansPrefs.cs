@@ -38,6 +38,7 @@ namespace MegafansSDK.Utils
             }
         }
 
+        public static float TournamentEntryTokens;
         public static bool IsRegisteredMegaFansUser
         {
             get

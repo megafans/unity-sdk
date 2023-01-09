@@ -33,14 +33,14 @@ namespace MegafansSDK.Utils
         const string ResetPasswordUrl = "/forgot_password"; //Not updated
         const string UpdatePasswordUrl = "/change_password";
         const string GetTournamentsUrl = "/view_all_tournaments";
-        const string GetTournamentsUrlV2 = "/view_all_tournaments_V2";
+        const string GetTournamentsUrlV2 = "/view_all_tournaments_V2";// view all tournament v2 api
         const string ViewProfileUrl = "/view_profile";
         const string ViewProfileUrlV2 = "/view_profile_V2";
         const string EditProfileUrl = "/edit_profile"; //Not updated
         const string UploadImageUrl = "/image_upload";
         const string CheckCreditsUrl = "/show_credit";
         const string EnterTournamentUrl = "/enter_tournament";
-        const string EnterTournamentUrlV2 = "/enter_tournament_V2";
+        const string EnterTournamentUrlV2 = "/enter_tournament_V2";//enter tournament v2 api
         const string EnterPracticeUrl = "/enter_practice";
         const string SaveScoreUrl = "/save_game_scores";
         const string SaveScoreUrlNew = "/save_game_scores_new";
@@ -49,12 +49,13 @@ namespace MegafansSDK.Utils
         const string ViewCurrentUserPracticeScoreboardUrl = "/practice_my_leaderboard";
         const string ViewCurrentUserScoreboardUrl = "/my_history";//"/tournament_my_leaderboard";
         const string ViewleaderboardUrl = "/leaderboard";//" / tournament_rank_leaderboard";
-        const string ViewleaderboardUrlV2 = "/leaderboard_V2";//" / tournament_rank_leaderboard";
+        const string ViewleaderboardUrlV2 = "/leaderboard_V2";// leaderboard of tournament v2 api
         const string GetTournamentRulesUrl = "/rules";
+        const string GetTournamentRulesUrlV2 = "/rules_V2";
         const string GetTermsOfUseUrl = "/TermsAndConditions";
         const string GetPrivacyPolicyUrl = "/Privacy";
         const string ViewPracticeLeaderboardUrl = "/practice_rank_leaderboard";
-        const string BuyTokensUrlv2 = "/buy_tokens_v2";
+        const string BuyTokensUrlv2 = "/buy_tokens_v2"; //buy tokens of tournament v2 api
         const string BuyTokensUrl = "/buy_tokens";
         const string OfferwallUrl = "/ispostback";
         const string RefreshAccessTokenUrl = "/refresh";
@@ -140,8 +141,8 @@ namespace MegafansSDK.Utils
 
             if (String.IsNullOrEmpty(www.error))
             {
-                Debug.Log("RESPONSE:");
-                Debug.Log(www.text);
+                Debug.Log("RESPONSE:" + www.text);
+                //Debug.Log(www.text);
 
                 try
                 {
@@ -614,7 +615,7 @@ namespace MegafansSDK.Utils
         {
             TournamentRulesRequest rulesRequest = new TournamentRulesRequest();
             rulesRequest.tournament_id = tournamentGUID;
-            string url = Megafans.Instance.ServerBaseUrl() + GetTournamentRulesUrl;
+            string url = Megafans.Instance.ServerBaseUrl() + GetTournamentRulesUrlV2;
             Request<TournamentRulesResponse>(rulesRequest, url, responseCallback, failureCallback);
         }
 
