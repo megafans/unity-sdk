@@ -34,7 +34,8 @@ namespace MegafansSDK.UI {
 
 
         void OnEnable() {
-            userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //userTokensTxt.text = "TET : " + MegafansPrefs.CurrentTokenBalance.ToString();
             oldPasswordField.text = "";
             newPasswordField.text = "";
             newPasswordConfirmField.text = "";
@@ -43,7 +44,8 @@ namespace MegafansSDK.UI {
 
         public void UpdateCreditUI()
         {
-            userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         void OnUpdatePasswordResponse(UpdatePasswordResponse response) {

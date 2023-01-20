@@ -27,7 +27,8 @@ namespace MegafansSDK.UI
 
         void OnEnable()
         {
-            userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         public void PlayNowBtn_OnClick()

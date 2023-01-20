@@ -30,7 +30,8 @@ namespace MegafansSDK.UI
 
         void OnEnable()
         {
-            userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
             nameField.text = "";
 
             MegafansWebService.Instance.ViewProfile("", OnViewProfileResponse, OnViewProfileFailure);
@@ -48,7 +49,8 @@ namespace MegafansSDK.UI
 
         public void UpdateCreditUI()
         {
-            userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensTxt.text ="TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         void Start()

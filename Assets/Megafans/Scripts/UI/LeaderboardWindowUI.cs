@@ -231,7 +231,8 @@ namespace MegafansSDK.UI
 
         public void UpdateCreditUI()
         {
-            userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //userTokensValueTxt.text = "CB : " + MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         private void OnGetCreditsSuccess(CheckCreditsResponse response)

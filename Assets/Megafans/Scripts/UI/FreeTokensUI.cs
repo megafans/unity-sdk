@@ -14,7 +14,8 @@ namespace MegafansSDK.UI
 
         void OnEnable()
         {
-            userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         public void ShowVideoAdForFreeTokens()
@@ -87,7 +88,8 @@ namespace MegafansSDK.UI
 
         internal void UpdateCreditUI()
         {
-            userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         internal void UpdateTokensGotGet(string _TokensToGet)

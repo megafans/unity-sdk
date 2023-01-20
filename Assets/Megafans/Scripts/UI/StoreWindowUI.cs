@@ -31,7 +31,8 @@ namespace MegafansSDK.UI
 
         private void OnEnable()
         {
-            userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //userTokensTxt.text = "" + MegafansPrefs.CurrentTokenBalance.ToString();
             listBox.ClearList();
             MegafansUI.Instance.ShowLoadingBar();
             StartCoroutine(SetProducts());
@@ -129,7 +130,8 @@ namespace MegafansSDK.UI
 
         public void UpdateCreditUI()
         {
-            userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         public void BackBtn_OnClick()

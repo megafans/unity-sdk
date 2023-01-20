@@ -31,7 +31,8 @@ namespace MegafansSDK.UI
         void OnEnable()
         {
             Debug.Log("User current token balance - " + MegafansPrefs.CurrentTokenBalance.ToString());
-            userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
             userNameLabel.text = MegafansPrefs.Username;
             profilePicImg.texture = picPlaceholder;
             isPhotoRemoved = false;
@@ -45,7 +46,8 @@ namespace MegafansSDK.UI
 
         public void UpdateCreditUI()
         {
-            userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         public void BackBtn_OnClick()

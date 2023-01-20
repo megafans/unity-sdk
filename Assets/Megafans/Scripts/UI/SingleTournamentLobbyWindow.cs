@@ -37,7 +37,8 @@ namespace MegafansSDK.UI
                 SetPlayNowBtnAmountTxt();
                 tournamentCard.SetValues(this.levelInfo, true);
             }
-            userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         void Awake()

@@ -47,12 +47,14 @@ namespace MegafansSDK.UI
                 verifyAcctViewTextLabel.text = "Register your account to view your game history";
                 verifyAcctViewButtonTextLabel.text = "Register now";
             }
-            userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            //userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
         }
 
         public void UpdateCreditUI()
         {
-            userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            //userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
         }
 
         public void Init(GameType gameType, RankingType rankingType, LevelsResponseData levelInfo,

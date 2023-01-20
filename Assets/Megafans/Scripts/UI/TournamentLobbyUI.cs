@@ -20,6 +20,7 @@ namespace MegafansSDK.UI
     public class TournamentLobbyUI : MonoBehaviour, TournamentCardItemCustomMessageTarget
     {
         [SerializeField] private Text userTokensValueTxt;
+        [SerializeField] private Text userClientValueTxt;
         [SerializeField] internal ListBox listBox;
         [SerializeField] private GameObject tournamentCardItemPrefab;
         [SerializeField] private GameObject tournamentCardItemPrefabLandScape;
@@ -62,7 +63,8 @@ namespace MegafansSDK.UI
                 OnLastTournamentResponse, OnFreeTokensCountFailure);
                 RequestTournaments();
             }
-            userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            userClientValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
 
             Megafan.NativeWrapper.MegafanNativeWrapper.RegisterUserWithUserId(MegafansPrefs.UserId.ToString(),
                                                           Megafans.Instance.GameUID,
@@ -127,7 +129,8 @@ namespace MegafansSDK.UI
 
         public void UpdateCreditUI()
         {
-            userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         public void RequestTournaments()
@@ -337,9 +340,11 @@ namespace MegafansSDK.UI
                 MegafansPrefs.Username = response.data.username;
                 MegafansPrefs.UserStatus = response.data.status ?? 7;
                 MegafansPrefs.CurrentTokenBalance = response.data.clientBalance;
+                MegafansPrefs.TournamentEntryTokens = response.data.TournamentEntryTokens;
                 MegafansPrefs.FacebookID = response.data.facebookLoginId;
 
-                userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+                userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+                userClientValueTxt.text = "CB : " + MegafansPrefs.CurrentTokenBalance.ToString();
                 if (response.data.email != null)
                 {
                     MegafansPrefs.Email = response.data.email;
@@ -364,7 +369,8 @@ namespace MegafansSDK.UI
             if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
             {
                 MegafansPrefs.CurrentTokenBalance = response.data.credits;
-                userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+                //userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+                userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
             }
         }
 

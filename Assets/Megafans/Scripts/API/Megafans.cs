@@ -341,6 +341,7 @@ namespace MegafansSDK
                 Debug.Log("REPORT - START GAME");
                 this.currentTournamentToken = tournamentToken;
                 joinGameCallback.StartGame(gameType, metaData);
+                MegafansPrefs.TournamentEntryTokens -= GetCurrentTournamentData().entryFee;
             }
         }
 
