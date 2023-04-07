@@ -20,16 +20,13 @@ namespace MegafansSDK.UI
             get
             {
                 bool isValidNumber = MegafansUtils.IsPhoneNumberValid(phoneNumberField.text);
-                //return MegafansUtils.IsPhoneNumberPrefixValid(phoneNumberPrefixField.text) && MegafansUtils.IsPhoneNumberValid (phoneNumberField.text);
                 return isValidNumber;
-                //return MegafansUtils.IsPhoneNumberValid(phoneNumberField.text);
             }
         }
 
         void Awake()
         {
             loginBtn.interactable = false;
-            //phoneNumberField.text = "9709858807";
         }
 
         private void OnEnable()

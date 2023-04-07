@@ -96,29 +96,7 @@ public class InGameUIHelper : MonoBehaviour
                     m_PreGameBoosters[_ID].transform.GetChild(1).gameObject.SetActive(false);
 
                 }, false);
-            }/*
-            else if (Refresh.Instance.adUrl != null)
-            {
-                if (_ID == 0)//Rainbow
-                {
-                    Debug.Log("Id is ----------->" + _ID);
-                    LevelManager.THIS.BoostColorfullBomb = 1;
-                }
-                else if (_ID == 1)
-                {
-                    Debug.Log("Id is ----------->" + _ID);
-                    LevelManager.THIS.BoostPackage = 5;
-                }
-                else
-                {
-                    Debug.Log("Id is ----------->" + _ID);
-                    LevelManager.THIS.BoostStriped = 5;
-                }
-                Debug.Log("Id is ----------->" + _ID);
-                m_PreGameBoosters[_ID].transform.GetChild(0).gameObject.SetActive(true);
-                m_PreGameBoosters[_ID].GetComponent<Button>().interactable = false;
-                m_PreGameBoosters[_ID].transform.GetChild(1).gameObject.SetActive(false);
-            }*/
+            }
             else
             {
                 MegafansSDK.Megafans.Instance.m_AdsManager.ShowRewardedVideo(() =>

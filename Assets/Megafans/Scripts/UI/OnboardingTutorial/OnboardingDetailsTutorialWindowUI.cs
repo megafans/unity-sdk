@@ -117,6 +117,8 @@ namespace MegafansSDK.UI
             MegafansUI.Instance.HideLoadingBar();
             if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
             {
+                MegafansConstants.UserBanned = false;
+
                 List<LevelsResponseData> levelsData = response.data;
 
                 if (levelsData.Count == 0 || levelsData == null)
@@ -141,18 +143,13 @@ namespace MegafansSDK.UI
                     MegafansUI.Instance.tournamentLobbyScreenUI.tournamentLobby.GetComponent<TournamentLobbyUI>().listBox.SetUpForScreenCount(levelsData.Count);
                     MegafansUI.Instance.tournamentLobbyScreenUI.tournamentLobby.GetComponent<TournamentLobbyUI>().listBox.ManualDrag(Megafans.Instance.m_AllTournaments.FindIndex(w => w.guid == currentF2PLevel.guid));
                     MegafansUI.Instance.ShowTournamentLobby();
-
-                    if (currentF2PLevel != null)
-                    {
-                        matchAssistant.JoinTournamentMatch(currentF2PLevel.guid);                       
-                    }
-                    else
-                    {
-                        //TODO: Send user to free tourmanent
-                        //matchAssistant.JoinPracticeMatch();
-                        OnGetTournamentsFailure("ERROR - Failed to join tournament");
-                    }
                 }
+            }
+            else
+            {
+                MegafansUI.Instance.ShowPopup("ALERT", response.message);
+                MegafansConstants.UserBanned = true;
+                Debug.Log("alert msg :  " + response.message);
             }
         }
 
@@ -168,6 +165,8 @@ namespace MegafansSDK.UI
             MegafansUI.Instance.HideLoadingBar();
             if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
             {
+                MegafansConstants.UserBanned = false;
+
                 List<LevelsResponseData> levelsData = response.data;
                 if (levelsData.Count == 0 || levelsData == null)
                 {
@@ -185,18 +184,14 @@ namespace MegafansSDK.UI
                             currentF2PLevel = level;
                         }
                     }
+                    MegafansUI.Instance.ShowTournamentLobby();
 
-                    if (currentF2PLevel != null)
-                    {
-                        matchAssistant.JoinTournamentMatch(currentF2PLevel.guid);
-                    }
-                    else
-                    {
-                        //TODO: Send user to free tourmanent
-                        //matchAssistant.JoinPracticeMatch();
-                        OnGetTournamentsFromProfileFailure("ERROR - Failed to join tournament");
-                    }
                 }
+            }
+            else
+            {
+                MegafansConstants.UserBanned = true;
+                MegafansUI.Instance.ShowPopup("ALERT", response.message);
             }
         }
 
@@ -207,7 +202,6 @@ namespace MegafansSDK.UI
             string errorString = "Error updating profile.  Please try again.";
             MegafansUI.Instance.ShowPopup("Error", errorString);
         }
-        //
 
         //private void OnVerifyPhoneResponse(LoginResponse response)
         //{

@@ -1,4 +1,4 @@
-﻿#pragma warning disable 649
+﻿using OneSignalSDK;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +11,7 @@ using MegafansSDK.Utils;
 using UnityEngine.UIElements;
 using MegafansSDK.AdsManagerAPI;
 using System.Collections;
+
 
 namespace MegafansSDK
 {
@@ -36,15 +37,16 @@ namespace MegafansSDK
         [SerializeField] string IOSIntercomAppKey;
         [SerializeField] public string discordChannelURL;
         [Space(10), Header("Purchase IDs:")]
-        [SerializeField] InAppId tokenPurchase200ProductID;
-        [SerializeField] InAppId tokenPurchase1000ProductID;
-        [SerializeField] InAppId tokenPurchase3000ProductID;
-        [SerializeField] InAppId tokenPurchase10000ProductID;
+        [SerializeField] public InAppId tokenPurchase200ProductID;
+        [SerializeField] public InAppId tokenPurchase1000ProductID;
+        [SerializeField] public InAppId tokenPurchase3000ProductID;
+        [SerializeField] public InAppId tokenPurchase10000ProductID;
         [Space(10), Header("Deployment Environment:")]
         [SerializeField] Deployment deployment;
         [SerializeField] string customDeployment;
         [SerializeField] public string AdvertisingID;
-
+        [HideInInspector]
+        public string _OneSignalAppID;
 
         string currentTournamentToken = "";
 
@@ -85,26 +87,26 @@ namespace MegafansSDK
         /// Set its value once at start.
         /// </summary>
         /// <value>The ProductID for 200 MegaFans Token Purchase.</value>
-        [HideInInspector]public string ProductID200Tokens;
+        [HideInInspector] public string ProductID200Tokens;
         /// <summary>
         /// Gets or sets the In-App ProductID for the purchase of 1000 MegaFans Tokens. This is the product ID given to you from the Apple App Store and Google Play store, should be the same for both stores.
         /// Set its value once at start.
         /// </summary>
         /// <value>The ProductID for 1000 MegaFans Token Purchase.</value>
-        [HideInInspector]public string ProductID1000Tokens;
+        [HideInInspector] public string ProductID1000Tokens;
 
         /// <summary>
         /// Gets or sets the In-App ProductID for the purchase of 3000 MegaFans Tokens. This is the product ID given to you from the Apple App Store and Google Play store, should be the same for both stores.
         /// Set its value once at start.
         /// </summary>
         /// <value>The ProductID for 3000 MegaFans Token Purchase.</value>
-        [HideInInspector]public string ProductID3000Tokens;
+        [HideInInspector] public string ProductID3000Tokens;
 
         /// <summary>
         /// Gets or sets the In-App ProductID for the purchase of 10000 MegaFans Tokens. This is the product ID given to you from the Apple App Store and Google Play store, should be the same for both stores.
         /// </summary>
         /// <value>The ProductID for 10000 MegaFans Token Purchase.</value>
-        [HideInInspector]public string ProductID10000Tokens;
+        [HideInInspector] public string ProductID10000Tokens;
 
         /// <summary>
         /// Gets a value indicating whether the user is currently logged in to MegaFans.
@@ -213,9 +215,11 @@ namespace MegafansSDK
                     {
                         if (onScoreSaved != null)
                         {
-                            Debug.Log("REPORT - SAVE SCORE");
-                            Debug.Log("working with Ciel " + response.message);
-                            Debug.Log(response);
+                            if (MegafansConstants.practiceMatch)
+                            {
+                                MegafansConstants.PracticMatchTextRespose = response.message;
+                                Debug.Log("Response :: " + MegafansConstants.PracticMatchTextRespose);
+                            }
                             onScoreSaved();
                             MegafansUI.Instance.ShowLeaderboardWithScore(gameType, RankingType.LEADERBOARD, score, metaString, currentTournamentToken);
                         }
@@ -230,6 +234,7 @@ namespace MegafansSDK
 
         void Awake()
         {
+            _OneSignalAppID = oneSignalAppId;
             if (instance == null)
             {
                 instance = this;
@@ -239,7 +244,7 @@ namespace MegafansSDK
             {
                 Destroy(gameObject);
             }
-            //OneSignal.StartInit(oneSignalAppId).EndInit();
+            OneSignal.Default.Initialize(oneSignalAppId);
             m_AdsManager = GetComponent<AdsManager>();
 
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -258,9 +263,9 @@ namespace MegafansSDK
             ProductID10000Tokens = tokenPurchase10000ProductID.AndroidId;
 #elif UNITY_IOS
             ProductID200Tokens = tokenPurchase200ProductID.iosId;
-                ProductID1000Tokens = tokenPurchase1000ProductID.iosId;
-                ProductID3000Tokens = tokenPurchase3000ProductID.iosId;
-                ProductID10000Tokens = tokenPurchase10000ProductID.iosId;
+            ProductID1000Tokens = tokenPurchase1000ProductID.iosId;
+            ProductID3000Tokens = tokenPurchase3000ProductID.iosId;
+            ProductID10000Tokens = tokenPurchase10000ProductID.iosId;
 #endif
 
             if (Instance.IsUserLoggedIn)
@@ -286,7 +291,7 @@ namespace MegafansSDK
                     if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
                     {
                         //MegafansUI.Instance.ShowStoreWindow(numberOfTokens, true);
-                        MegafansPrefs.CurrentTokenBalance += numberOfTokens;
+                        MegafansPrefs.TournamentEntryTokens += numberOfTokens;
                         MegafansUI.Instance.ShowStoreWindow();
                         onSuccess?.Invoke();
                     }
@@ -297,8 +302,6 @@ namespace MegafansSDK
                 },
                 (error) => onFailure?.Invoke(error));
         }
-
-
         public string ServerBaseUrl()
         {
             switch (deployment)
@@ -315,8 +318,6 @@ namespace MegafansSDK
                     throw new ArgumentOutOfRangeException();
             }
         }
-
-
         internal void ReportPlayGameClicked()
         {
             landingOptionsListener?.OnPlayGameClicked();
@@ -331,7 +332,7 @@ namespace MegafansSDK
 
         internal void ReportUserRegistered(string userId)
         {
-            landingOptionsListener?.OnUserLoggedIn(userId);
+            landingOptionsListener?.OnUserRegistered(userId);
         }
 
         internal void ReportStartGame(string tournamentToken, string tournamentGUID, GameType gameType, Dictionary<string, string> metaData)
@@ -341,7 +342,8 @@ namespace MegafansSDK
                 Debug.Log("REPORT - START GAME");
                 this.currentTournamentToken = tournamentToken;
                 joinGameCallback.StartGame(gameType, metaData);
-                MegafansPrefs.TournamentEntryTokens -= GetCurrentTournamentData().entryFee;
+                if (!MegafansConstants.practiceMatch)
+                    MegafansPrefs.TournamentEntryTokens -= GetCurrentTournamentData().entryFee;
             }
         }
 
@@ -375,7 +377,7 @@ namespace MegafansSDK
             }
             checkingLocationServices = true;
             StartCoroutine(StartLocationService());
-        }       
+        }
 
         internal IEnumerator StartLocationService()
         {
@@ -399,15 +401,13 @@ namespace MegafansSDK
             {
                 Debug.Log("Unable to determine device location");
                 this.checkingLocationServices = false;
-                this.locationServicesDenied = true;               
+                this.locationServicesDenied = true;
                 Input.location.Stop();
                 yield break;
             }
             this.locationServicesDenied = false;
             this.checkingLocationServices = false;
-            Debug.Log("Latitude : " + Input.location.lastData.latitude);
-            Debug.Log("Longitude : " + Input.location.lastData.longitude);
-            Debug.Log("Altitude : " + Input.location.lastData.altitude);
+            Debug.Log("Longitude : " + Input.location.lastData.longitude + "   Altitude : " + Input.location.lastData.altitude);
             this.lastLocationData = Input.location.lastData;
             Input.location.Stop();
         }

@@ -4,6 +4,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using MegafansSDK.Utils;
+using OneSignalSDK;
+
 
 namespace MegafansSDK.UI
 {
@@ -15,7 +17,8 @@ namespace MegafansSDK.UI
 
         //You can now play Jet Jack Tournament Edition and win prizes and real money powered by MegaFans
 
-        private void Awake() {
+        private void Awake()
+        {
             string gameName = Application.productName;
             gameDescriptionLabel.text = "You can now play " + gameName + " and win prizes powered by MegaFans!";
         }
@@ -43,8 +46,8 @@ namespace MegafansSDK.UI
                 MegafansPrefs.Username = response.data.username;
                 MegafansPrefs.UserId = response.data.userId;
                 MegafansPrefs.SMSAvailable = response.data.sms;
-             
-                //OneSignal.SetExternalUserId(MegafansPrefs.UserId.ToString());
+
+               // OneSignal.Default.SetExternalUserId(response.data.userId.ToString());
 
                 Megafan.NativeWrapper.MegafanNativeWrapper.RegisterUserWithUserId(response.data.userId.ToString(),
                                                                   Megafans.Instance.GameUID,
@@ -57,10 +60,7 @@ namespace MegafansSDK.UI
             }
         }
 
-        private void OneSignal_promptForPushNotificationsReponse(bool accepted)
-        {
-            Debug.Log("OneSignal_promptForPushNotificationsReponse: " + accepted);
-        }
+
 
         private void OnRegisterNewUserFailure(string error)
         {

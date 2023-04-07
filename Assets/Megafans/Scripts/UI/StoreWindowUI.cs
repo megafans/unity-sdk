@@ -10,8 +10,9 @@ namespace MegafansSDK.UI
 
     public class StoreWindowUI : MonoBehaviour
     {
-
-        [SerializeField] private Text userTokensTxt;
+        [SerializeField] GameObject Container;
+        [SerializeField] private Text userTournamentTokensTxt;
+        [SerializeField] private Text userClientTokensTxt;
         [SerializeField] private ListBox listBox;
         [SerializeField] private Text messageTxt;
         [SerializeField] private Sprite confirmationIcon;
@@ -21,7 +22,11 @@ namespace MegafansSDK.UI
 
         void Awake()
         {
-
+            if (Screen.orientation != ScreenOrientation.Portrait)
+            {
+                Container.transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);
+                Container.transform.position = new Vector3(Container.transform.position.x, Container.transform.position.y + 34, Container.transform.position.z);
+            }
         }
 
         void Start()
@@ -31,8 +36,8 @@ namespace MegafansSDK.UI
 
         private void OnEnable()
         {
-            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
-            //userTokensTxt.text = "" + MegafansPrefs.CurrentTokenBalance.ToString();
+            userTournamentTokensTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+            userClientTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
             listBox.ClearList();
             MegafansUI.Instance.ShowLoadingBar();
             StartCoroutine(SetProducts());
@@ -122,16 +127,16 @@ namespace MegafansSDK.UI
             float totalCredits = credits;
             if (addToExisting)
             {
-                totalCredits += float.Parse(userTokensTxt.text);
+                totalCredits += float.Parse(userTournamentTokensTxt.text);
             }
 
-            userTokensTxt.text = totalCredits.ToString();
+            userTournamentTokensTxt.text = totalCredits.ToString();
         }
 
         public void UpdateCreditUI()
         {
-            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
-            //userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTournamentTokensTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+            userClientTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         public void BackBtn_OnClick()
@@ -146,34 +151,8 @@ namespace MegafansSDK.UI
 
         public void StoreItemFreeBtn_OnClick()
         {
-            MegafansSDK.Megafans.Instance.m_AdsManager.ShowOfferwall();
+            Application.OpenURL(MegafansSDK.AdsManagerAPI.AdsManager.instance.freeTokensURL);
         }
-
-        //private void ShowConfirmationDialog(int itemIdx) {
-        //	GameObject item = listBox.GetItem (itemIdx);
-        //	if (item != null) {
-        //		StoreItem itemHandler = item.GetComponent<StoreItem> ();
-        //		if (itemHandler != null) {
-        //			int tokensQty = itemHandler.Quantity;
-        //			float price = itemHandler.Price;
-
-        //			string msg = "You are purchasing <color=#f5a623ff>" + tokensQty + " Tokens</color> \nfor " +
-        //			             "<b><color=black>$" + price + "</color></b>" +
-        //			             "\n\nDo you want to continue the purchase?";
-
-        //			MegafansUI.Instance.ShowAlertDialog (confirmationIcon, "Confirmation",
-        //				msg, "Buy", "Cancel",
-        //				() => {
-        //					MegafansUI.Instance.HideAlertDialog();
-        //                          Debug.Log(string.Format("InAppPurchaser Instance is null - {0}", InAppPurchaser.Instance == null));
-        //                          InAppPurchaser.Instance.BuyTokens(tokensQty);						
-        //				},
-        //				() => {
-        //					MegafansUI.Instance.HideAlertDialog();
-        //				});
-        //		}
-        //	}
-        //}
 
     }
 

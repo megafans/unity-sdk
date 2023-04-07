@@ -256,12 +256,10 @@ namespace MegafansSDK.AdsManagerAPI
         {
             if (IronSource.Agent.isRewardedVideoAvailable())
             {
-                Debug.Log("working with 1");
                 MegafansUI.Instance.freeTokensUI.ShowFreeTokensPanel(true);
             }
             else
             {
-                Debug.Log("working with 2");
                 OpenIronOfferWall();
             }
         }
@@ -278,13 +276,13 @@ namespace MegafansSDK.AdsManagerAPI
             }
         }
         string baseUrl = "https://megafansapi.azurewebsites.net/";
+        internal string freeTokensURL;
 
         IEnumerator GetRequest(string uri, int value, Action<bool> isShowingAction)
         {
             using (UnityWebRequest webRequest = UnityWebRequest.Get(uri))
             {
-                // Request and wait for the desired pa
-                Debug.Log(uri);
+
                 yield return webRequest.SendWebRequest();
 
                 string[] pages = uri.Split('/');

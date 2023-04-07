@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using MegafansSDK.Utils;
+using OneSignalSDK;
 
 namespace MegafansSDK.UI
 {
@@ -33,28 +34,8 @@ namespace MegafansSDK.UI
             withEmailBtn.gameObject.SetActive(true);
             withPhoneBtn.gameObject.SetActive(true);
             updateUIForLoginOrSignUp();
-            //if (!Megafans.Instance.IsUserLoggedIn)
-            //{
-            //    MegafansWebService.Instance.RegisterNewUser(OnRegisterNewUserResponse, OnRegisterNewUserFailure);
-            //}
+            
         }
-
-        //public void LoginWithFacebookBtn_OnClick()
-        //{
-        //    if (IsLogin)
-        //    {
-        //        MegafansWebService.Instance.LoginFB(OnLoginFBResponse, OnLoginFBFailure);
-        //    }
-        //    else if (IsLinking)
-        //    {
-        //        MegafansWebService.Instance.LinkFB(OnEditProfileResponse, OnLoginFBFailure);
-        //    }
-        //    else
-        //    {
-        //        MegafansUI.Instance.ShowLoadingBar();
-        //        MegafansWebService.Instance.RegisterFB(OnRegisterFBResponse, OnRegisterFBFailure);
-        //    }
-        //}
 
         public void CloseBtn_OnClick()
         {
@@ -236,7 +217,8 @@ namespace MegafansSDK.UI
                 MegafansPrefs.Username = response.data.username;
                 MegafansPrefs.UserId = response.data.userId;
                 MegafansPrefs.SMSAvailable = response.data.sms;
-                //OneSignal.SetExternalUserId(response.data.userId.ToString());
+                OneSignal.Default.SetExternalUserId(response.data.userId.ToString());
+
             }
             else
             {

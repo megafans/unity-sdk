@@ -43,8 +43,7 @@ namespace MegafansSDK.UI
                 termsAndConditionsView.SetActive(true);
             }
 
-            //emailField.text = "mark.hoyt970@gmail.com";
-            //passwordField.text = "Password1";
+
         }
 
         public void ContinueBtn_OnClick()
@@ -141,6 +140,8 @@ namespace MegafansSDK.UI
             {
                 MegafansPrefs.Email = emailField.text;
                 MegafansUI.Instance.ShowTournamentLobby();
+                MegafansHelper.m_Instance.OnUserRegistered(response.data.userId.ToString());
+
             }
             else
             {

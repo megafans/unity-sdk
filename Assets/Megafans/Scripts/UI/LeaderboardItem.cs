@@ -95,7 +95,6 @@ namespace MegafansSDK.UI
         public void SelectLeaderBoardRow()
         {
             //ShowWindow(viewProfileWindow);
-            //Debug.Log("Button clicked = " + valueTxt);
         }
 
         private void OnFetchAvatarSuccess(Texture2D tex)

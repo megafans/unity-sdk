@@ -19,6 +19,9 @@ namespace MegafansSDK.UI
 
     public class TournamentLobbyUI : MonoBehaviour, TournamentCardItemCustomMessageTarget
     {
+        [SerializeField] private GameObject Container;
+        [SerializeField] private GameObject discordIcon;
+        [SerializeField] private GameObject helpIcon;
         [SerializeField] private Text userTokensValueTxt;
         [SerializeField] private Text userClientValueTxt;
         [SerializeField] internal ListBox listBox;
@@ -43,9 +46,11 @@ namespace MegafansSDK.UI
                 content.GetComponent<HorizontalLayoutGroup>().padding.top = 200;
                 content.GetComponent<HorizontalLayoutGroup>().childControlHeight = false;
                 content.GetComponent<HorizontalLayoutGroup>().childControlWidth = false;
-
+                Container.transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);
+                Container.transform.position = new Vector3(Container.transform.position.x, Container.transform.position.y + 25, Container.transform.position.z);
+                discordIcon.transform.localPosition = new Vector3(discordIcon.transform.localPosition.x + 330, -81, 0);
+                helpIcon.transform.localPosition = new Vector3(helpIcon.transform.localPosition.x - 330, -81, 0);
             }
-
         }
 
 
@@ -63,14 +68,13 @@ namespace MegafansSDK.UI
                 OnLastTournamentResponse, OnFreeTokensCountFailure);
                 RequestTournaments();
             }
-            userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            userTokensValueTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
             userClientValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
 
-            Megafan.NativeWrapper.MegafanNativeWrapper.RegisterUserWithUserId(MegafansPrefs.UserId.ToString(),
-                                                          Megafans.Instance.GameUID,
-                                                          Application.productName);
+            Megafan.NativeWrapper.MegafanNativeWrapper.RegisterUserWithUserId(MegafansPrefs.UserId.ToString(), Megafans.Instance.GameUID,Application.productName);
 
-            Megafan.NativeWrapper.MegafanNativeWrapper.ShowIntercomIfUnreadMessages();        
+            Megafan.NativeWrapper.MegafanNativeWrapper.ShowIntercomIfUnreadMessages();
+            MegafansWebService.Instance.FreeToken();
         }
         private void OnFreeTokensCountResponse(GetFreeTokensCountResponse response)
         {
@@ -129,8 +133,8 @@ namespace MegafansSDK.UI
 
         public void UpdateCreditUI()
         {
-            userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
-            //userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensValueTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+            userClientValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         public void RequestTournaments()
@@ -149,12 +153,15 @@ namespace MegafansSDK.UI
             foreach (Transform _tr in listBox.GetItem().transform)
             {
                 _tr.GetComponent<TournamentCardItem>().GetPlayButton().interactable = false;
+                _tr.GetComponent<TournamentCardItem>().GetPracticeButton().interactable = false;
+
             }
             if (index == -1)
             {
                 index = 0;
             }
             listBox.GetItem(index).GetComponent<TournamentCardItem>().GetPlayButton().interactable = true;
+            listBox.GetItem(index).GetComponent<TournamentCardItem>().GetPracticeButton().interactable = true;
 
             CountdownTimer timer = listBox.GetItem(index).transform.GetChild(1).gameObject.GetComponent<CountdownTimer>();
             LevelsResponseData tournamentAtIndex = Megafans.Instance.m_AllTournaments[index];
@@ -174,7 +181,7 @@ namespace MegafansSDK.UI
 
             if (tournament.secondsLeft <= 0)
                 return;
-            Debug.Log(tournament.askPassword);
+           
             if (tournament.askPassword)
             {
                 tournamentPasswordUI.currentTournamentID = tournament.guid;
@@ -195,6 +202,33 @@ namespace MegafansSDK.UI
             }
         }
 
+        public void JoinPracticeNowBtn_OnClick()
+        {
+            LevelsResponseData tournament = Megafans.Instance.m_AllTournaments[listBox.currentIndex];
+           
+            if (tournament.secondsLeft <= 0)
+                return;
+            Debug.Log(tournament.askPassword);
+            if (tournament.askPassword)
+            {
+                tournamentPasswordUI.currentTournamentID = tournament.guid;
+                tournamentPasswordUI.gameObject.SetActive(true);
+            }
+            else
+            {
+                try
+                {
+               
+                    matchAssistant.JoinPracticeTournamentMatch(tournament.guid);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e.ToString());
+                    string error = "OOPS! Something went wrong. Please try later.";
+                    MegafansUI.Instance.ShowPopup("ERROR", error);
+                }
+            }
+        }
         internal void ShowCreditsWarning(float currentCredits)
         {
             MegafansUI.Instance.ShowAlertDialog(coinsWarningIcon, "Alert",
@@ -250,26 +284,34 @@ namespace MegafansSDK.UI
 
         public void LeaderboardBtn_OnClick()
         {
-            LevelsResponseData tournament = Megafans.Instance.m_AllTournaments[listBox.currentIndex];
+            if (!MegafansConstants.UserBanned)
+            {
+                LevelsResponseData tournament = Megafans.Instance.m_AllTournaments[listBox.currentIndex];
 
-            if (tournament != null)
-                MegafansUI.Instance.ShowSingleTournamentRankingAndHistoryWindow(GameType.TOURNAMENT, RankingType.LEADERBOARD, tournament);
+                if (tournament != null)
+                    MegafansUI.Instance.ShowSingleTournamentRankingAndHistoryWindow(GameType.TOURNAMENT, RankingType.LEADERBOARD, tournament);
+            }
         }
 
         public void ViewTournamentRulesBtn_OnClick()
         {
-            LevelsResponseData tournament = Megafans.Instance.m_AllTournaments[listBox.currentIndex];
-            Debug.Log(tournament.message);
-            if (tournament != null)
-                MegafansUI.Instance.ShowRulesWindow(tournament);
+            if (!MegafansConstants.UserBanned)
+            {
+                LevelsResponseData tournament = Megafans.Instance.m_AllTournaments[listBox.currentIndex];
+                if (tournament != null)
+                    MegafansUI.Instance.ShowRulesWindow(tournament);
+            }
         }
 
         public void ScoresBtn_OnClick()
         {
-            LevelsResponseData tournament = Megafans.Instance.m_AllTournaments[listBox.currentIndex];
+            if (!MegafansConstants.UserBanned)
+            {
+                LevelsResponseData tournament = Megafans.Instance.m_AllTournaments[listBox.currentIndex];
 
-            if (tournament != null)
-                MegafansUI.Instance.ShowSingleTournamentRankingAndHistoryWindow(GameType.TOURNAMENT, RankingType.HISTORY, tournament);
+                if (tournament != null)
+                    MegafansUI.Instance.ShowSingleTournamentRankingAndHistoryWindow(GameType.TOURNAMENT, RankingType.HISTORY, tournament);
+            }
         }
 
         public void MyAccountBtn_OnClick()
@@ -289,7 +331,7 @@ namespace MegafansSDK.UI
 
         public void OfferWallBtn_OnClick()
         {
-            MegafansSDK.Megafans.Instance.m_AdsManager.ShowOfferwall();
+            Application.OpenURL(MegafansSDK.AdsManagerAPI.AdsManager.instance.freeTokensURL);
         }
 
         public void NextBtn_OnClick()
@@ -343,8 +385,8 @@ namespace MegafansSDK.UI
                 MegafansPrefs.TournamentEntryTokens = response.data.TournamentEntryTokens;
                 MegafansPrefs.FacebookID = response.data.facebookLoginId;
 
-                userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
-                userClientValueTxt.text = "CB : " + MegafansPrefs.CurrentTokenBalance.ToString();
+                userTokensValueTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+                userClientValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
                 if (response.data.email != null)
                 {
                     MegafansPrefs.Email = response.data.email;
@@ -370,7 +412,8 @@ namespace MegafansSDK.UI
             {
                 MegafansPrefs.CurrentTokenBalance = response.data.credits;
                 //userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
-                userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+                userTokensValueTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+                userClientValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
             }
         }
 
@@ -383,6 +426,8 @@ namespace MegafansSDK.UI
         {
             if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
             {
+                MegafansConstants.UserBanned = false;
+
                 List<LevelsResponseData> levelsData = response.data;
                 if (levelsData.Count == 0 || levelsData == null)
                 {
@@ -404,6 +449,11 @@ namespace MegafansSDK.UI
                     else
                         ScrollViewDidFinishScrollingOnIndex(Megafans.Instance.GetCurrentTournamentIndex());
                 }
+            }
+            else
+            {
+                MegafansConstants.UserBanned = true;
+                MegafansUI.Instance.ShowPopup("ALERT", response.message);
             }
         }
 

@@ -16,15 +16,6 @@ namespace MegafansSDK.UI
         [SerializeField] public InputField textInput;
         [SerializeField] private LoadingBar isVerifying;
 
-        //public string defaultValue {
-        //    get {
-        //        return defaultValue;
-        //    }
-
-        //    set {
-        //        defaultValue = value;
-        //    }
-        //}
 
         public bool valueVerified {
             get {

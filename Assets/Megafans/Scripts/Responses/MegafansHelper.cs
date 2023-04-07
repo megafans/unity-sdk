@@ -6,6 +6,7 @@ using MegafansSDK;
 using MegafansSDK.UI;
 using MegafansSDK.Utils;
 using MegafansSDK.AdsManagerAPI;
+using OneSignalSDK;
 
 
 public class MegafansHelper : MonoBehaviour, ILandingOptionsListener, IJoinGameCallback
@@ -73,28 +74,34 @@ public class MegafansHelper : MonoBehaviour, ILandingOptionsListener, IJoinGameC
     public void OnUserLoggedIn(string userId)
     {
         Megafans.Instance.ShowTournamentLobby(this, this);
-        /*var status = OneSignal.GetPermissionSubscriptionState();
-        if (!status.permissionStatus.hasPrompted)
+
+        var status = OneSignal.Default.NotificationPermission;
+        if (status == NotificationPermission.NotDetermined)
         {
-            OneSignal.PromptForPushNotificationsWithUserResponse(OneSignal_promptForPushNotificationsReponse);
+            PromptForPushNotificationsWithUserResponse();
         }
 
-        OneSignal.SetExternalUserId(userId);*/
+        OneSignal.Default.SetExternalUserId(userId);
 
-        Megafan.NativeWrapper.MegafanNativeWrapper.RegisterUserWithUserId(userId,
-                                                                          Megafans.Instance.GameUID,
-                                                                          Application.productName);
+
+        Megafan.NativeWrapper.MegafanNativeWrapper.RegisterUserWithUserId(userId, Megafans.Instance.GameUID, Application.productName);
+    }
+    async void PromptForPushNotificationsWithUserResponse()
+    {
+
+       var response = await OneSignal.Default.PromptForPushNotificationsWithUserResponse();
+
     }
 
     public void OnUserRegistered(string userId)
     {
-        /*var status = OneSignal.GetPermissionSubscriptionState();
-        if (!status.permissionStatus.hasPrompted)
+      var status = OneSignal.Default.NotificationPermission;
+        if (status == NotificationPermission.NotDetermined)
         {
-            OneSignal.PromptForPushNotificationsWithUserResponse(OneSignal_promptForPushNotificationsReponse);
+            PromptForPushNotificationsWithUserResponse();
         }
 
-        OneSignal.SetExternalUserId(userId);*/
+        OneSignal.Default.SetExternalUserId(userId);
 
         Megafan.NativeWrapper.MegafanNativeWrapper.RegisterUserWithUserId(userId,
                                                                   Megafans.Instance.GameUID,
@@ -114,12 +121,8 @@ public class MegafansHelper : MonoBehaviour, ILandingOptionsListener, IJoinGameC
         {
             PlayerPrefs.SetInt("OpenLevel", currentLevel);
             PlayerPrefs.Save();
-            //LevelManager.THIS.MenuPlayEvent();
-            //LevelManager.THIS.LoadLevel();
 
             GameObject.Find("CanvasGlobal").transform.Find("MenuOfferBooster").gameObject.SetActive(true);
-
-            //LevelManager.THIS.m_IGH.HideAllShityPanelForTournament();
         }
     }
 

@@ -19,8 +19,9 @@ namespace MegafansSDK.UI
 
     public class TournamentRankingAndHistoryWindowUI : MonoBehaviour
     {
-
-        [SerializeField] private Text userTokensValueTxt;
+        [SerializeField] GameObject Container;
+        [SerializeField] private Text userTournamentValueTxt;
+        [SerializeField] private Text userCurrentValueTxt;
         [SerializeField] private Text leaderboardTitleTxt;
         [SerializeField] private Text panelTitleTxt;
         [SerializeField] private GameObject leaderboardItemPrefab;
@@ -39,6 +40,14 @@ namespace MegafansSDK.UI
         private LeaderboardType leaderboardType;
         private RankingType rankingType = RankingType.LEADERBOARD;
 
+        private void Start()
+        {
+            if (Screen.orientation != ScreenOrientation.Portrait)
+            {
+                Container.transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);
+                Container.transform.position = new Vector3(Container.transform.position.x, Container.transform.position.y + 34, Container.transform.position.z);
+            }
+        }
 
         void OnEnable()
         {
@@ -47,14 +56,15 @@ namespace MegafansSDK.UI
                 verifyAcctViewTextLabel.text = "Register your account to view your game history";
                 verifyAcctViewButtonTextLabel.text = "Register now";
             }
-            //userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
-            userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            //
+            userTournamentValueTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+            userCurrentValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         public void UpdateCreditUI()
         {
-            //userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
-            userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
+            userTournamentValueTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+            userCurrentValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         public void Init(GameType gameType, RankingType rankingType, LevelsResponseData levelInfo,

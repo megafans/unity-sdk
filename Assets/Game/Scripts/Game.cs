@@ -49,16 +49,6 @@ public class Game : MonoBehaviour, ILandingOptionsListener, IJoinGameCallback {
 		}
 	}
 
-	void Start() {
-		if (!Megafans.Instance.IsUserLoggedIn)
-		{
-			Megafans.Instance.ShowLandingScreen(this, this);
-		}
-		else
-		{
-			Megafans.Instance.ShowTournamentLobby(this, this);
-		}
-	}
 
 	public void RollBtn_OnClick() {
 		score = Random.Range (minNumber, maxNumber + 1);
@@ -89,8 +79,6 @@ public class Game : MonoBehaviour, ILandingOptionsListener, IJoinGameCallback {
 	}
 
 	public void OnUserLoggedIn(string userId) { 
-		Debug.Log ("User logged in");
-        Debug.Log("SHOW LOBBY");
         Megafans.Instance.ShowTournamentLobby (this, this);
 	}
 

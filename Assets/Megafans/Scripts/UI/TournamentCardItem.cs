@@ -21,6 +21,7 @@ namespace MegafansSDK.UI
         [SerializeField] private Text winnersFeeValueTxt;
         [SerializeField] private Text entryFeeValueTxt;
         [SerializeField] private GameObject joinTournamentButton;
+        [SerializeField] private GameObject joinPracticTournamentButton;
         [SerializeField] private GameObject passwordLock;
 
         private LevelsResponseData tournamentInfo;
@@ -35,8 +36,8 @@ namespace MegafansSDK.UI
                 tournamentPicImg.gameObject.SetActive(true);
                 titleTxt.text = tournamentInfo.name;
                 prizeValueTxt.text = "N/A";
-                
-                for(int i = 0; i < prizeValueTxt.transform.childCount; i++)
+
+                for (int i = 0; i < prizeValueTxt.transform.childCount; i++)
                 {
                     prizeValueTxt.transform.GetChild(i).gameObject.SetActive(false);
                 }
@@ -51,6 +52,7 @@ namespace MegafansSDK.UI
 
                 lockPanel.SetActive(true);
                 joinTournamentButton.SetActive(false);
+                joinPracticTournamentButton.SetActive(false);
 
                 CountdownTimer unlockTimer = unlockCountdownTimer.GetComponent<CountdownTimer>();
 
@@ -90,14 +92,14 @@ namespace MegafansSDK.UI
                 if (displayPayouts)
                 {
                     if (tournamentInfo != null
-                        && tournamentInfo.payouts != null
+                        /*&& tournamentInfo.payouts != null
                         && tournamentInfo.payouts.data != null
-                        && tournamentInfo.payouts.data.Count > 0)
+                        && tournamentInfo.payouts.data.Count > 0*/)
                     {
                         titleTxt.text = tournamentInfo.name;
 
                         //Gunslinger : Double currency mod
-                        if(tournamentInfo.cash_tournament)
+                        if (tournamentInfo.cash_tournament)
                         {
                             prizeValueTxt.transform.GetChild(0).gameObject.SetActive(false);
                             prizeValueTxt.text = "$" + tournamentInfo.payout;
@@ -110,6 +112,20 @@ namespace MegafansSDK.UI
 
                         if (tournamentInfo.entryFee <= 0f)
                         {
+
+                            // joinTournamentButton.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(323.0f, 164.9f);
+                            if (Screen.orientation == ScreenOrientation.Portrait)
+                            {
+                                joinTournamentButton.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(323.0f, 164.9f);
+                                joinTournamentButton.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -85, 0);
+                            }
+                            else
+                            {
+                                joinTournamentButton.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(310.0f, 164.9f);
+                                joinTournamentButton.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(78, -52, 0);
+                            }
+
+                            joinPracticTournamentButton.SetActive(false);
                             entryFeeValueTxt.text = "Free";
                             entryFeeValueTxt.transform.GetChild(0).gameObject.SetActive(false);
                         }
@@ -132,7 +148,8 @@ namespace MegafansSDK.UI
                             entryFeeValueTxt.transform.GetChild(0).gameObject.SetActive(true);
                         }
 
-                        winnersFeeValueTxt.text = "Top " + tournamentInfo.payouts.data.Count.ToString();
+                        //winnersFeeValueTxt.text = "Top " + tournamentInfo.payouts.data.Count.ToString();
+                        winnersFeeValueTxt.text = /*"Top " +*/ tournamentInfo.payouts.name;//.ToString();
 
                         MegafansWebService.Instance.FetchImage(tournamentInfo.imageUrl, OnFetchPicSuccess, OnFetchPicFailure);
                         tournamentPicImg.gameObject.SetActive(true);
@@ -170,17 +187,35 @@ namespace MegafansSDK.UI
         private void OnEnable()
         {
             SetJoinButtonAction();
+            joinPracticeMatch();
         }
 
+        void joinPracticeMatch()
+        {
+  
+            joinPracticTournamentButton.GetComponent<Button>().onClick.AddListener(delegate { OnclickPracticeMatchButton(); });
+
+        }
         void SetJoinButtonAction()
         {
-            joinTournamentButton.GetComponent<Button>().onClick.AddListener( delegate { OnJoinButtonClick(); } );
+            joinTournamentButton.GetComponent<Button>().onClick.AddListener(delegate { OnJoinButtonClick(); });
         }
 
+        void OnclickPracticeMatchButton()
+        {
+            TournamentLobbyUI _TLUI = FindObjectOfType<TournamentLobbyUI>();
+            MegafansConstants.practiceMatch = true;
+         
+            if (_TLUI != null)
+            {
+               
+                _TLUI.JoinPracticeNowBtn_OnClick();
+            }
+        }
         void OnJoinButtonClick()
         {
             TournamentLobbyUI _TLUI = FindObjectOfType<TournamentLobbyUI>();
-
+            MegafansConstants.practiceMatch = false;
             if (_TLUI != null)
             {
                 _TLUI.JoinNowBtn_OnClick();
@@ -189,8 +224,7 @@ namespace MegafansSDK.UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            Debug.Log("Button clicked = " + eventData);
-            //PointerEventData pData = (PointerEventData)eventData;
+
             GameObject tournamentLobbyUI = this.transform.parent.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent.gameObject;
             ExecuteEvents.Execute<TournamentCardItemCustomMessageTarget>(tournamentLobbyUI, null, (x, y) => x.EnterTournamentBtn_OnClick(tournamentInfo));
         }
@@ -211,6 +245,10 @@ namespace MegafansSDK.UI
         internal Button GetPlayButton()
         {
             return joinTournamentButton.GetComponent<Button>();
+        }
+        internal Button GetPracticeButton()
+        {
+            return joinPracticTournamentButton.GetComponent<Button>();
         }
     }
 }

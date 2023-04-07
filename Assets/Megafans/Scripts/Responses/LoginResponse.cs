@@ -15,6 +15,7 @@ namespace MegafansSDK.Utils {
 		public int id;
 		public string username;
         public string token;
+		public int userId;
         public string refresh;
         public string email;
 		public string password;

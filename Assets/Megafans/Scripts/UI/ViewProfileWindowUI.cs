@@ -142,12 +142,7 @@ namespace MegafansSDK.UI
 
         private void SetHeader()
         {
-
-            //LeaderboardItem headerViewHandler = listBox.Header.GetComponent<LeaderboardItem>();
-            //if (headerViewHandler != null)
-            //{
-            //    headerViewHandler.SetValues("SCORE", "LEVEL", "");
-            //}                 
+              
         }
 
         private void SetProfileStats()

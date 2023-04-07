@@ -1,20 +1,30 @@
 ﻿using UnityEngine;
+using OneSignalSDK;
 
-namespace MegafansSDK.Utils {
 
-	public class DeviceInfo {
+namespace MegafansSDK.Utils
+{
 
-		public static string DeviceToken {
-			get {
-                if (!string.IsNullOrEmpty(MegafansPrefs.DeviceTokens)) {
+    public class DeviceInfo
+    {
+
+        public static string DeviceToken
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(MegafansPrefs.DeviceTokens))
+                {
                     return SystemInfo.deviceUniqueIdentifier + "-" + MegafansPrefs.DeviceTokens.Length;
-                } else {
+                }
+                else
+                {
                     return SystemInfo.deviceUniqueIdentifier;
-                }				
+                }
             }
-		}
+        }
 
-        public static string DeviceType {
+        public static string DeviceType
+        {
             get
             {
 #if UNITY_EDITOR
@@ -48,18 +58,15 @@ namespace MegafansSDK.Utils {
 
             get
             {
-                return "";/*
 
-                var status = OneSignal.GetPermissionSubscriptionState();
 
-                if (!status.permissionStatus.hasPrompted)
-                    return "";
+                var status = OneSignal.Default.NotificationPermission;
 
-                if (status == null || status.subscriptionStatus == null || status.subscriptionStatus.userId == null)
-
+                if (status == NotificationPermission.NotDetermined)
                     return "";
                 else
-                    return status.subscriptionStatus.userId;*/
+                    return "";
+
             }
 
         }

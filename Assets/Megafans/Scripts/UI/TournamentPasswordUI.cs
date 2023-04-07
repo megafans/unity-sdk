@@ -25,8 +25,6 @@ namespace MegafansSDK.UI
         {
             if (response != null && response.success.Equals(MegafansConstants.SUCCESS_CODE))
             {
-                Debug.Log("Start Playing Password Correct !!!");
-
                 TournamentLobbyUI _TLUI = FindObjectOfType<TournamentLobbyUI>();
                 if (_TLUI != null)
                 {

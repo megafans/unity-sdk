@@ -22,16 +22,6 @@ namespace MegafansSDK.UI
             dateTxt.text = date;
             trounamentNameTxt.text = tournamentName;
         }
-
-        /*
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            Debug.Log("Button clicked = " + eventData);
-            //PointerEventData pData = (PointerEventData)eventData;
-            GameObject rankingAndHistoryWindowUI = this.transform.parent.gameObject.transform.parent.gameObject.transform.parent.gameObject.transform.parent.gameObject;
-            ExecuteEvents.Execute<ICustomMessageTarget>(rankingAndHistoryWindowUI, null, (x, y) => x.ViewUserProfile(userCode));
-        }
-        */
     }
 
 }

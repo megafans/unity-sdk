@@ -9,7 +9,9 @@ namespace MegafansSDK.UI {
 
     public class UpdatePasswordWindowUI : MonoBehaviour {
 
-        [SerializeField] Text userTokensTxt;
+        [SerializeField] GameObject Container;
+        [SerializeField] Text userTournamentTokensTxt;
+        [SerializeField] Text userClientTokensTxt;
         [SerializeField] Text SamePasswordWarnig;
         [SerializeField] InputField oldPasswordField;
         [SerializeField] InputField newPasswordField;
@@ -29,13 +31,17 @@ namespace MegafansSDK.UI {
 
         void Awake()
         {
-           
+            if (Screen.orientation != ScreenOrientation.Portrait)
+            {
+                Container.transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);
+                Container.transform.position = new Vector3(Container.transform.position.x, Container.transform.position.y + 34, Container.transform.position.z);
+            }
         }
 
 
         void OnEnable() {
-            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
-            //userTokensTxt.text = "TET : " + MegafansPrefs.CurrentTokenBalance.ToString();
+            userTournamentTokensTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+            userClientTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
             oldPasswordField.text = "";
             newPasswordField.text = "";
             newPasswordConfirmField.text = "";
@@ -44,8 +50,8 @@ namespace MegafansSDK.UI {
 
         public void UpdateCreditUI()
         {
-            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
-            //userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTournamentTokensTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+            userClientTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         void OnUpdatePasswordResponse(UpdatePasswordResponse response) {

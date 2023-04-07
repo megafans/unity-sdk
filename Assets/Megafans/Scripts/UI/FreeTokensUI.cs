@@ -10,12 +10,23 @@ namespace MegafansSDK.UI
     public class FreeTokensUI : MonoBehaviour
     {
         public Text m_TokensCountToAdd;
-        public Text userTokensTxt;
+        public Text userTournamentTokensTxt;
+        [SerializeField] GameObject Container;
+        public Text userClientTokensTxt;
+
+        private void Start()
+        {
+            if (Screen.orientation != ScreenOrientation.Portrait)
+            {
+                Container.transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);
+                Container.transform.position = new Vector3(Container.transform.position.x, Container.transform.position.y + 34, Container.transform.position.z);
+            }
+        }
 
         void OnEnable()
         {
-            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
-            //userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTournamentTokensTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+            userClientTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         public void ShowVideoAdForFreeTokens()
@@ -28,23 +39,12 @@ namespace MegafansSDK.UI
                 {
                     MegafansSDK.Megafans.Instance.m_AdsManager.ShowRewardedVideo(() =>
                     {
-                        Debug.Log("---------------------- Fucking Update UI -------------------");
-                        /*MegafansWebService.Instance.GetCredits(MegafansPrefs.UserId,
-                                                               OnGetCreditsSuccess,
-                                                               OnGetCreditsFailure);*/
-                        MegafansWebService.Instance.GetFreeTokensCount(OnGetCreditsSuccess,
-                                                               OnGetCreditsFailure);
-
-
+                        MegafansWebService.Instance.GetFreeTokensCount(OnGetCreditsSuccess, OnGetCreditsFailure);
                     }, true);
                 }
                 else
                 {
-                    /*MegafansWebService.Instance.GetCredits(MegafansPrefs.UserId,
-                                                               OnGetCreditsSuccess,
-                                                               OnGetCreditsFailure);*/
-                    MegafansWebService.Instance.GetFreeTokensCount(OnGetCreditsSuccess,
-                                                           OnGetCreditsFailure);
+                    MegafansWebService.Instance.GetFreeTokensCount(OnGetCreditsSuccess,OnGetCreditsFailure);
                 }
             });
         }
@@ -57,12 +57,7 @@ namespace MegafansSDK.UI
         {
             if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
             {
-                Debug.Log("trying to add free tokens");
-                Debug.Log(response);
-                //MegafansPrefs.CurrentTokenBalance = response.data.credits;
-                //MegafansPrefs.CurrentTokenBalance = response.data.credits;
-
-                MegafansUI.Instance.UpdateAllTokenTexts();
+                 MegafansUI.Instance.UpdateAllTokenTexts();
             }
         }
 
@@ -88,8 +83,8 @@ namespace MegafansSDK.UI
 
         internal void UpdateCreditUI()
         {
-            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
-            //userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTournamentTokensTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+            userClientTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         internal void UpdateTokensGotGet(string _TokensToGet)

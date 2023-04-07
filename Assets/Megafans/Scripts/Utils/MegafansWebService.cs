@@ -41,6 +41,7 @@ namespace MegafansSDK.Utils
         const string CheckCreditsUrl = "/show_credit";
         const string EnterTournamentUrl = "/enter_tournament";
         const string EnterTournamentUrlV2 = "/enter_tournament_V2";//enter tournament v2 api
+        const string EnterPracticeTournamentUrlV2 = "/enter_practice_tournament";
         const string EnterPracticeUrl = "/enter_practice";
         const string SaveScoreUrl = "/save_game_scores";
         const string SaveScoreUrlNew = "/save_game_scores_new";
@@ -65,6 +66,7 @@ namespace MegafansSDK.Utils
         const string FreeTokensCountURL = "/ad_tokens";
         const string CheckPassword = "/checkpassword";
         const string deletAccountUrl = "/delete_user";
+        const string freeTokens = "/free_tokens";
 
         //private MegafansFBHelper fbHelper;
         private bool isRefreshingToken = false;
@@ -90,8 +92,46 @@ namespace MegafansSDK.Utils
         void Start()
         {
             StartCoroutine(CheckLatestVersion());
+            FreeToken();
         }
 
+        public void FreeToken()
+        {
+            StartCoroutine(freeTokenRequest());
+        }
+        public IEnumerator freeTokenRequest()
+        {
+            string url = Megafans.Instance.ServerBaseUrl() + freeTokens;
+            using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
+            {
+                // Request and wait for the desired page.
+                webRequest.SetRequestHeader("Content-Type", "application/json");
+                webRequest.SetRequestHeader("Authorization", GetBearerToken());
+                yield return webRequest.SendWebRequest();
+                try
+                {
+                    var FTR = Newtonsoft.Json.JsonConvert.DeserializeObject<FreeTokenResponse>(webRequest.downloadHandler.text);
+                    if (FTR.success)
+                    {
+                        MegafansSDK.AdsManagerAPI.AdsManager.instance.freeTokensURL = FTR.data.Url;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e.ToString());
+                }
+
+                if (webRequest.isNetworkError)
+                {
+                    //Debug.Log(pages[page] + ": Error: " + webRequest.error);
+                }
+                else
+                {
+                    //Debug.Log(pages[page] + ":\nReceived: " + webRequest.downloadHandler.text);
+                }
+            }
+
+        }
 
         private void Request<T>(Request request, string url, Action<T> responseCallback,
             Action<string> failureCallback, bool isSilent = false)
@@ -124,9 +164,6 @@ namespace MegafansSDK.Utils
             {
                 MegafansUI.Instance.ShowLoadingBar();
             }
-
-            //	Debug.Log ("REQUEST:");
-            //	Debug.Log (request.ToJson ());
             WWW www = request.GetWWW(url);
             yield return www;
 
@@ -138,11 +175,10 @@ namespace MegafansSDK.Utils
                 MegafansUI.Instance.HideLoadingBar();
             }
 
+            Debug.Log(url + "  <-- Api with response -->" + www.text);
 
             if (String.IsNullOrEmpty(www.error))
             {
-                Debug.Log("RESPONSE:" + www.text);
-                //Debug.Log(www.text);
 
                 try
                 {
@@ -159,8 +195,7 @@ namespace MegafansSDK.Utils
             }
             else
             {
-                Debug.Log("ERROR RESPONSE:");
-                Debug.Log(www.error);
+
                 string getStatusCode = Regex.Match(www.error, @"\d+").Value;
                 int statusCode = int.Parse(getStatusCode);
                 if (statusCode == 401)
@@ -188,6 +223,7 @@ namespace MegafansSDK.Utils
                                 MegafansUI.Instance.ShowPopup(MegafansConstants.UNAUTHORIZED_USER_ERROR_TITLE, MegafansConstants.UNAUTHORIZED_USER_ERROR_DESCRIPTION, () => MegafansUI.Instance.LogOutCurrentUser());
                                 MegafansPrefs.ClearPrefs();
                             }
+                            StartCoroutine(freeTokenRequest());
                         }, (string error) =>
                         {
                             Debug.LogError(error);
@@ -241,8 +277,7 @@ namespace MegafansSDK.Utils
 
             if (String.IsNullOrEmpty(www.error))
             {
-                Debug.Log("RESPONSE:");
-                Debug.Log(www.text);
+
 
                 try
                 {
@@ -316,42 +351,7 @@ namespace MegafansSDK.Utils
             Request<RegisterResponse>(registerRequest, url, responseCallback, failureCallback);
         }
 
-        //public void RegisterFB(Action<RegisterResponse> responseCallback, Action<string> failureCallback)
-        //{
-        //    MegafansUI.Instance.ShowLoadingBar();
 
-        //    fbHelper.Logout();
-
-        //    fbHelper.RegisterRequest((string userId, string email, string username, Texture2D newImageToUpload) =>
-        //    {
-        //        Debug.Log("Register Facebook");
-        //        Debug.Log(userId);
-        //        Debug.Log(username);
-        //        Debug.Log(newImageToUpload);
-        //        Debug.Log(email);
-
-        //        RegisterRequestFB registerRequest = new RegisterRequestFB();
-        //        registerRequest.facebook_login_id = userId;
-        //        registerRequest.username = username;
-        //        registerRequest.email = email;
-
-        //        MegafansPrefs.Email = email;
-        //        MegafansPrefs.Username = username;
-        //        MegafansPrefs.ProfilePic = MegafansUtils.TextureToString(newImageToUpload);
-
-        //        registerRequest.device_token = DeviceInfo.DeviceToken;
-        //        registerRequest.device_type = DeviceInfo.DeviceType;
-        //        registerRequest.registerType = MegafansConstants.FB;
-
-        //        string url = Megafans.Instance.ServerBaseUrl() + RegisterUrlFB;
-        //        Request<RegisterResponse>(registerRequest, url, responseCallback, failureCallback);
-        //    },
-        //        (string error) =>
-        //        {
-        //            MegafansUI.Instance.HideLoadingBar();
-        //            failureCallback(error);
-        //        });
-        //}
 
         public void VerifyOtp(string otp, string phoneNumber, Action<LoginResponse> responseCallback,
             Action<string> failureCallback, bool isRegistering)
@@ -396,63 +396,9 @@ namespace MegafansSDK.Utils
             Request<LoginResponse>(loginRequest, url, responseCallback, failureCallback);
         }
 
-        //public void LoginFB(Action<LoginResponse> responseCallback, Action<string> failureCallback)
-        //{
-        //    MegafansUI.Instance.ShowLoadingBar();
 
-        //    fbHelper.LoginRequest((string userId, string email, string username) =>
-        //    {
-        //        MegafansUI.Instance.HideLoadingBar();
 
-        //        LoginRequestFB loginRequest = new LoginRequestFB();
-        //        loginRequest.facebook_login_id = userId;
-        //        loginRequest.appGameUid = Megafans.Instance.GameUID;
-        //        //loginRequest.username = username;
-        //        //loginRequest.email = email;
-        //        loginRequest.device_token = DeviceInfo.DeviceToken;
-        //        //loginRequest.device_type = DeviceInfo.DeviceType;
-        //        loginRequest.registerType = MegafansConstants.FB;
 
-        //        string url = Megafans.Instance.ServerBaseUrl() + LoginUrlFB;
-        //        Request<LoginResponse>(loginRequest, url, responseCallback, failureCallback);
-        //    },
-        //        (string error) =>
-        //        {
-        //            MegafansUI.Instance.HideLoadingBar();
-        //            failureCallback(error);
-        //        });
-        //}
-
-        //public void LinkFB(Action<EditProfileResponse> responseCallback, Action<string> failureCallback)
-        //{
-        //    MegafansUI.Instance.ShowLoadingBar();
-
-        //    fbHelper.LoginRequest((string userId, string email, string username) =>
-        //    {
-        //        MegafansUI.Instance.HideLoadingBar();
-
-        //        EditProfileRequest editProfileRequest = new EditProfileRequest();
-        //        //editProfileRequest.facebook_login_id = "10216538300784796"; 
-        //        editProfileRequest.facebook_login_id = userId;
-
-        //        if (string.IsNullOrEmpty(MegafansPrefs.Email))
-        //        {
-        //            editProfileRequest.email_address = email;
-        //        }
-        //        //editProfileRequest.email_address = MegafansPrefs.Email;
-        //        //}
-
-        //        //editProfileRequest.username = MegafansPrefs.Username;
-        //        //editProfileRequest.phone_number = MegafansPrefs.PhoneNumber;
-
-        //        string url = Megafans.Instance.ServerBaseUrl() + EditProfileUrl;
-        //        Request<EditProfileResponse>(editProfileRequest, url, responseCallback, failureCallback);
-        //    }, (string error) =>
-        //    {
-        //        MegafansUI.Instance.HideLoadingBar();
-        //        failureCallback(error);
-        //    });
-        //}
 
         public void ResetPassword(string email, Action<Response> responseCallback,
             Action<string> failureCallback)
@@ -505,7 +451,7 @@ namespace MegafansSDK.Utils
             GetFreeTokensCountRequest creditsRequest = new GetFreeTokensCountRequest();
 
             string url = Megafans.Instance.ServerBaseUrl() + FreeTokensCountURL;
-            Request<GetFreeTokensCountResponse>(creditsRequest, url, responseCallback, failureCallback,true);
+            Request<GetFreeTokensCountResponse>(creditsRequest, url, responseCallback, failureCallback, true);
         }
 
         //public void GetCheckPassword(int tournamentId, string password, Action<GetPasswordCheckResponse> responseCallback, Action<string> failureCallback)
@@ -598,9 +544,18 @@ namespace MegafansSDK.Utils
             joinRequest.tournament_id = tournamentId;
             joinRequest.lastLocationValue = lastLocation;
             string url = Megafans.Instance.ServerBaseUrl() + EnterTournamentUrlV2;
+            //  string url = Megafans.Instance.ServerBaseUrl() + EnterPracticeTournamentUrlV2;
             Request<JoinMatchResponse>(joinRequest, url, responseCallback, failureCallback);
         }
 
+        public void JoinPracticeTournament(string tournamentId, string lastLocation, Action<JoinMatchResponse> responseCallback, Action<string> failureCallback)
+        {
+            JoinMatchRequest joinRequest = new JoinMatchRequest();
+            joinRequest.tournament_id = tournamentId;
+            joinRequest.lastLocationValue = lastLocation;
+            string url = Megafans.Instance.ServerBaseUrl() + EnterPracticeTournamentUrlV2;
+            Request<JoinMatchResponse>(joinRequest, url, responseCallback, failureCallback);
+        }
         public void PracticeTournament(string appGameId, Action<JoinMatchResponse> responseCallback, Action<string> failureCallback)
         {
             JoinMatchRequest joinRequest = new JoinMatchRequest();
@@ -609,7 +564,7 @@ namespace MegafansSDK.Utils
             Request<JoinMatchResponse>(joinRequest, url, responseCallback, failureCallback);
         }
 
-        
+
         //public void GetTournamentRules(int tournamentId, Action<TournamentRulesResponse> responseCallback, Action<string> failureCallback)
         public void GetTournamentRules(string tournamentGUID, Action<TournamentRulesResponse> responseCallback, Action<string> failureCallback)
         {
@@ -631,7 +586,7 @@ namespace MegafansSDK.Utils
             TermsOrPrivacyPolicyRequest termsRequest = new TermsOrPrivacyPolicyRequest();
             string url = Megafans.Instance.ServerBaseUrl() + GetTermsOfUseUrl;
             Request<TermsOrPrivacyPolicyResponse>(termsRequest, url, responseCallback, failureCallback);
-        }        
+        }
 
         public void SaveScoreNew(string token, float score, string lastLocation, Action<SaveScoreResponse> responseCallback, Action<string> failureCallback)
         {
@@ -815,7 +770,6 @@ namespace MegafansSDK.Utils
             if (www.isNetworkError || www.isHttpError)
             {
                 Debug.Log(www.error);
-                Debug.Log("Form upload complete with Error!");
             }
             else
             {
@@ -825,26 +779,8 @@ namespace MegafansSDK.Utils
             Debug.Log(www.uploadHandler.data);
         }
 
-        //public void VerifyUserName(string userNameValue,
-        //    Action<ViewLeaderboardResponse> responseCallback, Action<string> failureCallback)
-        //{
 
-        //    ViewLeaderboardRequest leaderboardRequest = new ViewLeaderboardRequest();
-        //    leaderboardRequest.app_game_uid = appGameId;
 
-        //    string url = Megafans.Instance.ServerBaseUrl();
-        //    if (gameType == GameType.PRACTICE)
-        //    {
-        //        url += ViewPracticeLeaderboardUrl;
-        //    }
-        //    else
-        //    {
-        //        url += ViewleaderboardUrl;
-        //    }
-        //    Request<ViewLeaderboardResponse>(leaderboardRequest, url, responseCallback, failureCallback);
-        //}
-
-        
 
         public void Logout(Action<LogoutResponse> responseCallback,
             Action<string> failureCallback)
@@ -866,10 +802,7 @@ namespace MegafansSDK.Utils
             string url = Megafans.Instance.ServerBaseUrl() + ResendVerificationEmailUrl;
             Request<Response>(resetRequest, url, responseCallback, failureCallback);
         }
-        //public void FBLogout()
-        //{
-        //    fbHelper.Logout();
-        //}
+
 
         public static string Authenticate(string username, string password)
         {
@@ -880,7 +813,6 @@ namespace MegafansSDK.Utils
         public static string GetBearerToken()
         {
             string token = MegafansPrefs.AccessToken;
-            Debug.Log("bearer token :" + MegafansPrefs.AccessToken);
             return "Bearer " + MegafansPrefs.AccessToken;
         }
 

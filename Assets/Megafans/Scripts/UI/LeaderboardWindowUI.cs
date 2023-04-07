@@ -14,7 +14,9 @@ namespace MegafansSDK.UI
 
     public class LeaderboardWindowUI : MonoBehaviour
     {
+        [SerializeField] GameObject Container;
         [SerializeField] Text userTokensValueTxt;
+        [SerializeField] Text userClientBlncTxt;
         [SerializeField] GameObject leaderboardItemPrefab;
         [SerializeField] Text scoreValueText;
         [SerializeField] Text leaderboardPanelScoreValueText;
@@ -29,8 +31,9 @@ namespace MegafansSDK.UI
         [SerializeField] GameObject WatchedDoublerAd;
         [SerializeField] GameObject HasNotWatchedDoublerAd;
         [SerializeField] GameObject FreeEntriesRemainingText;
-
-
+        public Text PracticeMatchText;
+        public GameObject InappButton;
+        [SerializeField] GameObject ContinueBtn;
         GameType gameType = GameType.TOURNAMENT;
         LeaderboardType leaderboardType;
         RankingType rankingType = RankingType.LEADERBOARD;
@@ -46,6 +49,13 @@ namespace MegafansSDK.UI
         void Awake()
         {
             matchAssistant = gameObject.AddComponent<JoinMatchAssistant>();
+            if (Screen.orientation != ScreenOrientation.Portrait)
+            {
+                Container.transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);
+                Container.transform.position = new Vector3(Container.transform.position.x, Container.transform.position.y + 34, Container.transform.position.z);
+            }
+            InappButton.SetActive(false);
+            PracticeMatchText.gameObject.SetActive(false);
         }
 
         void OnEnable()
@@ -114,6 +124,9 @@ namespace MegafansSDK.UI
                 //Show Game Over Screen
                 GameOverScreen.SetActive(true);
 
+                if (!MegafansConstants.practiceMatch)
+                    ContinueBtn.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -525, 0);
+
                 RequestLeaderboard(gameType, leaderboardType, rankingType);
             }
         }
@@ -121,98 +134,70 @@ namespace MegafansSDK.UI
         //@Gunslinger - Rerwad multiplier logic
         private void RewardMultiplierLogic(int _Score)
         {
-            if(!MegafansSDK.Megafans.Instance.m_AdsManager.IsRewardedVideoAvailable())
+            if (!MegafansConstants.practiceMatch)
             {
-                MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier = MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier;
-                HideRewardButtonsAndResetMultiplier();
-                return;
-            }
-
-            int _FirstMultiplier = _Score * MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier;
-            int _SecondMultiplier = _FirstMultiplier + _Score;
-            int _CurrentHighScore = int.Parse(m_CurrentHighscore);
-
-            //Need To Show Both Buttons
-            if (hasWatchedDoublePoints)
-            {
-                HideRewardButtonsAndResetMultiplier();
-            }
-            //Already watched add on next screen 
-            else
-            {
-                //Current Score for this round
-                if (_Score > 0)
+                InappButton.SetActive(false);
+                PracticeMatchText.gameObject.SetActive(false);
+                if (!MegafansSDK.Megafans.Instance.m_AdsManager.IsRewardedVideoAvailable())
                 {
-                    //Show default 2X reward multiplier
-                    HasNotWatchedDoublerAd.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "x" + MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier.ToString();
-                    HasNotWatchedDoublerAd.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = _FirstMultiplier.ToString();
-                    HasNotWatchedDoublerAd.SetActive(true);
-                    DoublePointsWithAd.transform.GetChild(1).GetComponent<Text>().text = "x" + MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier.ToString();
-                    DoublePointsWithAd.transform.GetChild(2).GetComponent<Text>().text = _FirstMultiplier.ToString();
-                    DoublePointsWithAd.SetActive(true);
-                    WatchedDoublerAd.SetActive(false);
+                    MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier = MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier;
+                    HideRewardButtonsAndResetMultiplier();
+                    return;
+                }
 
+                int _FirstMultiplier = _Score * MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier;
+                int _SecondMultiplier = _FirstMultiplier + _Score;
+                int _CurrentHighScore = int.Parse(m_CurrentHighscore);
 
-                    //INCENTIVE based rewards
-
-                    //if (_Score < _CurrentHighScore && _CurrentHighScore > 0)
-                    //{
-                    //    MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier = MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier;
-
-                    //    if (_CurrentHighScore >= 0 && _FirstMultiplier > _CurrentHighScore)
-                    //    {
-                    //        //Show First reward button
-                    //        HasNotWatchedDoublerAd.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "x" + MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier.ToString();
-                    //        HasNotWatchedDoublerAd.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = _FirstMultiplier.ToString();
-                    //        HasNotWatchedDoublerAd.SetActive(true);
-                    //        DoublePointsWithAd.transform.GetChild(1).GetComponent<Text>().text = "x" + MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier.ToString();
-                    //        DoublePointsWithAd.transform.GetChild(2).GetComponent<Text>().text = _FirstMultiplier.ToString();
-                    //        DoublePointsWithAd.SetActive(true);
-                    //        WatchedDoublerAd.SetActive(false);
-                    //    }
-                    //    else if (_CurrentHighScore >= 0 && _FirstMultiplier <= _CurrentHighScore && _SecondMultiplier > _CurrentHighScore)
-                    //    {
-                    //        //Show Second reward button
-                    //        HasNotWatchedDoublerAd.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "x" + (MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier + 1).ToString();
-                    //        HasNotWatchedDoublerAd.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = _SecondMultiplier.ToString();
-                    //        HasNotWatchedDoublerAd.SetActive(true);
-                    //        DoublePointsWithAd.transform.GetChild(1).GetComponent<Text>().text = "x" + (MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier + 1).ToString();
-                    //        DoublePointsWithAd.transform.GetChild(2).GetComponent<Text>().text = _SecondMultiplier.ToString();
-                    //        DoublePointsWithAd.SetActive(true);
-                    //        WatchedDoublerAd.SetActive(false);
-
-                    //        MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier = MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier + 1;
-                    //    }
-                    //    else
-                    //    {
-                    //        //Hide reward button and leave Continue button
-                    //        HideRewardButtonsAndResetMultiplier();
-                    //        MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier = MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier;
-                    //    }
-                    //}
-                    //else if (_Score >= _CurrentHighScore && _CurrentHighScore > 0)
-                    //{
-                    //    _FirstMultiplier = _Score * MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier;
-                    //    _SecondMultiplier = _FirstMultiplier + _Score;
-
-                    //    if (_CurrentHighScore >= 0 && _FirstMultiplier > _CurrentHighScore)
-                    //    {
-                    //        //Show First reward button
-                    //        HasNotWatchedDoublerAd.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "x" + MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier.ToString();
-                    //        HasNotWatchedDoublerAd.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = _FirstMultiplier.ToString();
-                    //        HasNotWatchedDoublerAd.SetActive(true);
-                    //        DoublePointsWithAd.transform.GetChild(1).GetComponent<Text>().text = "x" + MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier.ToString();
-                    //        DoublePointsWithAd.transform.GetChild(2).GetComponent<Text>().text = _FirstMultiplier.ToString();
-                    //        DoublePointsWithAd.SetActive(true);
-                    //        WatchedDoublerAd.SetActive(false);
-                    //    }
-                    //}
+                //Need To Show Both Buttons
+                if (hasWatchedDoublePoints)
+                {
+                    HideRewardButtonsAndResetMultiplier();
+                }
+                //Already watched add on next screen 
+                else
+                {
+                    //Current Score for this round
+                    if (_Score > 0)
+                    {
+                        //Show default 2X reward multiplier
+                        HasNotWatchedDoublerAd.transform.GetChild(0).GetChild(1).GetComponent<Text>().text = "x" + MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier.ToString();
+                        HasNotWatchedDoublerAd.transform.GetChild(0).GetChild(2).GetComponent<Text>().text = _FirstMultiplier.ToString();
+                        HasNotWatchedDoublerAd.SetActive(true);
+                        DoublePointsWithAd.transform.GetChild(1).GetComponent<Text>().text = "x" + MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier.ToString();
+                        DoublePointsWithAd.transform.GetChild(2).GetComponent<Text>().text = _FirstMultiplier.ToString();
+                        DoublePointsWithAd.SetActive(true);
+                        WatchedDoublerAd.SetActive(false);
+                    }
+                    else
+                    {
+                        HideRewardButtonsAndResetMultiplier();
+                        MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier = MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier;
+                    }
+                }
+            }
+            else // Practice play Button
+            {
+                InappButton.SetActive(true);
+                PracticeMatchText.gameObject.SetActive(true);
+                if (Screen.orientation == ScreenOrientation.Portrait)
+                {
+                    PracticeMatchText.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(600.0f, 160.9f);
+                    PracticeMatchText.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -513, 0);
+                    InappButton.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -556, 0);
+                    ContinueBtn.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -210, 0);
                 }
                 else
                 {
-                    HideRewardButtonsAndResetMultiplier();
-                    MegafansSDK.Megafans.Instance.m_AdsManager.m_VideRewardMultiplier = MegafansSDK.Megafans.Instance.m_AdsManager.m_MinMultiplier;
+                    PracticeMatchText.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(1250.0f, 120.9f);
+                    PracticeMatchText.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -360, 0);
+                    InappButton.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(1054, -500, 0);
+                    ContinueBtn.gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -500, 0);
                 }
+
+                PracticeMatchText.text = MegafansConstants.PracticMatchTextRespose;
+                Debug.Log("Practice match data");
+                HideRewardButtonsAndResetMultiplier();
             }
         }
 
@@ -231,8 +216,8 @@ namespace MegafansSDK.UI
 
         public void UpdateCreditUI()
         {
-            userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
-            //userTokensValueTxt.text = "CB : " + MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensValueTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+            userClientBlncTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         private void OnGetCreditsSuccess(CheckCreditsResponse response)
@@ -240,25 +225,27 @@ namespace MegafansSDK.UI
             if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
             {
                 MegafansPrefs.CurrentTokenBalance = response.data.credits;
-                userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString() + " : " + MegafansPrefs.TournamentEntryTokens.ToString();
+                userTokensValueTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+                userClientBlncTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
             }
         }
 
         public void ContinueBtn_OnClick()
         {
+            InappButton.SetActive(false);
+            PracticeMatchText.gameObject.SetActive(false);
             GameOverScreen.SetActive(false);
             LeaderboardScreen.SetActive(true);
 
             if (!MegafansHelper.m_Instance.m_WasPlayingTournament)
             {
-                MegafansSDK.AdsManagerAPI.AdsManager.instance.ApiCall_FullScreen(needtoShowThirdPartyAds => {
+                MegafansSDK.AdsManagerAPI.AdsManager.instance.ApiCall_FullScreen(needtoShowThirdPartyAds =>
+                {
 
                     if (needtoShowThirdPartyAds)
                     {
                         MegafansSDK.Megafans.Instance.m_AdsManager.ShowInterstitial();
                     }
-
-
                 });
             }
         }
@@ -266,7 +253,14 @@ namespace MegafansSDK.UI
         public void PlayAgainBtn_Click()
         {
             hasWatchedDoublePoints = false;
-            matchAssistant.ReplayTournamentMatch();
+            if (!MegafansConstants.practiceMatch)
+            {
+                matchAssistant.ReplayTournamentMatch();
+            }
+            else
+            {
+                matchAssistant.ReplayPracticeTournamentMatch();
+            }
         }
 
         public void DoubleBtn_OnClick()
@@ -275,7 +269,6 @@ namespace MegafansSDK.UI
 
             MegafansSDK.AdsManagerAPI.AdsManager.instance.ApiCall_FullScreen(needtoShowThirdPartyAds =>
             {
-
                 if (needtoShowThirdPartyAds)
                 {
                     MegafansSDK.Megafans.Instance.m_AdsManager.ShowRewardedVideo(() =>
@@ -336,7 +329,7 @@ namespace MegafansSDK.UI
                 rankingType = _rankingType;
                 loadingView.SetActive(true);
                 MegafansWebService.Instance.ViewLeaderboard(Megafans.Instance.GameUID,
-                    Megafans.Instance.GetCurrentTournamentData().guid, "","",
+                    Megafans.Instance.GetCurrentTournamentData().guid, "", "",
                     gameType, OnLeaderboardResponse, OnLeaderboardFailure);
             }
         }

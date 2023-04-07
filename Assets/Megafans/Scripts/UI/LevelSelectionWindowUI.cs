@@ -79,6 +79,7 @@ namespace MegafansSDK.UI
         {
             if (response.success.Equals(MegafansConstants.SUCCESS_CODE))
             {
+                MegafansConstants.UserBanned = false;
                 List<LevelsResponseData> levelsData = response.data;
                 if (levelsData.Count == 0 || levelsData == null)
                 {
@@ -90,6 +91,13 @@ namespace MegafansSDK.UI
                     messageTxt.gameObject.SetActive(false);
                     FillLevels(levelsData);
                 }
+            }
+
+            else
+            {
+                Debug.Log("Alert Mesg: " + response.message);
+                MegafansConstants.UserBanned = true;
+                MegafansUI.Instance.ShowPopup("ALERT", response.message);
             }
         }
 

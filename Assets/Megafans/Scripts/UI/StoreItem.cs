@@ -20,7 +20,7 @@ namespace MegafansSDK.UI {
 
 			private set {
 				qty = value;
-				qtyTxt.text = qty.ToString () + " tokens";
+				qtyTxt.text = qty.ToString () + " Coins";
 			}
 		}
 
@@ -45,8 +45,7 @@ namespace MegafansSDK.UI {
         }
 
         void Awake() {
-			//qty = int.Parse (qtyTxt.text);
-			//price = priceTxt.text;
+			
 		}
 
 		public void SetValues(int qty, string price, UnityAction buyBtnAction) {

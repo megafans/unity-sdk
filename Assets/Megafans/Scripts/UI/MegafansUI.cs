@@ -150,14 +150,12 @@ namespace MegafansSDK.UI
             // todo : 
             if (!UIenabled)
             {
-                Debug.Log("Ashish: HideLandingWindow ");
-                MegafansSDK.AdsManagerAPI.AdsManager.instance.ApiCall_Banner(needtoShowThirdPartyAds => {
-                    Debug.Log("Ashish: HideLandingWindow 1"+ needtoShowThirdPartyAds);
+                MegafansSDK.AdsManagerAPI.AdsManager.instance.ApiCall_Banner(needtoShowThirdPartyAds =>
+                {
                     if (needtoShowThirdPartyAds)
                     {
                         AdsManagerAPI.AdsManager.instance.adImage.enabled = false;
                         AdsManagerAPI.AdsManager.instance.adImage1.enabled = false;
-                        Debug.Log("Ashish: HideLandingWindow 2" + needtoShowThirdPartyAds);
                         IronSource.Agent.displayBanner();
                     }
                 });
@@ -286,14 +284,11 @@ namespace MegafansSDK.UI
                 landingScreenUI.HideAllWindows();
                 tournamentLobbyScreenUI.HideAllWindows();
 
-                Debug.Log("Ashish: EnableUI ");
-                MegafansSDK.AdsManagerAPI.AdsManager.instance.ApiCall_Banner(needtoShowThirdPartyAds => {
-                    Debug.Log("Ashish: EnableUI1 " + needtoShowThirdPartyAds);
+                MegafansSDK.AdsManagerAPI.AdsManager.instance.ApiCall_Banner(needtoShowThirdPartyAds =>
+                {
                     if (needtoShowThirdPartyAds)
                     {
-                        //AdsManagerAPI.AdsManager.instance.adImage.enabled = false;
-                        //AdsManagerAPI.AdsManager.instance.adImage1.enabled = false;
-                        Debug.Log("Ashish: EnableUI2 " + needtoShowThirdPartyAds);
+                  
                         IronSource.Agent.displayBanner();
                     }
                 });
@@ -322,7 +317,7 @@ namespace MegafansSDK.UI
         void takeThemToStore()
         {
 #if UNITY_ANDROID
-            Application.OpenURL("https://play.google.com/store/apps/details?id="+Application.identifier);
+            Application.OpenURL("https://play.google.com/store/apps/details?id=" + Application.identifier);
 #elif UNITY_IOS
             Application.OpenURL("https://apps.apple.com/us/app/subway-surfers/id1447419350");
 #endif
@@ -348,14 +343,17 @@ namespace MegafansSDK.UI
 
         public void ShowStoreWindow()
         {
-            if (MegafansPrefs.IsRegisteredMegaFansUser)
+            if (MegafansConstants.UserBanned == false)
             {
-                UnityEngine.Purchasing.ProductCollection allproducts = InAppPurchaser.Instance.GetProducts();
-                tournamentLobbyScreenUI.ShowStoreWindow(MegafansPrefs.CurrentTokenBalance, false);
-            }
-            else
-            {
-                onboardingTutorialUI.ShowRegisterNowMegaFansWindow();
+                if (MegafansPrefs.IsRegisteredMegaFansUser)
+                {
+                    UnityEngine.Purchasing.ProductCollection allproducts = InAppPurchaser.Instance.GetProducts();
+                    tournamentLobbyScreenUI.ShowStoreWindow(MegafansPrefs.TournamentEntryTokens, false);
+                }
+                else
+                {
+                    onboardingTutorialUI.ShowRegisterNowMegaFansWindow();
+                }
             }
         }
 
@@ -506,7 +504,7 @@ namespace MegafansSDK.UI
 
         public void LogOutCurrentUser()
         {
-            MegafansWebService.Instance.Logout(OnLogoutResponse, OnLogoutFailure);            
+            MegafansWebService.Instance.Logout(OnLogoutResponse, OnLogoutFailure);
         }
 
         private void OnLogoutResponse(LogoutResponse response)
@@ -524,6 +522,11 @@ namespace MegafansSDK.UI
         private void OnLogoutFailure(string error)
         {
             Debug.LogError(error.ToString());
+        }
+
+        public void WithdrawBtnClicked()
+        {
+            Application.OpenURL(Megafans.Instance.WithdrawURL);
         }
     }
 }

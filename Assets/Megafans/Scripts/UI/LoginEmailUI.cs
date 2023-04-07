@@ -112,7 +112,8 @@ namespace MegafansSDK.UI
                 Debug.Log("REGISTER USER With ID");
                 Debug.Log(MegafansPrefs.UserId.ToString());
                 Debug.Log(MegafansPrefs.UserId);
-                Megafans.Instance.ReportUserLoggedIn(MegafansPrefs.UserId.ToString());
+                MegafansPrefs.UserId = response.data.userId;
+                Megafans.Instance.ReportUserLoggedIn(response.data.userId.ToString());
             }
             else
             {

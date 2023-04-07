@@ -8,8 +8,9 @@ namespace MegafansSDK.UI
 
     public class MyAccountWindowUI : MonoBehaviour
     {
-
+        [SerializeField] private GameObject Container;
         [SerializeField] private Text userTokensTxt;
+        [SerializeField] private Text userClientTokensTxt;
         [SerializeField] private Text userNameLabel;
         [SerializeField] private RawImage profilePicImg;
         [SerializeField] private Button loginBtn;
@@ -26,13 +27,19 @@ namespace MegafansSDK.UI
             imagePicker = GetComponent<ImagePicker>();
 
             picPlaceholder = (Texture2D)profilePicImg.texture;
+
+            if (Screen.orientation != ScreenOrientation.Portrait)
+            {
+                Container.transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);
+                Container.transform.position = new Vector3(Container.transform.position.x, Container.transform.position.y + 34, Container.transform.position.z);
+            }
         }
 
         void OnEnable()
         {
             Debug.Log("User current token balance - " + MegafansPrefs.CurrentTokenBalance.ToString());
-            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
-            //userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+            userClientTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
             userNameLabel.text = MegafansPrefs.Username;
             profilePicImg.texture = picPlaceholder;
             isPhotoRemoved = false;
@@ -46,8 +53,8 @@ namespace MegafansSDK.UI
 
         public void UpdateCreditUI()
         {
-            userTokensTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
-            //userTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
+            userTokensTxt.text = MegafansPrefs.TournamentEntryTokens.ToString();
+            userClientTokensTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         public void BackBtn_OnClick()
@@ -105,7 +112,7 @@ namespace MegafansSDK.UI
             Debug.Log("working here 0");
             imagePicker.PickImage((Texture2D tex, string imagePath) =>
             {
-                Debug.Log("working here 3");
+            
                 if (tex != null)
                 {
                     isPhotoRemoved = false;
@@ -229,9 +236,7 @@ namespace MegafansSDK.UI
             MegafansPrefs.UserId = 0;
             MegafansPrefs.ProfilePicUrl = "";
             MegafansPrefs.ClearPrefs();
-            //MegafansWebService.Instance.FBLogout();
             MegafansUI.Instance.ShowOnboardingStartWindow();
-            //Megafans.NativeWrapper.MegafanNativeWrapper.LogoutFromIntercom();
         }
 
         private void OnViewProfileResponse(ViewProfileResponse response)
@@ -249,7 +254,6 @@ namespace MegafansSDK.UI
                 MegafansWebService.Instance.FetchImage(response.data.image, OnFetchPicSuccess, OnFetchPicFailure);
             }
 
-            Debug.Log("ssssSSss : " + response.data);
         }
 
         private void OnViewProfileFailure(string error)

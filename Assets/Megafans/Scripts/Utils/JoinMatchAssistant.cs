@@ -66,6 +66,48 @@ namespace MegafansSDK.Utils
 #endif            
         }
 
+        public void JoinPracticeTournamentMatch(string tournamentID)
+        {
+            isReplay = false;
+            Megafans.Instance.CurrentTournamentId = tournamentID;
+            Megafans.Instance.CurrentTounamentFreeEntries = Megafans.Instance.GetCurrentTournamentData().freeEntriesRemaining;
+#if !UNITY_EDITOR
+                if (Megafans.Instance.lastLocationData != null)
+                {
+                    var lastLocation = Megafans.Instance.lastLocationData.Value.latitude.ToString() + ',' + Megafans.Instance.lastLocationData.Value.longitude.ToString();
+                    MegafansWebService.Instance.JoinPracticeTournament(tournamentID, lastLocation, OnJoinTournamentMatchSuccess, OnJoinTournamentMatchFailure);
+                }
+                else
+                {
+                    // Force user to give us location            
+                    Megafans.Instance.CheckForLocationPermissions();
+
+                }
+#else
+        
+            MegafansWebService.Instance.JoinPracticeTournament(tournamentID, "latitude,longitude", OnJoinTournamentMatchSuccess, OnJoinTournamentMatchFailure);
+#endif
+        }
+        public void ReplayPracticeTournamentMatch()
+        {
+            isReplay = false;
+            // Megafans.Instance.CurrentTournamentId = tournamentID;
+            Megafans.Instance.CurrentTounamentFreeEntries = Megafans.Instance.GetCurrentTournamentData().freeEntriesRemaining;
+#if !UNITY_EDITOR
+                if (Megafans.Instance.lastLocationData != null)
+                {
+                    var lastLocation = Megafans.Instance.lastLocationData.Value.latitude.ToString() + ',' + Megafans.Instance.lastLocationData.Value.longitude.ToString();
+                    MegafansWebService.Instance.JoinPracticeTournament(Megafans.Instance.CurrentTournamentId, lastLocation, OnJoinTournamentMatchSuccess, OnJoinTournamentMatchFailure);
+                }
+                else
+                {          
+                    Megafans.Instance.CheckForLocationPermissions();
+                }
+#else
+            MegafansWebService.Instance.JoinPracticeTournament(Megafans.Instance.CurrentTournamentId, "latitude,longitude", OnJoinTournamentMatchSuccess, OnJoinTournamentMatchFailure);
+#endif
+        }
+
         public void ReplayTournamentMatch()
         {
             MegafansHelper.m_Instance.m_WasPlayingTournament = false;
@@ -113,7 +155,8 @@ namespace MegafansSDK.Utils
                 {
                     if (isReplay)
                     {
-                        MegafansSDK.AdsManagerAPI.AdsManager.instance.ApiCall_FullScreen(needtoShowThirdPartyAds => {
+                        MegafansSDK.AdsManagerAPI.AdsManager.instance.ApiCall_FullScreen(needtoShowThirdPartyAds =>
+                        {
 
                             if (needtoShowThirdPartyAds)
                             {
@@ -152,6 +195,12 @@ namespace MegafansSDK.Utils
                     {
                         MegafansUI.Instance.ShowUnregisteredUserWarning();
                     }
+                }
+                else
+                {
+                    MegafansConstants.UserBanned = true;
+                    MegafansUI.Instance.ShowPopup("ALERT", response.message);
+
                 }
             }
         }

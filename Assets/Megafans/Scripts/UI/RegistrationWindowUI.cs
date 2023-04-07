@@ -73,11 +73,6 @@ namespace MegafansSDK.UI
             }
         }
 
-        //public void FBBtn_OnClick()
-        //{
-        //    MegafansWebService.Instance.RegisterFB(OnRegisterFBResponse, OnRegisterFBFailure);
-        //}
-
         public void PhoneBtn_OnClick()
         {
             emailSection.SetActive(false);

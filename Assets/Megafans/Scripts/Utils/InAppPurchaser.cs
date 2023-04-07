@@ -232,7 +232,6 @@ namespace MegafansSDK.Utils
         {
             MegafansUI.Instance.HideLoadingBar();
             MegafansUI.Instance.ShowPopup("Error", "Error purchasing tokens.  You were not charged for this transaction.  Please try again.");
-            Debug.Log(string.Format("OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1}", product.definition.storeSpecificId, failureReason));
         }
     }
 }

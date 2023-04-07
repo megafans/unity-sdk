@@ -19,8 +19,7 @@ namespace MegafansSDK.UI
         [SerializeField] private TournamentCardItem tournamentCard;
 
 
-        //[SerializeField] private GameObject tournamentCardItemPrefab;
-        //[SerializeField] private RawImage profilePicImg;
+       
 
         LevelsResponseData levelInfo;
 
@@ -38,7 +37,6 @@ namespace MegafansSDK.UI
                 tournamentCard.SetValues(this.levelInfo, true);
             }
             userTokensValueTxt.text = "TET : " + MegafansPrefs.TournamentEntryTokens.ToString();
-            //userTokensValueTxt.text = MegafansPrefs.CurrentTokenBalance.ToString();
         }
 
         void Awake()
@@ -50,7 +48,6 @@ namespace MegafansSDK.UI
         {
             if (!string.IsNullOrEmpty(MegafansPrefs.AccessToken))
             {
-                //MegafansWebService.Instance.ViewProfile("", OnViewProfileResponse, OnViewProfileFailure);
             }
         }
 
@@ -75,7 +72,6 @@ namespace MegafansSDK.UI
                     matchAssistant.JoinTournamentMatch(levelInfo.guid);
                 }
 
-                //ShowCreditsWarning(userCredits);
             }
             catch (Exception e)
             {

@@ -22,7 +22,6 @@ public class UnityWebViewPostprocessBuild
 
     public void OnPostGenerateGradleAndroidProject(string basePath)
     {
-        Debug.Log("adjusted AndroidManifest.xml.");
         var androidManifest = new AndroidManifest(GetManifestPath(basePath));
         androidManifest.SetHardwareAccelerated(true);
         androidManifest.Save();
